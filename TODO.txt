@@ -1,0 +1,58 @@
+Features:
+
+[ ] Deletion of elements.
+
+[ ] More basic elements for a first release:
+	[X] Radio buttons
+	[X] Labels
+	[ ] Listbox 
+	[ ] Scrollbars (vertical / horizontal)
+	[ ] ...
+	
+[ ] uiTextbox / Textcontrols:
+	[ ] Selection of text
+	[ ] Handling of CRTL+A
+	[ ] Copy & Paste
+
+[ ] Handling of OnMouseMove. Important for scrollbars and stuff.
+
+[ ] Write a readme and proper example code.
+
+In the future:	
+
+[ ] Proper movement of elements.
+
+[ ] Inactive elements
+	[ ] Won't receive events
+	[ ] Different rendering...?
+	
+
+
+Internal / Performance / style:
+
+[ ] Better strategy for routing click-events. Right now, it'is terrible for overlapping elements
+	For example: Clicking on a dropdown that overlaps with a button would trigger both.
+	I think I might need a z-Index and a way to check that stuff fast.
+
+[ ] The focus/unfocus in code  uiWindow.HandleEvent is terrible.
+
+[ ] Better event-handling in general. By just making threads, it can happen that events reach the uiElement in the wrong order
+	or worse: The threads queue up because of mutexing-issues.
+	(Doesn't help that the GFXlib occasionally has deadlocks without a global gfx-mutex)
+	Ideas:
+		[ ] Event-buffer with multiple workers
+		[ ] Handle mousemove (main source of event-threads) differently
+		[ ] Just have one event-thread alltogether...
+
+[X] uiElement.Parent should be a property with proper mutex-locking. 
+
+[X] calls to this._parent->DrawElement() should be null-checked and probably done in a method in uiElement
+
+[ ] Graphics overhaul: Prettier code, new constants.
+	[X] Get rid of sGui_Drawing.bas and the global variables in it.
+	[ ] Introduce properly named constants instead (sorry Muttonhead)
+		Alternative: Color and TextColor could be properties on uiElement with decent-looking defaults
+
+BUGS:
+
+Project is WIP.... so, yeah.
