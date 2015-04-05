@@ -118,14 +118,14 @@ function uiTextbox.Render() as fb.image  ptr
 			cairo_rectangle (this._cairo, 3+(this._cursor.Position*7), 0, 1, .h)
 			cairo_set_source_rgb(this._cairo,0,0,0)
 			cairo_fill(this._cairo)
+			
+			if (this._cursor.SelectionStart >= 0 AND this._cursor.SelectionEnd > 0) then
+				cairo_rectangle (this._cairo, this._cursor.SelectionStart*7+3, 0, (this._cursor.SelectionEnd-this._cursor.SelectionStart)*7, .h)
+				cairo_set_source_rgb(this._cairo,0.75,.75,.75)
+				cairo_fill(this._cairo)
+			end if
 		end if
-
-		if (this._cursor.SelectionStart >= 0) then
-			cairo_rectangle (this._cairo, this._cursor.SelectionStart*7+3, 0, (this._cursor.SelectionEnd-this._cursor.SelectionStart)*7, .h)
-			cairo_set_source_rgb(this._cairo,0.75,.75,.75)
-			cairo_fill(this._cairo)
-		end if
-		
+			
 		DrawLabel(this._cairo,3, (.h - CAIRO_FONTSIZE)/2, this._text)
 	end with
 	return this._buffer
