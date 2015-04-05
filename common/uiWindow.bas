@@ -119,8 +119,7 @@ sub uiWindow.HandleEvent(event as uiEvent)
 			this._focus->OnKeypress(event.keypress)
 		end if
 	end if
-		if (event.eventType AND mouseMove)  then
-	'	shell "echo move"
+	if (event.eventType AND mouseMove)  then
 		if ( this._lastClick <> 0 ) then
 			this._lastClick->OnMouseMove(event.mouse)
 		end if
