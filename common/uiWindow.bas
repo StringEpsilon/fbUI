@@ -1,56 +1,55 @@
 ' uiWindow.bas - Do what the f... you want (WTFPL). 
 ' Author: StringEpsilon, 2015
-
-
 #include once "fbthread.bi"
 #include once "uiEvents.bas"
 #include once "uiElement.bas"
 #include once "buffer.bas"
 
-
-
 declarebuffer(IRenderable ptr, RenderableBuffer)
 
 type uiWindow extends IDrawing
 	private:
-		static _instance as uiWindow ptr ' Its a singleton!
+		static _instance as uiWindow ptr
 		_mutex as any ptr
 		_children as uiElementList ptr
 		_focus as uiElement ptr
-		_lastClick as uiElement ptr	
 		_RenderBuffer as RenderableBuffer ptr	
 		
-		declare sub DrawAll()	
 		declare Constructor()
+		declare Destructor()
+		declare sub DrawAll()	
+		declare function GetElementAt(x as integer, y as integer) as uiElement ptr
 	public:
 		'IDrawing:
 		declare virtual sub DrawElement( element as IRenderable ptr)
 		
 		declare static function GetInstance() as uiWindow ptr
 		declare static sub DestroyInstance()
-		shutdown as bool = false
-		'declare sub ShutDown() 
-		
-		
 		declare sub CreateWindow(h as integer, w as integer)
 		declare sub HandleEvent(event as uiEvent)
 		declare sub Main()
-		declare sub AddGadget( uiElement as uiElement ptr)
+		declare sub AddElement( uiElement as uiElement ptr)
+		declare sub RemoveElement( uiElement as uiElement ptr)
 		
-		declare Destructor()
+		
+		shutdown as bool = false
 end type
 
 dim uiWindow._instance as uiWindow ptr = 0
 
-sub uiWindow.DestroyInstance()
-	if (uiWindow._instance <> 0) then
-		delete uiWindow._instance
-	end if
+sub UIDestructor() Destructor 101
+	uiWindow.DestroyInstance()
 end sub
 
 sub uiWindowEventDispatcher(event as uiEvent ptr)
 	uiWindow.GetInstance()->HandleEvent(*event)
 end sub
+
+' Dummy parameter because of threadcreate. 
+sub uiWindowStart(dummyParameter as uinteger)
+	uiWindow.GetInstance()->Main()
+end sub
+
 
 Constructor uiWindow()
 	this._mutex = mutexcreate
@@ -64,12 +63,48 @@ Destructor uiWindow()
 	mutexdestroy(this._mutex)
 end destructor
 
-function uiWindow.GetInstance() as uiWindow ptr
-	if ( uiWindow._instance = 0 ) then
-		_instance = new uiWindow()
-	end if
-	return _instance
+sub uiWindow.DrawAll()
+	dim as uiElement ptr child
+	COLOR 0,BackGroundColor
+	cls
+	mutexlock(this._mutex)
+	for i as integer = 0 to this._children->count -1
+		child = this._children->item(i)
+		mutexlock(GFXMUTEX)
+		PUT (child->dimensions.x, child->dimensions.y), child->Render, Alpha
+		mutexunlock(GFXMUTEX)
+		
+	next	
+	mutexunlock(this._mutex)
+end sub
+
+function uiWindow.GetElementAt(x as integer, y as integer) as uiElement ptr
+	dim result as uiElement ptr = 0
+	dim i as integer = 0
+	dim child as uiElement ptr
+	while i < this._children->count and result = 0
+		child = this._children->item(i)
+		with child->dimensions
+			if (( x >= .x) AND ( x <= .x + .w ) and ( y >= .y) and (y <= .y + .h)) then
+				result = child
+			end if
+		end with
+		i+=1
+	wend
+	return result
 end function
+
+
+sub uiWindow.AddElement( element as uiElement ptr)
+	if (element <> 0) then
+		mutexlock(this._mutex)
+		element->Parent = @this
+		this._children->append(element)
+		
+		mutexunlock(this._mutex)
+		this.drawelement(element)
+	end if
+end sub
 
 sub uiWindow.CreateWindow(h as integer, w as integer)
 	screenres h, w, 32
@@ -80,6 +115,97 @@ sub uiWindow.CreateWindow(h as integer, w as integer)
 		end 2
 	end if
 	cls
+end sub
+
+sub uiWindow.DestroyInstance()
+	if (uiWindow._instance <> 0) then
+		delete uiWindow._instance
+	end if
+end sub
+
+sub uiWindow.RemoveElement(element as uiElement ptr)
+	if (element <> 0) then
+		dim i as integer = 0
+		while i < this._children->count
+			if ( this._children->item(i) = element) then
+				mutexlock(this._mutex)
+				this._children->remove(i)
+				element->parent = 0
+				mutexunlock(this._mutex)
+				exit while
+			end if
+			i += 1
+		wend
+		
+		if (this._focus = element) then 
+			mutexlock(this._mutex)
+			this._focus = 0
+			mutexunlock(this._mutex)
+		end if
+		this.DrawAll()
+	end if
+end sub
+
+sub uiWindow.DrawElement( renderable as IRenderable ptr)
+	if ( renderable <> 0  ) then
+		mutexlock(this._mutex)
+		this._RenderBuffer->Push(renderable)
+		mutexunlock(this._mutex)
+	end if
+end sub
+
+
+function uiWindow.GetInstance() as uiWindow ptr
+	if ( uiWindow._instance = 0 ) then
+		_instance = new uiWindow()
+	end if
+	return _instance
+end function
+
+sub uiWindow.HandleEvent(event as uiEvent)
+	if (screenptr = 0) then exit sub
+	
+	if ( event.eventType AND keyPress ) then
+		if (event.keypress.keycode = 17 ) then
+			mutexlock(this._mutex)
+			this.shutdown = true
+			mutexunlock(this._mutex)
+			shutdownEventListener = true
+			exit sub
+		end if
+		if (this._focus <> 0) then
+			this._focus->OnKeypress(event.keypress)
+		end if
+	end if
+	
+	if ( event.eventType AND mouseClick ) then
+		dim clickedElement as uiElement ptr = this.GetElementAt(event.mouse.x, event.mouse.y)
+		if (clickedElement <> 0) then
+			if (this._focus <> clickedElement) then
+				if (this._focus <> 0 ) then
+					this._focus->OnFocus(false)
+				end if
+				mutexlock(this._mutex)
+				this._focus = clickedElement
+				mutexunlock(this._mutex)
+				this._focus->OnFocus(true)
+			end if
+			clickedElement->OnClick(event.Mouse)
+		elseif (this._focus <> 0) then
+			this._focus->OnFocus(false)
+			mutexlock(this._mutex)
+			this._focus = 0
+			mutexunlock(this._mutex)
+		end if
+	end if
+	
+	if (event.eventType AND mouseMove)  then
+		' See TODO.txt
+		if ( this._focus <> 0 ) then
+			this._focus->OnMouseMove(event.mouse)
+		end if
+	end if
+	
 end sub
 
 sub uiWindow.Main()
@@ -104,97 +230,3 @@ sub uiWindow.Main()
 	ThreadWait(eventThread)
 end sub
 
-sub uiWindow.HandleEvent(event as uiEvent)
-	if (screenptr = 0) then exit sub
-	
-	if ( event.eventType AND keyPress ) then
-		if (event.keypress.keycode = 17 ) then
-			mutexlock(this._mutex)
-			this.shutdown = true
-			mutexunlock(this._mutex)
-			shutdownEventListener = true
-			exit sub
-		end if
-		if (this._focus <> 0) then
-			this._focus->OnKeypress(event.keypress)
-		end if
-	end if
-	if (event.eventType AND mouseMove)  then
-		if ( this._lastClick <> 0 ) then
-			this._lastClick->OnMouseMove(event.mouse)
-		end if
-	end if
-	if ( event.eventType AND mouseClick ) then
-		dim clickedGadget as bool = false
-		dim child as uiElement ptr
-		for i as integer = 0 to this._children->count -1
-			child = this._children->item(i)
-			
-			with child->dimensions
-				if ( event.mouse.x >= .x) AND ( event.mouse.x <= .x + .w ) and ( event.mouse.y >= .y) and ( event.mouse.y <= .y + .h) then
-					if (this._focus <> child) then
-						if this._focus <> 0 then 
-							this._focus->OnFocus(false)
-						end if
-						mutexlock(this._mutex)
-						this._focus = child
-						mutexunlock(this._mutex)
-						this._focus->OnFocus(true)					
-					end if
-					clickedGadget = true
-					mutexlock(this._mutex)
-					this._lastClick = child
-					mutexunlock(this._mutex)
-					child->OnClick(event.mouse)
-				end if
-			end with
-		next
-		if ( not(clickedGadget) AND this._focus <> 0 ) then
-			this._focus->OnFocus(false)
-			mutexlock(this._mutex)
-			this._focus = 0
-			_lastClick = 0
-			mutexunlock(this._mutex)
-		end if
-	end if
-end sub
-
-sub uiWindow.AddGadget( element as uiElement ptr)
-	if (element <> 0) then
-		mutexlock(this._mutex)
-		element->Parent = @this
-		this._children->append(element)
-		
-		mutexunlock(this._mutex)
-		this.drawelement(element)
-	end if
-end sub
-
-sub uiWindow.DrawElement( renderable as IRenderable ptr)
-	if ( renderable <> 0  ) then
-		mutexlock(this._mutex)
-		this._RenderBuffer->Push(renderable)
-		mutexunlock(this._mutex)
-	end if
-end sub
-
-sub uiWindow.DrawAll()
-	
-	dim as uiElement ptr child
-	
-	cls
-	mutexlock(this._mutex)
-	for i as integer = 0 to this._children->count -1
-		child = this._children->item(i)
-		mutexlock(GFXMUTEX)
-		PUT (child->dimensions.x, child->dimensions.y), child->Render, Alpha
-		mutexunlock(GFXMUTEX)
-		
-	next	
-	mutexunlock(this._mutex)
-end sub
-
-
-sub UIDestructor() Destructor 101
-	uiWindow.DestroyInstance()
-end sub
