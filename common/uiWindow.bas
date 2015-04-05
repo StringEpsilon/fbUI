@@ -1,5 +1,7 @@
 ' uiWindow.bas - Do what the f... you want (WTFPL). 
 ' Author: StringEpsilon, 2015
+
+SCREENRES 1,1, 32,, FB.GFX_NULL
 #include once "fbthread.bi"
 #include once "uiEvents.bas"
 #include once "uiElement.bas"
@@ -100,7 +102,6 @@ sub uiWindow.AddElement( element as uiElement ptr)
 		mutexlock(this._mutex)
 		element->Parent = @this
 		this._children->append(element)
-		
 		mutexunlock(this._mutex)
 		this.drawelement(element)
 	end if

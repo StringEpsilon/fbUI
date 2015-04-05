@@ -7,8 +7,6 @@
 type uiButton extends uiElement
 	protected:
 		dim as string _Label
-	private:
-		dim as integer _boxOffset
 		dim as bool _hold
 	public:
 		dim as bool IsChecked = true
@@ -39,19 +37,18 @@ end constructor
 constructor uiButton(newdim as uiDimensions, newLabel as string = "")
 	base()
 	this._dimensions = newdim
-	this._boxOffset = ( this.dimensions.h-12 ) \ 2
 	this.CreateBuffer()
 end constructor
 
 property uiButton.Label(value as string)
-	if ( len(value) <= ( this._dimensions.w - 20 ) / 8 ) then 
+	if ( len(value) <= ( this._dimensions.w - 20 ) / 7 ) then 
 		mutexlock(this._mutex)
 		this._label = value
 		mutexunlock(this._mutex)
 	else
 		mutexlock(this._mutex)
 		this._label = value
-		this._dimensions.w = 20 + len(value)*8
+		this._dimensions.w = 20 + len(value)*7
 		this.CreateBuffer()
 		mutexunlock(this._mutex)
 	end if
@@ -64,9 +61,6 @@ end property
 
 function uiButton.Render() as fb.image  ptr
 	with this._dimensions
-		mutexlock(this._mutex)
-		this._hasFocus = this._Hold
-		mutexunlock(this._mutex)
 		DrawButton(this._cairo,.w,.h, this._Hold)
 		DrawLabel(this._cairo,10, (.h - CAIRO_FONTSIZE)/2, this._Label)
 	end with
@@ -81,17 +75,19 @@ sub uiButton.OnClick( mouse as uiMouseEvent )
 		if ( this.callback <> 0 ) then
 			threaddetach(threadcreate(this.callback, @this))
 		end if
+		base.DoRedraw()
 	elseif ( mouse.lmb = hit OR mouse.lmb = hold ) then
 		mutexlock(this._mutex)
 		this._hold = true
 		mutexunlock(this._mutex)
+		base.DoRedraw()
 	end if
-
-	base.DoRedraw()
 end sub
 
 
 sub uiButton.OnFocus( focus as bool )
-	if (focus = false) then this._hold = false
-	base.DoRedraw()
+	if (focus = false) then
+		this._hold = false
+		base.DoRedraw()
+	end if
 end sub

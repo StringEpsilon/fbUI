@@ -32,15 +32,9 @@ end constructor
 
 function uiToggleButton.Render() as fb.image  ptr
 	with this.dimensions
-		mutexlock(this._mutex)
-		'Dirty, dirty workaround ... I'm lazy.. *sigh*
-		this._hasFocus = this.State
-		mutexunlock(this._mutex)
-		
-		DrawButton(this._cairo,.w,.h,  this.State)
+		DrawButton(this._cairo,.w,.h,  this.State OR this._hold)
 		DrawLabel(this._cairo, 10, (.h - CAIRO_FONTSIZE)/2 , this._Label)
 	end with
-
 	return this._buffer
 end function
 
@@ -48,11 +42,16 @@ sub uiToggleButton.OnClick( mouse as uiMouseEvent )
 	if ( mouse.lmb = released  ) then
 		mutexlock(this._mutex)
 		this.State = not(this.State)
-		
+		this._hold = false
 		mutexunlock(this._mutex)
 		if ( this.callback <> 0 ) then
-'			threaddetach(threadcreate(this.callback, @this))
+			threaddetach(threadcreate(this.callback, @this))
 		end if
 		this.DoRedraw()
+	elseif ( mouse.lmb = hit OR mouse.lmb = hold ) then
+		mutexlock(this._mutex)
+		this._hold = true
+		mutexunlock(this._mutex)
+		base.DoRedraw()
 	end if
 end sub
