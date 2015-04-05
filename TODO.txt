@@ -1,6 +1,6 @@
 Features:
 
-[ ] Deletion of elements.
+[X] Deletion of elements.
 
 [ ] More basic elements for a first release:
 	[X] Radio buttons
@@ -10,11 +10,12 @@ Features:
 	[ ] ...
 	
 [ ] uiTextbox / Textcontrols:
-	[ ] Selection of text
-	[ ] Handling of CRTL+A
+	[X] Selection of text
+	[X] Handling of CRTL+A
 	[ ] Copy & Paste
 
-[ ] Handling of OnMouseMove. Important for scrollbars and stuff.
+[-] Handling of OnMouseMove. Important for scrollbars and stuff.
+	[ ] Introduce "OnMouseOver(mouse as uiMouseEvent"
 
 [ ] Write a readme and proper example code.
 
