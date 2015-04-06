@@ -21,7 +21,7 @@ type uiButton extends uiElement
 		declare property Label(value as string)
 end type
 
-constructor uiButton( x as integer, y as integer, newLabel as string = "")
+constructor uiButton( x as integer, y as integer, newLabel as string = "", length as integer = 0)
 	base()
 	with this._dimensions
 		.h = CAIRO_FONTSIZE + 4

@@ -10,7 +10,6 @@ type uiToggleButton extends uiButton
 	declare virtual sub OnClick( mouse as uiMouseEvent)	
 	
 	declare constructor( x as integer, y as integer, newLabel as string = "")
-	declare constructor(newdim as uiDimensions, newLabel as string = "")
 	
 	private:
 		declare constructor(byref element as const uiToggleButton)
@@ -26,9 +25,6 @@ constructor uiToggleButton( x as integer, y as integer, newLabel as string = "")
 	base(x,y,newLabel)
 end constructor
 
-constructor uiToggleButton(newdim as uiDimensions, newLabel as string = "")
-	base(newDim, newLabel)
-end constructor
 
 function uiToggleButton.Render() as fb.image  ptr
 	with this.dimensions
