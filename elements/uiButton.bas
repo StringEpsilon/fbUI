@@ -15,8 +15,7 @@ type uiButton extends uiElement
 		declare virtual sub OnClick( mouse as uiMouseEvent)	
 		declare virtual sub Onfocus( focus as bool)
 		
-		declare constructor overload( x as integer, y as integer, newLabel as string = "")
-		declare constructor(dimensions as uiDimensions, newLabel as string = "")
+		declare constructor overload( x as integer, y as integer, newLabel as string = "", length as integer = 0)
 
 		declare property Label() as string
 		declare property Label(value as string)
@@ -25,8 +24,8 @@ end type
 constructor uiButton( x as integer, y as integer, newLabel as string = "")
 	base()
 	with this._dimensions
-		.h = CAIRO_FONTWIDTH + 4
-		.w = 20 + (len(newlabel)*CAIRO_FONTWIDTH)
+		.h = CAIRO_FONTSIZE + 4
+		.w = 20 + IIF(length = 0, (len(newlabel)*CAIRO_FONTWIDTH), length * CAIRO_FONTWIDTH)
 		.x = x
 		.y = y
 	end with
@@ -34,24 +33,10 @@ constructor uiButton( x as integer, y as integer, newLabel as string = "")
 	this.CreateBuffer()
 end constructor
 
-constructor uiButton(newdim as uiDimensions, newLabel as string = "")
-	base()
-	this._dimensions = newdim
-	this.CreateBuffer()
-end constructor
-
 property uiButton.Label(value as string)
-	if ( len(value) <= ( this._dimensions.w - 20 ) / CAIRO_FONTWIDTH ) then 
-		mutexlock(this._mutex)
-		this._label = value
-		mutexunlock(this._mutex)
-	else
-		mutexlock(this._mutex)
-		this._label = value
-		this._dimensions.w = 20 + len(value)*CAIRO_FONTWIDTH
-		this.CreateBuffer()
-		mutexunlock(this._mutex)
-	end if
+	mutexlock(this._mutex)
+	this._label = value
+	mutexunlock(this._mutex)
 	this.DoRedraw()
 end property
 
@@ -83,7 +68,6 @@ sub uiButton.OnClick( mouse as uiMouseEvent )
 		base.DoRedraw()
 	end if
 end sub
-
 
 sub uiButton.OnFocus( focus as bool )
 	if (focus = false) then
