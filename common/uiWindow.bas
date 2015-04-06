@@ -166,13 +166,14 @@ sub uiWindow.HandleEvent(event as uiEvent)
 	if (screenptr = 0) then exit sub
 	
 	if ( event.eventType AND keyPress ) then
-		if (event.keypress.keycode = 17 ) then
+		if ( event.keypress.extended AND event.keypress.keycode = 107 ) then
 			mutexlock(this._mutex)
 			this.shutdown = true
 			mutexunlock(this._mutex)
 			shutdownEventListener = true
 			exit sub
 		end if
+		
 		if (this._focus <> 0) then
 			this._focus->OnKeypress(event.keypress)
 		end if
