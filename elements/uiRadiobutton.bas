@@ -24,7 +24,6 @@ type uiRadiobutton extends uiElement
 		declare virtual sub OnKeypress(keypress as uiKeyEvent)
 
 		declare constructor overload( x as integer, y as integer, label as string = "", head as uiRadiobutton ptr = 0)
-		declare constructor(dimensions as uiDimensions, head as uiRadiobutton ptr = 0)
 
 		declare property Label() as string
 		declare property Label(value as string)
@@ -40,27 +39,13 @@ constructor uiRadiobutton( x as integer, y as integer, newLabel as string = "", 
 	base()
 	with this._dimensions
 		.h = 16
-		.w = 20 + (len(newlabel)*8)
+		.w = 20 + len(newlabel) * CAIRO_FONTWIDTH
 		.x = x
 		.y = y
 		this._boxOffset = ( .h-12 ) \ 2
 	end with
 	this._label = newLabel
 	if ( head <> 0 ANDALSO head->_group <> 0 ) then
-		this._head = head
-		this._head->_group->Append(@this)
-	else
-		this._group = new uiRadioButtonlist()
-		this._group->Append(@this)
-	end if
-	this.CreateBuffer()
-end constructor
-
-constructor uiRadiobutton(newdim as uiDimensions, head as uiRadiobutton ptr = 0)
-	base()
-	this._dimensions = newdim
-	this._boxOffset = ( this.Dimensions.h-12 ) \ 2
-	if ( this._head <> 0 ) then
 		this._head = head
 		this._head->_group->Append(@this)
 	else
@@ -78,7 +63,7 @@ property uiRadiobutton.Label(value as string)
 	else
 		mutexlock(this._mutex)
 		this._label = value
-		this._dimensions.w = 20 + len(value)*8
+		this._dimensions.w = 20 + len(value)* CAIRO_FONTWIDTH
 		this.CreateBuffer()
 		mutexunlock(this._mutex)
 	end if

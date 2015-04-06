@@ -32,7 +32,7 @@ constructor uiCheckBox( x as integer, y as integer, newLabel as string = "")
 	
 	with this._dimensions
 		.h = 16
-		.w = 20 + (len(newlabel)*8)
+		.w = 20 + (len(newlabel)*CAIRO_FONTWIDTH)
 		.x = x
 		.y = y
 		this._boxOffset = ( .h-12 ) \ 2
@@ -56,7 +56,7 @@ property uiCheckBox.Label(value as string)
 	else
 		mutexlock(this._mutex)
 		this._label = value
-		this._dimensions.w = 20 + len(value)*8
+		this._dimensions.w = 20 + len(value) * CAIRO_FONTWIDTH
 		this.CreateBuffer()
 		mutexunlock(this._mutex)
 	end if

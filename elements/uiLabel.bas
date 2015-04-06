@@ -21,7 +21,7 @@ constructor uiLabel( x as integer, y as integer, newText as string = "")
 	
 	with this._dimensions
 		.h = 16
-		.w = 4 + (len(newText)*7)
+		.w = 4 + len(newText) * CAIRO_FONTWIDTH
 		.x = x
 		.y = y
 	end with
@@ -43,7 +43,7 @@ property uiLabel.Text(value as string)
 	else
 		mutexlock(this._mutex)
 		this._text = value
-		this._dimensions.w = 2 + len(value)*7
+		this._dimensions.w = 2 + len(value) * CAIRO_FONTWIDTH
 		this.CreateBuffer()
 		mutexunlock(this._mutex)
 	end if

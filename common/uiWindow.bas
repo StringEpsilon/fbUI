@@ -1,11 +1,11 @@
 ' uiWindow.bas - Do what the f... you want (WTFPL). 
 ' Author: StringEpsilon, 2015
-
-SCREENRES 1,1, 32,, FB.GFX_NULL
 #include once "fbthread.bi"
 #include once "uiEvents.bas"
 #include once "uiElement.bas"
 #include once "buffer.bas"
+
+SCREENRES 1,1, 32,, FB.GFX_NULL
 
 declarebuffer(IRenderable ptr, RenderableBuffer)
 
@@ -32,8 +32,7 @@ type uiWindow extends IDrawing
 		declare sub Main()
 		declare sub AddElement( uiElement as uiElement ptr)
 		declare sub RemoveElement( uiElement as uiElement ptr)
-		
-		
+				
 		shutdown as bool = false
 end type
 

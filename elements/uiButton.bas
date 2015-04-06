@@ -2,7 +2,7 @@
 ' Author: StringEpsilon, 2015
 
 #include once "../common/uiElement.bas"
-#include once "fbthread.bi"
+
 
 type uiButton extends uiElement
 	protected:
@@ -25,8 +25,8 @@ end type
 constructor uiButton( x as integer, y as integer, newLabel as string = "")
 	base()
 	with this._dimensions
-		.h = 18
-		.w = 20 + (len(newlabel)*7)
+		.h = CAIRO_FONTWIDTH + 4
+		.w = 20 + (len(newlabel)*CAIRO_FONTWIDTH)
 		.x = x
 		.y = y
 	end with
@@ -41,14 +41,14 @@ constructor uiButton(newdim as uiDimensions, newLabel as string = "")
 end constructor
 
 property uiButton.Label(value as string)
-	if ( len(value) <= ( this._dimensions.w - 20 ) / 7 ) then 
+	if ( len(value) <= ( this._dimensions.w - 20 ) / CAIRO_FONTWIDTH ) then 
 		mutexlock(this._mutex)
 		this._label = value
 		mutexunlock(this._mutex)
 	else
 		mutexlock(this._mutex)
 		this._label = value
-		this._dimensions.w = 20 + len(value)*7
+		this._dimensions.w = 20 + len(value)*CAIRO_FONTWIDTH
 		this.CreateBuffer()
 		mutexunlock(this._mutex)
 	end if
