@@ -9,19 +9,18 @@ type uiLabel extends uiElement
 	public:
 		declare function Render() as fb.image  ptr
 		
-		declare constructor overload( x as integer, y as integer, newText as string = "")
-		declare constructor(dimensions as uiDimensions)
+		declare constructor overload( x as integer, y as integer,newText as string,  length as integer = 0)
 
 		declare property Text() as string
 		declare property Text(value as string)
 end type
 
-constructor uiLabel( x as integer, y as integer, newText as string = "")
+constructor uiLabel( x as integer, y as integer,newText as string,  length as integer = 0)
 	base()
 	
 	with this._dimensions
 		.h = 16
-		.w = 4 + len(newText) * CAIRO_FONTWIDTH
+		.w = 4 + IIF(length = 0, len(newText) * CAIRO_FONTWIDTH, length * CAIRO_FONTWIDTH)
 		.x = x
 		.y = y
 	end with
@@ -29,24 +28,11 @@ constructor uiLabel( x as integer, y as integer, newText as string = "")
 	this.CreateBuffer()
 end constructor
 
-constructor uiLabel(newdim as uiDimensions)
-	base()
-	this._dimensions = newdim
-	this.CreateBuffer()
-end constructor
-
 property uiLabel.Text(value as string)
-	if ( len(value) <> len(this._text) ) then 
-		mutexlock(this._mutex)
-		this._text = value
-		mutexunlock(this._mutex)
-	else
-		mutexlock(this._mutex)
-		this._text = value
-		this._dimensions.w = 2 + len(value) * CAIRO_FONTWIDTH
-		this.CreateBuffer()
-		mutexunlock(this._mutex)
-	end if
+	mutexlock(this._mutex)
+	this._text = value
+	mutexunlock(this._mutex)
+	this.DoRedraw()
 end property
 
 property uiLabel.Text() as string
