@@ -20,10 +20,13 @@ const BackgroundColor = &hE8E8E8
 const ElementLight = &hFFFFFF
 const ElementDark = &hA0A0A0
 const ElementTextColor = 0 ' Black
+
 'const BackgroundColor = &hE8E8E8
 
 const CAIRO_FONTSIZE = 12
+const CAIRO_FONTWIDTH = 7
 Const PI = 3.14159265358979323846
+
 
 sub DrawRadio(c as cairo_t ptr, x as double, y as double , radius as double, active as byte )
 	dim as double cx, cy
@@ -145,14 +148,7 @@ sub DrawTextbox(c as cairo_t ptr,w as double, h as double)
 	dim as cairo_pattern_t ptr pat = cairo_pattern_create_linear(0,h,0,0)
 	cairo_pattern_add_color_stop_rgb (pat,0,RGBA_R(col),RGBA_G(col),RGBA_B(col))
 	cairo_pattern_add_color_stop_rgb (pat,1,RGBA_R(col2),RGBA_G(col2),RGBA_B(col2))
-	
-	w = w-1
-	h = h-1
-	
-	cairo_rectangle (c, .5, .5, w, h)
-	cairo_set_source_rgb(c,1,1,1)
-	cairo_fill_preserve(c)
-	
+	cairo_rectangle (c, .5, .5, w-1, h-1)
 	
 	cairo_set_source (c, pat)
 	cairo_set_line_width (c, 1)

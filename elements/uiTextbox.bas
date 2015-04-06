@@ -27,6 +27,7 @@ type uiTextbox extends uiElement
 		dim as integer _boxOffset
 		dim as string _Text
 		dim as integer _length	
+		dim as integer _offset = 0
 		
 		declare sub MoveTo(value as integer)
 		declare sub MoveBy(value as integer)	
@@ -37,7 +38,7 @@ constructor uiTextbox( x as integer, y as integer, length as integer, newText as
 	base(x,y)
 	
 	this._dimensions.h = 16
-	this._dimensions.w = 12 + (length*7)
+	this._dimensions.w = 12 + length * CAIRO_FONTWIDTH
 	
 	this._length = length
 	this._text = newText
@@ -56,7 +57,6 @@ property uiTextbox.Text(value as string)
 		this._Text = value
 	else
 		this._Text = value
-		this._dimensions.w = 20 + len(value)*8
 		this.CreateBuffer()
 	end if
 	this.DoRedraw()
@@ -80,6 +80,13 @@ sub uiTextbox.MoveTo(value as integer)
 			.selectionEnd = -1
 		end if
 		.Position = value
+		if (.Position - this._offset > this._length ) then
+			this._offset = value -this._length
+		elseif (.Position < this._offset) then
+		
+			this._offset = 0' len(this._text) - value
+		'	shell "echo offset: "& this._offset
+		end if
 	end with
 end sub
 
@@ -89,6 +96,9 @@ sub uiTextbox.MoveBy(value as integer)
 		if (.Position + value > len(this._text) ) then exit sub
 		
 		.Position += value
+		if (.Position - this._offset > this._length  OR .Position - this._offset < 0) then
+			this._offset += value
+		end if
 		if ( multikey(FB.SC_LSHIFT) ) then
 			if (.selectionStart = -1) then
 				.selectionStart = .Position -value
@@ -112,28 +122,41 @@ sub uiTextbox.RemoveSelected()
 end sub
 
 function uiTextbox.Render() as fb.image  ptr
-	with this._dimensions	
-		DrawTextbox(this._cairo,.w,.h)	
-		if (this._hasFocus) then
-			cairo_rectangle (this._cairo, 3+(this._cursor.Position*7), 0, 1, .h)
-			cairo_set_source_rgb(this._cairo,0,0,0)
-			cairo_fill(this._cairo)
+	with this._dimensions
+		cairo_rectangle (this._cairo, 0, 0, .w, .h)
+		cairo_set_source_rgb(this._cairo,1,1,1)
+		cairo_fill(this._cairo)
 			
-			if (this._cursor.SelectionStart >= 0 AND this._cursor.SelectionEnd > 0) then
-				cairo_rectangle (this._cairo, this._cursor.SelectionStart*7+3, 0, (this._cursor.SelectionEnd-this._cursor.SelectionStart)*7, .h)
+		if (this._hasFocus) then
+			if (this._cursor.SelectionStart >= 0 AND this._cursor.SelectionEnd >= 0) then
+				dim as integer selectionX, selectionWidth
+				selectionX = (this._cursor.SelectionStart - this._offset) * CAIRO_FONTWIDTH
+				selectionWidth = (this._cursor.SelectionEnd - this._offset) * CAIRO_FONTWIDTH -selectionX
+				
+				cairo_rectangle (this._cairo, selectionX+3, 1, selectionWidth, .h-2)
 				cairo_set_source_rgb(this._cairo,0.75,.75,.75)
 				cairo_fill(this._cairo)
 			end if
+			cairo_rectangle (this._cairo, 3 +(this._cursor.Position-this._offset)*CAIRO_FONTWIDTH, 1, 1, .h-2)
+			cairo_set_source_rgb(this._cairo,0,0,0)
+			cairo_fill(this._cairo)
 		end if
-			
-		DrawLabel(this._cairo,3, (.h - CAIRO_FONTSIZE)/2, this._text)
+		
+		if (this._offset <> 0 ) then
+			dim offsetText as string = mid(this._text, _offset+1, this._length)
+			DrawLabel(this._cairo,3, (.h - CAIRO_FONTSIZE)/2, offsetText)
+		else
+			DrawLabel(this._cairo,3, (.h - CAIRO_FONTSIZE)/2, this._text)
+		end if
+		
+		DrawTextbox(this._cairo,.w,.h)			
 	end with
 	return this._buffer
 end function
 
 sub uiTextbox.OnClick( mouse as uiMouseEvent )
 	if ( mouse.lmb = hit ) then
-		dim as integer newCursor = (mouse.x - this.dimensions.x - 3 ) / 7
+		dim as integer newCursor = (mouse.x - this.dimensions.x - 3 ) / CAIRO_FONTWIDTH +this._offset
 		if ( newCursor > len(this._text) ) then
 			newCursor = len(this._text)
 		end if
@@ -148,7 +171,7 @@ end sub
 
 sub uiTextbox.OnMouseMove( mouse as uiMouseEvent )
 	if (mouse.lmb = hit and mouse.x <> -1 and mouse.y <> -1 ) then
-		dim as integer newCursor = (mouse.x - this.dimensions.x - 3 ) / 7
+		dim as integer newCursor = (mouse.x - this.dimensions.x - 3 ) / CAIRO_FONTWIDTH + this._offset
 		if ( newCursor > len(this._text) ) then
 			newCursor = len(this._text)
 		elseif newCursor < 0 then 
@@ -213,7 +236,7 @@ sub uiTextbox.OnKeypress( keypress as uiKeyEvent )
 				if (this._cursor.SelectionStart <> -1) then
 					this.RemoveSelected()
 				end if
-				if ( len(this._text) < this._length  ) then
+				if ( len(this._text) < 255  ) then
 					if ( this._cursor.Position = len(this._text) ) then
 						this._Text += keypress.key
 						
