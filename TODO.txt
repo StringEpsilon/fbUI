@@ -6,7 +6,7 @@ Features:
 	[X] Radio buttons
 	[X] Labels
 	[ ] Listbox 
-	[ ] Scrollbars (vertical / horizontal)
+	[X] Scrollbars (vertical / horizontal)
 	[ ] ...
 	
 [ ] uiTextbox / Textcontrols:
@@ -44,6 +44,9 @@ Internal / Performance / style:
 		[ ] Event-buffer with multiple workers
 		[ ] Handle mousemove (main source of event-threads) differently
 		[ ] Just have one event-thread alltogether...
+
+[ ] Use common base class or for vertical and horizontal scollbars.
+	[ ] Add some properties to adjust min and max after creation.
 
 [X] uiElement.Parent should be a property with proper mutex-locking. 
 

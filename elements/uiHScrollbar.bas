@@ -1,11 +1,10 @@
-' uiVScrollbar.bas - Do what the f... you want (WTFPL). 
+' uiHScrollbar.bas - Do what the f... you want (WTFPL). 
 ' Author: StringEpsilon, 2015
 
 #include once "../common/uiElement.bas"
 
 
-
-type uiVScrollbar extends uiElement
+type uiHScrollbar extends uiElement
 	private:
 		_min as integer
 		_max as integer
@@ -17,7 +16,7 @@ type uiVScrollbar extends uiElement
 	public:
 		declare function Render() as fb.image  ptr
 		
-		declare constructor overload( x as integer, y as integer, h as integer, max as integer, min as integer = 1)
+		declare constructor overload( x as integer, y as integer, w as integer, max as integer, min as integer = 1)
 		declare constructor(dimensions as uiDimensions)
 
 		declare property Value() as integer
@@ -27,11 +26,11 @@ type uiVScrollbar extends uiElement
 		declare virtual sub OnClick( mouse as uiMouseEvent ) 
 end type
 
-constructor uiVScrollbar( x as integer, y as integer, h as integer, max as integer, min as integer = 1)
+constructor uiHScrollbar( x as integer, y as integer, w as integer, max as integer, min as integer = 1)
 	base()
 	with this._dimensions
-		.h = h
-		.w = 10
+		.h = 10
+		.w = w
 		.x = x
 		.y = y
 	end with
@@ -39,41 +38,30 @@ constructor uiVScrollbar( x as integer, y as integer, h as integer, max as integ
 	this._min = min
 	this._value = this._min
 	this._segments = (this._max - this._min + 1) 
-	this._knobSize = (this.dimensions.h-1) / this._segments
+	this._knobSize = (this.dimensions.w-1) / this._segments
 	this.CreateBuffer()
 end constructor
 
-constructor uiVScrollbar(newdim as uiDimensions)
+constructor uiHScrollbar(newdim as uiDimensions)
 	base()
 	this._dimensions = newdim
 	this.CreateBuffer()
 end constructor
 
-property uiVScrollbar.Value() as integer
+property uiHScrollbar.Value() as integer
 	return this._value
 end property
 
 
-property uiVScrollbar.Value(newValue as integer)
+property uiHScrollbar.Value(newValue as integer)
 	mutexlock(this._mutex)
 	this._value = newValue
 	mutexunlock(this._mutex)
 	this.DoRedraw()
 end property
 
-sub uiVScrollbar.OnMouseMove( mouse as uiMouseEvent )
-	if (mouse.lmb = hit  OR mouse.lmb = hold) then
-		dim y as integer = mouse.y - this._dimensions.y 
-		if ( y > 0 and y < this._dimensions.h and this._hold ) then
-			mutexlock(this._mutex)
-			this.CalculateValue(y)
-			mutexunlock(this._mutex)
-		end if
-	end if
-end sub
-
-sub uiVScrollbar.CalculateValue(position as integer)
-	dim as integer newValue =  int( position / (this.dimensions.h+1) * this._segments)  + this._min
+sub uiHScrollbar.CalculateValue(position as integer)
+	dim as integer newValue =  int( position / (this.dimensions.w+1) * this._segments)  + this._min
 	if (this._value <> newValue ) then
 		this._value = newValue
 		this.DoRedraw()
@@ -83,29 +71,40 @@ sub uiVScrollbar.CalculateValue(position as integer)
 	end if
 end sub
 
-sub uiVScrollbar.OnClick( mouse as uiMouseEvent )
-	dim y as integer = mouse.y - this._dimensions.y 
-	dim as integer y1, y2 
-	y1 = (this._knobSize * (this._value - this._min))
-	y2 = y1 + this._knobSize
+sub uiHScrollbar.OnMouseMove( mouse as uiMouseEvent )
+	if (mouse.lmb = hit  OR mouse.lmb = hold) then
+		dim x as integer = mouse.x - this._dimensions.x
+		if ( x > 0 and x < this._dimensions.w and this._hold ) then
+			mutexlock(this._mutex)
+			this.CalculateValue(x)
+			mutexunlock(this._mutex)
+		end if
+	end if
+end sub
+
+sub uiHScrollbar.OnClick( mouse as uiMouseEvent )
+	dim x as integer = mouse.x - this._dimensions.x 
+	dim as integer x1, x2 
+	x1 = (this._knobSize * (this._value - this._min))
+	x2 = x1 + this._knobSize
 		
 	if ( mouse.lmb = hit ) then
-		if (y >= y1 and y <= y2 ) then
+		if (x >= x1 and x <= x2 ) then
 			this._hold = true
 		end if
 	elseif ( mouse.lmb = released ) then
 		this._hold = false
-		if (y < y1 OR y > y2) then
-			this.CalculateValue(y)
+		if (x < x1 OR x > x2) then
+			this.CalculateValue(x)
 		end if
 	else
 		this._hold = false
 	end if
 end sub
 
-function uiVScrollbar.Render() as fb.image  ptr
+function uiHScrollbar.Render() as fb.image  ptr
 	with this._dimensions
-		dim knobY as integer = (this._knobSize * (this._value - this._min))
+		dim knobX as integer = (this._knobSize * (this._value - this._min))
 		
 		cairo_set_source_rgb(this._cairo,RGBA_R(ElementLight),RGBA_G(ElementLight),RGBA_B(ElementLight))
 		cairo_set_line_width(this._cairo, 1)
@@ -115,7 +114,7 @@ function uiVScrollbar.Render() as fb.image  ptr
 		
 		cairo_stroke (this._cairo)
 				
-		cairo_rectangle (this._cairo, .5,knobY+.5, .w-1,this._knobSize)
+		cairo_rectangle (this._cairo, knobX+.5,.5,this._knobSize,.h-1)
 		cairo_stroke_preserve (this._cairo)
 		cairo_set_source_rgb(this._cairo,RGBA_R(ElementDark),RGBA_G(ElementDark),RGBA_B(ElementDark))
 		cairo_fill(this._cairo)		
