@@ -83,11 +83,13 @@ function uiWindow.GetElementAt(x as integer, y as integer) as uiElement ptr
 	dim result as uiElement ptr = 0
 	dim i as integer = 0
 	dim child as uiElement ptr
+	
 	while i < this._children->count and result = 0
 		child = this._children->item(i)
 		with child->dimensions
 			if (( x >= .x) AND ( x <= .x + .w ) and ( y >= .y) and (y <= .y + .h)) then
 				result = child
+				
 			end if
 		end with
 		i+=1
@@ -130,7 +132,7 @@ sub uiWindow.RemoveElement(element as uiElement ptr)
 			if ( this._children->item(i) = element) then
 				mutexlock(this._mutex)
 				this._children->remove(i)
-				element->parent = 0
+				element->Parent = cast(IDrawing ptr,0)
 				mutexunlock(this._mutex)
 				exit while
 			end if
@@ -163,6 +165,7 @@ function uiWindow.GetInstance() as uiWindow ptr
 end function
 
 sub uiWindow.HandleEvent(event as uiEvent)
+	
 	if (screenptr = 0) then exit sub
 	
 	if ( event.eventType AND keyPress ) then
@@ -178,9 +181,10 @@ sub uiWindow.HandleEvent(event as uiEvent)
 			this._focus->OnKeypress(event.keypress)
 		end if
 	end if
-	
-	if ( event.eventType AND mouseClick ) then
+
+	if ( event.eventType = mouseClick ) then
 		dim clickedElement as uiElement ptr = this.GetElementAt(event.mouse.x, event.mouse.y)
+		
 		if (clickedElement <> 0) then
 			if (this._focus <> clickedElement) then
 				if (this._focus <> 0 ) then
@@ -201,7 +205,6 @@ sub uiWindow.HandleEvent(event as uiEvent)
 	end if
 	
 	if (event.eventType AND mouseMove)  then
-		' See TODO.txt
 		if ( this._focus <> 0 ) then
 			this._focus->OnMouseMove(event.mouse)
 		end if

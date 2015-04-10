@@ -2,6 +2,7 @@
 ' Author: StringEpsilon, 2015
 
 #include once "fbgfx.bi"
+#include once "fbthread.bi"
 #include once "uiEvent.bi"
 #include once "linkedlist.bas"
 #include once "cairoHelper.bas"
@@ -10,6 +11,7 @@
 type uiElement extends IRenderable
 	private:
 		_parent as IDrawing	ptr
+		_parentElement as uiElement ptr
 	protected:
 		_mutex as any ptr
 		_buffer as fb.image ptr
@@ -26,6 +28,7 @@ type uiElement extends IRenderable
 		Callback as sub(payload as any ptr)
 		declare property Dimensions () as uiDimensions ' Part of IRenderable
 		declare property Parent(value as IDrawing ptr)
+		declare property Parent(value as uiElement ptr)
 		
 		declare destructor()
 		declare constructor(dimensions as uiDimensions)
@@ -78,8 +81,18 @@ property uiElement.Parent(value as IDrawing ptr)
 	mutexunlock(this._mutex)
 end property
 
+property uiElement.Parent(value as uiElement ptr)
+	mutexlock(this._mutex)
+	this._parentElement = value
+	mutexunlock(this._mutex)
+end property
+
 sub uiElement.Redraw()
+	if (this._parentElement <> 0) then
+		this._parentElement->Redraw()
+	elseif ( this._parent ) then
 		this._parent->DrawElement(@this)		
+	end if
 end sub
 
 sub UiElement.OnClick(mouse as uiMouseEvent)
