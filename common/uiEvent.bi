@@ -21,9 +21,8 @@ end enum
 
 enum uiMouseButtoSstate
 	released = 0
-	release = 1
-	hit = 2
-	hold = 3
+	hit = 1
+	hold = 2
 end enum
 
 type uiMouseEvent

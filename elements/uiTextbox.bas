@@ -168,7 +168,7 @@ sub uiTextbox.OnClick( mouse as uiMouseEvent )
 end sub
 
 sub uiTextbox.OnMouseMove( mouse as uiMouseEvent )
-	if (mouse.lmb = hit and mouse.x <> -1 and mouse.y <> -1 ) then
+	if (mouse.lmb = hold and mouse.x <> -1 and mouse.y <> -1 ) then
 		dim as integer newCursor = (mouse.x - this.dimensions.x - 3 ) / CAIRO_FONTWIDTH + this._offset
 		if ( newCursor > len(this._text) ) then
 			newCursor = len(this._text)

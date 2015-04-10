@@ -3,6 +3,7 @@
 
 #include once "uiEvent.bi"
 #include once "fbthread.bi"
+#INCLUDE once "fbgfx.bi"
 
 #ifndef bool
 enum bool
@@ -16,92 +17,61 @@ dim shared shutdownEventListener as bool = false
 declare sub uiEventListener( callback as any ptr  )
 
 sub uiEventListener( callback as any ptr  )
-	dim key as string
-	dim as uiEvent oldEvent
-
-	'Thanks to Muttonhead. Most of this logic is copied from sGUI and refactored to my needs.
+	dim as uiMouseEvent oldMouse 
+	dim as uiEvent ptr newEvent
+	dim event as fb.event
+	'Thanks to Muttonhead, for the inspiration and the event-code prior to the screenevent version.
 	do
-		dim as uiEventType eventType = none
-		dim as uiMouseEvent oldMouse 
-		dim as uiEvent newEvent
+		if ( SCREENEVENT(@event)  )THEN
+			if (newEvent <> 0) then
+				delete newEvent
+			end if
+			newEvent = new uiEvent()
+			newEvent->Mouse = oldMouse
 			
-		newEvent =  uiEvent
-		oldMouse = oldEvent.Mouse
-		
-		
-		with newEvent.mouse
-			mutexlock(GFXMUTEX)
-			getmouse(.x, .y, .wheel, .button)
-			mutexunlock(GFXMUTEX)
-			if .x < 0 or .y < 0 then 
-				'wenn die Maus ausserhalb des Screens ist
-				'falls eine Maustaste gedrückt aus den Screen geschoben wird, wird sie über
-				'RELEASE in den RELEASED Zustand versetzt
-				'"kostet" also 2 Loops als Ereignis im Eventloop
-				.LMB = iif( .LMB > RELEASE, RELEASE,RELEASED )
-				.MMB = iif( .MMB > RELEASE, RELEASE,RELEASED )
-				.RMB = iif( .RMB > RELEASE, RELEASE,RELEASED )
-
-				'.wheelvalue=oldwheelvalue
-			else
-				'LMB 4 Schaltzustände simulieren
-				if ( .button and 1 ) then
-					.LMB = iif( .LMB < HIT ,HIT, HOLD )
-				else 
-					.LMB = iif( .LMB > RELEASE, RELEASE, RELEASED )
-				end if
-				'MMB 4 Schaltzustände simulieren
-				if ( .button and 4 ) then
-				  .MMB=iif(.MMB<HIT,HIT,HOLD)
-				else
-				  .MMB=iif(.MMB>RELEASE,RELEASE,RELEASED)
-				end if
-				'RMB 4 Schaltzustände simulieren
-				if ( .button and 2 ) then
-				  .RMB=iif(.RMB<HIT,HIT,HOLD)
-				else
-				  .RMB=iif(.RMB>RELEASE,RELEASE,RELEASED)
-				end if
+			select case event.type
+				case FB.EVENT_KEY_PRESS
+					if ( event.ascii > 0 ) then
+						newEvent->keyPress.key = chr(event.ascii)
+						newEvent->keyPress.keycode = event.ascii
+					else
+						newEvent->keyPress.Extended = true
+						newEvent->keyPress.keycode = event.scancode
+					end if
+					newEvent->eventType += keyPress
+				case FB.EVENT_MOUSE_MOVE
+					newEvent->eventType += mouseMove
+					with newEvent->Mouse
+						.x = event.x
+						.y = event.y
+						.LMB = iif( .LMB >= hit,HOLD, 0 )
+						.RMB = iif( .RMB >= hit,HOLD, 0 )
+						.MMB = iif( .MMB >= hit,HOLD, 0 )
+					end with
+				case FB.EVENT_MOUSE_BUTTON_PRESS
+					IF event.button = FB.BUTTON_LEFT  THEN
+						newEvent->mouse.lmb = HIT
+					ELSEIF event.button = FB.BUTTON_RIGHT THEN
+						newEvent->mouse.RMB = HIT
+					ELSEIF event.button = FB.BUTTON_MIDDLE THEN
+						newEvent->mouse.MMB = HIT
+					END IF
+					newEvent->eventType = mouseClick
+				case FB.EVENT_MOUSE_BUTTON_RELEASE
+					IF event.button = FB.BUTTON_LEFT  THEN
+						newEvent->mouse.lmb = released
+					ELSEIF event.button = FB.BUTTON_RIGHT THEN
+						newEvent->mouse.RMB = released
+					ELSEIF event.button = FB.BUTTON_MIDDLE THEN
+						newEvent->mouse.MMB = released
+					END IF
+					newEvent->eventType = mouseClick
+			end select
+			if ( newEvent->eventType <> 0  ) then
+				threaddetach( threadcreate (cast(any ptr, callback), newEvent ))
 			end if
-		
-			if ( .X <> oldMouse.X or .Y <> oldMouse.Y ) then 
-				eventType = eventType OR mouseMove
-			end if
-			'Event LMB
-			if ( .LMB <> oldMouse.LMB ) then 
-				eventType = eventType OR mouseClick
-			end if
-			'Event MMB
-			if ( .MMB <> oldMouse.MMB ) then 
-				eventType = eventType OR mouseClick
-			end if
-			'Event RMB
-			if ( .RMB <> oldMouse.RMB ) then
-				eventType = eventType OR mouseClick
-			end if
-			
-		end with
-		
-		with newEvent.keyPress
-			mutexlock(GFXMUTEX)
-			.key = inkey
-			mutexunlock(GFXMUTEX)
-			if ( .key <> "" ) then
-				if ( len(.key) = 2 ) then
-				  .extended=asc(left(.key,1))
-				  .key=right(.key,1)
-				end if
-				.keycode = asc(.key)
-				eventType = eventType OR keyPress
-			end if
-		end with
-		
-		if ( eventType <> none  ) then
-			newEvent.eventType = eventType
-			threaddetach( threadcreate (cast(any ptr, callback), @newEvent ))
-			oldEvent = newEvent
+			oldMouse = newEvent->Mouse
 		end if
-		
-		sleep 50,1
+		sleep 1,1		
 	loop until shutdownEventListener
 end sub
