@@ -59,7 +59,7 @@ property uiTextbox.Text(value as string)
 		this._Text = value
 		this.CreateBuffer()
 	end if
-	this.DoRedraw()
+	this.Redraw()
 end property
 
 property uiTextbox.Text() as string
@@ -83,9 +83,7 @@ sub uiTextbox.MoveTo(value as integer)
 		if (.Position - this._offset > this._length ) then
 			this._offset = value -this._length
 		elseif (.Position < this._offset) then
-		
-			this._offset = 0' len(this._text) - value
-		'	shell "echo offset: "& this._offset
+			this._offset = 0
 		end if
 	end with
 end sub
@@ -164,7 +162,7 @@ sub uiTextbox.OnClick( mouse as uiMouseEvent )
 			mutexlock(this._mutex)
 			this.MoveTo(newCursor)
 			mutexunlock(this._mutex)
-			this.DoRedraw()
+			this.Redraw()
 		end if
 	end if
 end sub
@@ -182,7 +180,7 @@ sub uiTextbox.OnMouseMove( mouse as uiMouseEvent )
 		else
 			this._cursor.selectionStart = this._cursor.Position
 		end if
-		this.DoRedraw()
+		this.Redraw()
 	end if
 end sub
 
@@ -205,9 +203,7 @@ sub uiTextbox.OnKeypress( keypress as uiKeyEvent )
 					this.RemoveSelected()
 				else
 					this._text = left(text, this._cursor.Position) + right (text, len(this._text) -this._cursor.Position -1)
-				end if
-			case else:
-				shell "echo extended: " & keypress.keycode
+				end if				
 		end select
 	else
 		select case keypress.keycode
@@ -249,5 +245,5 @@ sub uiTextbox.OnKeypress( keypress as uiKeyEvent )
 		end select
 	end if
 	mutexunlock(this._mutex)
-	this.DoRedraw()
+	this.Redraw()
 end sub

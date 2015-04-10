@@ -70,7 +70,7 @@ property uiCheckBox.IsChecked(value as bool)
 	mutexlock(this._mutex)
 	this._isChecked = value
 	mutexunlock(this._mutex)
-	this.DoRedraw()
+	this.Redraw()
 end property
 
 property uiCheckBox.IsChecked() as bool
@@ -105,7 +105,7 @@ sub uiCheckBox.OnClick(mouse as UiMouseEvent)
 			if ( this.callback <> 0 ) then
 				this.callback(@this)
 			end if
-			this.DoRedraw()
+			this.Redraw()
 		end if
 	end if
 end sub
@@ -118,7 +118,7 @@ sub uiCheckBox.OnKeyPress( keyPress as uiKeyEvent )
 		if ( this.callback <> 0 ) then
 			this.callback(@this)
 		end if
-		this.DoRedraw()
+		this.Redraw()
 	end if
 end sub
 

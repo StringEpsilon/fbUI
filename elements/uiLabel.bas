@@ -16,8 +16,7 @@ type uiLabel extends uiElement
 end type
 
 constructor uiLabel( x as integer, y as integer,newText as string,  length as integer = 0)
-	base()
-	
+	base()	
 	with this._dimensions
 		.h = 16
 		.w = 4 + IIF(length = 0, len(newText) * CAIRO_FONTWIDTH, length * CAIRO_FONTWIDTH)
@@ -32,7 +31,7 @@ property uiLabel.Text(value as string)
 	mutexlock(this._mutex)
 	this._text = value
 	mutexunlock(this._mutex)
-	this.DoRedraw()
+	this.Redraw()
 end property
 
 property uiLabel.Text() as string

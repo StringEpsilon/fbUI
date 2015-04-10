@@ -57,14 +57,14 @@ property uiHScrollbar.Value(newValue as integer)
 	mutexlock(this._mutex)
 	this._value = newValue
 	mutexunlock(this._mutex)
-	this.DoRedraw()
+	this.Redraw()
 end property
 
 sub uiHScrollbar.CalculateValue(position as integer)
 	dim as integer newValue =  int( position / (this.dimensions.w+1) * this._segments)  + this._min
 	if (this._value <> newValue ) then
 		this._value = newValue
-		this.DoRedraw()
+		this.Redraw()
 		if (this.callback <> 0) then
 			threaddetach(threadcreate(this.callback, @this))
 		end if

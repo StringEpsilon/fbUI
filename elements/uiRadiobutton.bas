@@ -136,10 +136,10 @@ sub uiRadiobutton.SelectElement(selection as uiRadiobutton ptr)
 				mutexlock(item->_mutex)
 				item->_IsSelected = true
 				mutexunlock(item->_mutex)
-				item->DoRedraw()
+				item->Redraw()
 			elseif (item->_IsSelected) then
 				item->IsSelected = false
-				item->DoRedraw()
+				item->Redraw()
 			end if
 		next
 	end if

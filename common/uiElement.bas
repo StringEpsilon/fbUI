@@ -11,8 +11,8 @@ type uiElement extends IRenderable
 	private:
 		_parent as IDrawing	ptr
 	protected:
-		_buffer as fb.image ptr
 		_mutex as any ptr
+		_buffer as fb.image ptr
 		_isActive as bool = true
 		_hasFocus as bool = false
 		_surface as cairo_surface_t ptr 
@@ -21,7 +21,7 @@ type uiElement extends IRenderable
 		
 		declare constructor (x as integer, y as integer)
 		declare virtual sub CreateBuffer()
-		declare sub DoRedraw()
+		declare sub Redraw()
 	public:
 		Callback as sub(payload as any ptr)
 		declare property Dimensions () as uiDimensions ' Part of IRenderable
@@ -54,11 +54,6 @@ constructor uiElement(newDimensions as uiDimensions)
 	this._dimensions = newDimensions
 end constructor 
 
-property uiElement.Parent(value as IDrawing ptr)
-	mutexlock(this._mutex)
-	this._parent = value
-	mutexunlock(this._mutex)
-end property
 
 Destructor uiElement()
 	if (this._mutex <> 0 ) then
@@ -77,6 +72,16 @@ property uiElement.Dimensions() as uiDimensions
 	return this._dimensions
 end property
 
+property uiElement.Parent(value as IDrawing ptr)
+	mutexlock(this._mutex)
+	this._parent = value
+	mutexunlock(this._mutex)
+end property
+
+sub uiElement.Redraw()
+		this._parent->DrawElement(@this)		
+end sub
+
 sub UiElement.OnClick(mouse as uiMouseEvent)
 end sub
 
@@ -86,15 +91,11 @@ end sub
 sub UiElement.OnKeypress(keypress as uiKeyEvent)
 end sub
 
-sub uiElement.DoRedraw()
-	this._Parent->DrawElement(@this)
-end sub
-
 sub UiElement.OnFocus(focus as bool)
 	mutexlock(this._mutex)
 	this._hasFocus = focus
 	mutexunlock(this._mutex)
-	this.DoRedraw()
+	this.Redraw()
 end sub
 
 sub uiElement.CreateBuffer()

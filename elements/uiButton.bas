@@ -37,7 +37,7 @@ property uiButton.Label(value as string)
 	mutexlock(this._mutex)
 	this._label = value
 	mutexunlock(this._mutex)
-	this.DoRedraw()
+	this.Redraw()
 end property
 
 property uiButton.Label() as string
@@ -60,18 +60,18 @@ sub uiButton.OnClick( mouse as uiMouseEvent )
 		if ( this.callback <> 0 ) then
 			threaddetach(threadcreate(this.callback, @this))
 		end if
-		base.DoRedraw()
+		base.Redraw()
 	elseif ( mouse.lmb = hit OR mouse.lmb = hold ) then
 		mutexlock(this._mutex)
 		this._hold = true
 		mutexunlock(this._mutex)
-		base.DoRedraw()
+		base.Redraw()
 	end if
 end sub
 
 sub uiButton.OnFocus( focus as bool )
 	if (focus = false) then
 		this._hold = false
-		base.DoRedraw()
+		base.Redraw()
 	end if
 end sub

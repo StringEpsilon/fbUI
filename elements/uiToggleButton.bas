@@ -43,11 +43,11 @@ sub uiToggleButton.OnClick( mouse as uiMouseEvent )
 		if ( this.callback <> 0 ) then
 			threaddetach(threadcreate(this.callback, @this))
 		end if
-		this.DoRedraw()
+		this.Redraw()
 	elseif ( mouse.lmb = hit OR mouse.lmb = hold ) then
 		mutexlock(this._mutex)
 		this._hold = true
 		mutexunlock(this._mutex)
-		base.DoRedraw()
+		base.Redraw()
 	end if
 end sub
