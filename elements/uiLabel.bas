@@ -40,9 +40,14 @@ end property
 
 function uiLabel.Render() as fb.image  ptr
 	with this._dimensions
-		cairo_set_source_rgba(this._cairo,&hE8/255,&hE8/255,&hE8/255,1)
+		cairo_save (this._cairo)
+		cairo_set_source_rgba(this._cairo,0,0,0,0)
+		cairo_set_operator (this._cairo, CAIRO_OPERATOR_SOURCE)
 		cairo_paint(this._cairo)
+		cairo_restore (this._cairo)
+		
 		DrawLabel(this._cairo, 2, (.h - CAIRO_FONTSIZE)/2, this._text)
+		
 	end with
 	return this._buffer
 end function

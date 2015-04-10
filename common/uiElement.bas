@@ -115,7 +115,7 @@ sub uiElement.CreateBuffer()
 	if (this._buffer <> 0) then
 		ImageDestroy(this._buffer)
 	end if
-	this._buffer = IMAGECREATE(this._dimensions.w,this._dimensions.h,&h00000000)
+	this._buffer = IMAGECREATE(this._dimensions.w,this._dimensions.h,&h000000FF)
 	if (this._buffer = 0) then	
 		exit sub
 	end if

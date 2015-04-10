@@ -224,7 +224,10 @@ sub uiWindow.Main()
 				element = this._RenderBuffer->Pop()
 				mutexunlock(this._mutex)
 				mutexlock(GFXMUTEX)
-				PUT (element->dimensions.x, element->dimensions.y), element->Render(), Alpha
+				with element->dimensions
+					LINE (.x, .y)-(.x+.w, .y+.h),BackgroundColor, BF
+					PUT (.x, .y), element->Render(), alpha
+				end with
 				mutexunlock(GFXMUTEX)
 			wend			
 		end if
