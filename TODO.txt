@@ -15,7 +15,10 @@ Features:
 	[ ] Copy & Paste
 
 [-] Handling of OnMouseMove. Important for scrollbars and stuff.
-	[ ] Introduce "OnMouseOver(mouse as uiMouseEvent"
+	[X] Introduce "OnMouseOver(mouse as uiMouseEvent"
+	[X] Introduce OnMouseLeave()
+	[ ] Call OnMouseMove() of the focused element only if a button is on "hold"
+		Otherwise, notify the _mouseOver element. 
 
 [ ] Write a readme and proper example code.
 

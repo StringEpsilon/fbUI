@@ -15,7 +15,8 @@ type uiWindow extends IDrawing
 		_mutex as any ptr
 		_children as uiElementList ptr
 		_focus as uiElement ptr
-		_RenderBuffer as RenderableBuffer ptr	
+		_RenderBuffer as RenderableBuffer ptr
+		_mouseOver as uiElement ptr 'For tracking mouseLeave
 		
 		declare Constructor()
 		declare Destructor()
@@ -97,7 +98,6 @@ function uiWindow.GetElementAt(x as integer, y as integer) as uiElement ptr
 	return result
 end function
 
-
 sub uiWindow.AddElement( element as uiElement ptr)
 	if (element <> 0) then
 		mutexlock(this._mutex)
@@ -165,10 +165,8 @@ function uiWindow.GetInstance() as uiWindow ptr
 end function
 
 sub uiWindow.HandleEvent(event as uiEvent)
-	
 	if (screenptr = 0) then exit sub
-	
-	select case event.eventType
+	select case as const event.eventType 
 		case uiShutdown
 			mutexlock(this._mutex)
 			this.shutdown = true
@@ -181,7 +179,6 @@ sub uiWindow.HandleEvent(event as uiEvent)
 			end if
 		case mouseClick
 			dim clickedElement as uiElement ptr = this.GetElementAt(event.mouse.x, event.mouse.y)
-			
 			if (clickedElement <> 0) then
 				if (this._focus <> clickedElement) then
 					if (this._focus <> 0 ) then
@@ -203,6 +200,24 @@ sub uiWindow.HandleEvent(event as uiEvent)
 			if ( this._focus <> 0 ) then
 				this._focus->OnMouseMove(event.mouse)
 			end if
+			
+			dim as uielement ptr mouseLeave, mouseEnter
+			dim clickedElement as uiElement ptr = this.GetElementAt(event.mouse.x, event.mouse.y)
+			
+			mutexlock(this._mutex)
+			if ( this._mouseOver <> clickedElement) then
+				if (this._mouseOver <> 0) then
+					mouseLeave = this._mouseOver
+				end if
+				this._mouseOver = clickedElement
+				if (this._mouseOver <> 0) then
+					mouseEnter = this._mouseOver
+				end if
+			end if
+			mutexunlock(this._mutex)
+			
+			if (mouseLeave <> 0) then mouseLeave->OnMouseLeave(event.mouse)
+			if (mouseEnter <> 0) then mouseEnter->OnMouseOver(event.mouse)
 	end select
 end sub
 

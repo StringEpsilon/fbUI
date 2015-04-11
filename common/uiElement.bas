@@ -38,6 +38,8 @@ type uiElement extends IRenderable
 		declare virtual sub OnKeypress(keypress as uiKeyEvent)
 		declare virtual sub OnMouseMove(mouse as uiMouseEvent)
 		declare virtual sub OnFocus(focus as bool)
+		declare virtual sub OnMouseOver(mouse as uiMouseEvent)
+		declare virtual sub OnMouseLeave(mouse as uiMouseEvent)
 end type
 
 declareList(uiElement ptr, uiElementList)
@@ -99,6 +101,12 @@ sub UiElement.OnClick(mouse as uiMouseEvent)
 end sub
 
 sub UiElement.OnMouseMove(mouse as uiMouseEvent)
+end sub
+
+sub UiElement.OnMouseOver(mouse as uiMouseEvent)
+end sub
+
+sub UiElement.OnMouseLeave(mouse as uiMouseEvent)
 end sub
 
 sub UiElement.OnKeypress(keypress as uiKeyEvent)
