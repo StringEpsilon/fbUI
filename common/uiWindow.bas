@@ -168,48 +168,42 @@ sub uiWindow.HandleEvent(event as uiEvent)
 	
 	if (screenptr = 0) then exit sub
 	
-	if ( event.eventType AND keyPress ) then
-		if ( event.keypress.extended AND event.keypress.keycode = 107 ) then
+	select case event.eventType
+		case uiShutdown
 			mutexlock(this._mutex)
 			this.shutdown = true
 			mutexunlock(this._mutex)
 			shutdownEventListener = true
 			exit sub
-		end if
-		
-		if (this._focus <> 0) then
-			this._focus->OnKeypress(event.keypress)
-		end if
-	end if
-
-	if ( event.eventType = mouseClick ) then
-		dim clickedElement as uiElement ptr = this.GetElementAt(event.mouse.x, event.mouse.y)
-		
-		if (clickedElement <> 0) then
-			if (this._focus <> clickedElement) then
-				if (this._focus <> 0 ) then
-					this._focus->OnFocus(false)
-				end if
-				mutexlock(this._mutex)
-				this._focus = clickedElement
-				mutexunlock(this._mutex)
-				this._focus->OnFocus(true)
+		case keyPress
+			if (this._focus <> 0) then
+				this._focus->OnKeypress(event.keypress)
 			end if
-			clickedElement->OnClick(event.Mouse)
-		elseif (this._focus <> 0) then
-			this._focus->OnFocus(false)
-			mutexlock(this._mutex)
-			this._focus = 0
-			mutexunlock(this._mutex)
-		end if
-	end if
-	
-	if (event.eventType AND mouseMove)  then
-		if ( this._focus <> 0 ) then
-			this._focus->OnMouseMove(event.mouse)
-		end if
-	end if
-	
+		case mouseClick
+			dim clickedElement as uiElement ptr = this.GetElementAt(event.mouse.x, event.mouse.y)
+			
+			if (clickedElement <> 0) then
+				if (this._focus <> clickedElement) then
+					if (this._focus <> 0 ) then
+						this._focus->OnFocus(false)
+					end if
+					mutexlock(this._mutex)
+					this._focus = clickedElement
+					mutexunlock(this._mutex)
+					this._focus->OnFocus(true)
+				end if
+				clickedElement->OnClick(event.Mouse)
+			elseif (this._focus <> 0) then
+				this._focus->OnFocus(false)
+				mutexlock(this._mutex)
+				this._focus = 0
+				mutexunlock(this._mutex)
+			end if
+		case mouseMove
+			if ( this._focus <> 0 ) then
+				this._focus->OnMouseMove(event.mouse)
+			end if
+	end select
 end sub
 
 sub uiWindow.Main()

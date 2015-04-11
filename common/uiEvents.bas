@@ -66,6 +66,8 @@ sub uiEventListener( callback as any ptr  )
 						newEvent->mouse.MMB = released
 					END IF
 					newEvent->eventType = mouseClick
+				case FB.EVENT_WINDOW_CLOSE
+					newEvent->EventType = uiShutDown
 			end select
 			if ( newEvent->eventType <> 0  ) then
 				threaddetach( threadcreate (cast(any ptr, callback), newEvent ))

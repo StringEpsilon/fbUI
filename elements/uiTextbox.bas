@@ -244,9 +244,7 @@ sub uiTextbox.OnKeypress( keypress as uiKeyEvent )
 					this.MoveBy(+1)
 					this._cursor.SelectionStart = -1
 				end if
-				shell "echo normal: " & keypress.keycode
 			case else:
-				shell "echo normal: " & keypress.keycode
 		end select
 	end if
 	mutexunlock(this._mutex)

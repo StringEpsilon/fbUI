@@ -16,7 +16,7 @@ enum uiEventType
 	mouseClick = 	&b00000001
 	mouseMove = 	&b00000010
 	keyPress = 		&b00000100
-	shutdownUI =	&b10000000
+	uiShutDown =	&b10000000
 end enum
 
 enum uiMouseButtoSstate

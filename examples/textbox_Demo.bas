@@ -19,10 +19,6 @@ fbGUI->AddElement(label)
 fbGUI->AddElement(textbox)
 fbGUI->CreateWindow(200,100)
 
-print inkey
-sleep
-sleep
-
 ' Start the event loop and the main UI thread:
 fbGUI->Main()
 ' You can exit the UI with ctrl+q
