@@ -34,13 +34,13 @@ type uiTextbox extends uiElement
 		declare sub RemoveSelected()
 end type
 
-constructor uiTextbox( x as integer, y as integer, length as integer, newText as string = "")
+constructor uiTextbox( x as integer, y as integer, w as integer, newText as string = "")
 	base(x,y)
 	
 	this._dimensions.h = 16
-	this._dimensions.w = 12 + length * CAIRO_FONTWIDTH
+	this._dimensions.w = w
 	
-	this._length = length
+	this._length = (w - 12) / CAIRO_FONTWIDTH
 	this._text = newText
 	this.CreateBuffer()
 end constructor
@@ -227,8 +227,10 @@ sub uiTextbox.OnKeypress( keypress as uiKeyEvent )
 			case 9:
 				
 			case 13 ' Enter
-				' Callback?
-			case 32 to 127:
+				if ( this.callback <> 0 ) then
+					this.callback(@this)
+				end if
+			case 32 to 254:
 				if (this._cursor.SelectionStart <> -1) then
 					this.RemoveSelected()
 				end if
@@ -242,6 +244,9 @@ sub uiTextbox.OnKeypress( keypress as uiKeyEvent )
 					this.MoveBy(+1)
 					this._cursor.SelectionStart = -1
 				end if
+				shell "echo normal: " & keypress.keycode
+			case else:
+				shell "echo normal: " & keypress.keycode
 		end select
 	end if
 	mutexunlock(this._mutex)
