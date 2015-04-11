@@ -76,4 +76,5 @@ sub uiEventListener( callback as any ptr  )
 		end if
 		sleep 10	
 	loop until shutdownEventListener
+	delete newEvent
 end sub

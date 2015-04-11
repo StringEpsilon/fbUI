@@ -11,7 +11,6 @@ end enum
 
 #MACRO DeclareBuffer(datatype, buffername, CreateThreadSafe)
 
-
 type ##buffername##
 	private:
 		#if CreateThreadSafe = true
@@ -53,9 +52,6 @@ end constructor
 constructor ##buffername##(initialCount as uinteger)
 	#if CreateThreadSafe = true
 	this._mutex = mutexcreate()
-	shell "echo Threadsafe buffer"
-	#else
-	shell "echo Unsafe buffer"
 	#endif
 	this._array = callocate(sizeof(datatype)*initialCount)
 	this._arraySize = initialCount

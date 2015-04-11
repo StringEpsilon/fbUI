@@ -8,19 +8,23 @@ type uiSpinner extends uiElement
 	private:
 		_state as bool = false
 		_currentFrame as integer = 1
-		_d as integer 
+		_d as integer
+		_threadHandle as any ptr
+		_exitAnimation as bool = false
 	public:
 		declare function Render() as fb.image  ptr
 		
 		declare constructor overload( x as integer, y as integer, d as integer)
+		declare destructor()
 		
+		declare Property ThreadHandle(value as any ptr)
 		declare property State() as bool
 		declare property State(newState as bool)
 		
 		declare sub AnimationLoop()
 end type
 
-declare sub StartSpinnerAnimation(spinner as uiSpinner ptr)
+declare sub StartSpinnerAnimation(spinner as any ptr)
 
 constructor uiSpinner( x as integer, y as integer,d as integer)
 	base()	
@@ -32,8 +36,16 @@ constructor uiSpinner( x as integer, y as integer,d as integer)
 		.y = y
 	end with
 	this.CreateBuffer()
-	ThreadDetach(ThreadCreate(@StartSpinnerAnimation,@this))
+	this._threadHandle = ThreadCreate(@StartSpinnerAnimation,@this)
 end constructor
+
+destructor uiSpinner()
+	mutexlock(this._mutex)
+	this._state = false
+	this._exitAnimation = true
+	mutexunlock(this._mutex)
+	threadwait(this._threadHandle)
+end destructor
 
 property uiSpinner.State(value as bool)
 	mutexlock(this._mutex)
@@ -48,7 +60,6 @@ end property
 
 sub uiSpinner.AnimationLoop()
 	do
-		sleep 50
 		if (this._state = true) then
 			mutexlock(this._mutex)
 			this._currentFrame += 5
@@ -58,7 +69,8 @@ sub uiSpinner.AnimationLoop()
 			mutexunlock(this._mutex)
 			this.Redraw()
 		end if
-	loop
+		sleep 50
+	loop until this._exitAnimation
 end sub
 
 function uiSpinner.Render() as fb.image  ptr
@@ -81,6 +93,7 @@ function uiSpinner.Render() as fb.image  ptr
 	return this._buffer
 end function
 
-sub StartSpinnerAnimation(spinner as uiSpinner ptr)
+sub StartSpinnerAnimation(element as any ptr)
+	dim as uiSpinner ptr spinner = cast(uiSpinner ptr, element)
 	spinner->AnimationLoop()
 end sub

@@ -159,7 +159,7 @@ function uiWindow.GetInstance() as uiWindow ptr
 end function
 
 sub uiWindow.HandleEvent(event as uiEvent)
-	if (screenptr = 0) then exit sub
+	'if (screenptr = 0) then exit sub
 	select case as const event.eventType 
 		case uiShutdown
 			mutexlock(this._mutex)
@@ -231,7 +231,6 @@ sub uiWindow.Main()
 			wend			
 		end if
 		screensync
-		'sleep 5
 	loop until this.ShutDown
 	ThreadWait(eventThread)
 end sub
