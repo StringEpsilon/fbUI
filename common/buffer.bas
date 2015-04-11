@@ -9,10 +9,14 @@ enum bool
 end enum
 #endif
 
-#MACRO DeclareBuffer(datatype, buffername)
+#MACRO DeclareBuffer(datatype, buffername, CreateThreadSafe)
+
 
 type ##buffername##
 	private:
+		#if CreateThreadSafe = true
+		_mutex as any ptr
+		#endif
 		_array	 as datatype ptr
 		_arraySize as uinteger
 		_head	 as uinteger = 0
@@ -37,29 +41,51 @@ type ##buffername##
 end type
 
 constructor ##buffername##()
+	#if CreateThreadSafe = true
+	this._mutex = mutexcreate()
+	shell "echo Threadsafe buffer"
+	#else
+	shell "echo Unsafe buffer"
+	#endif
 	this._array = callocate(sizeof(datatype))
 end constructor
 
 constructor ##buffername##(initialCount as uinteger)
+	#if CreateThreadSafe = true
+	this._mutex = mutexcreate()
+	shell "echo Threadsafe buffer"
+	#else
+	shell "echo Unsafe buffer"
+	#endif
 	this._array = callocate(sizeof(datatype)*initialCount)
 	this._arraySize = initialCount
 end constructor
 
 destructor ##buffername##()
 	deallocate (this._array)
+	#if CreateThreadSafe = true
+	mutexdestroy(this._mutex)
+	#endif
 end destructor
 
 sub ##buffername##.Clear()
+	#if CreateThreadSafe = true
+	mutexlock(this._mutex)
+	#endif
 	deallocate(this._array)
 	this._head = this._tail = this._size = 0
 	this._version += 1
+	#if CreateThreadSafe = true
+	mutexunlock(this._mutex)
+	#endif
 end sub
 
 function ##buffername##.Pop() as datatype
 	dim as datatype element
-	
 	if ( this._size > 0 ) then
-		
+		#if CreateThreadSafe = true
+		mutexlock(this._mutex)
+		#endif
 		element = this._array[this._head]
 		if (this._head + 1 =  this._arraySize) then
 			this._head = 0
@@ -68,6 +94,9 @@ function ##buffername##.Pop() as datatype
 		end if
 		this._size -= 1
 		this._version +=1
+		#if CreateThreadSafe = true
+		mutexunlock(this._mutex)
+		#endif
 	end if
 	return element
 end function
@@ -86,7 +115,9 @@ sub ##buffername##.Push(item as datatype)
 	if (this._size = this._arraySize OR this._tail = this._arraySize) then
 		this.SetCapacity(IIF(_size<_tail, _tail, _size)* 2)
 	end if
-	
+	#if CreateThreadSafe = true
+	mutexlock(this._mutex)
+	#endif
 	this._array[this._tail] = item
 	
 	if ( this._tail + 1 = this._arraySize ) then
@@ -96,18 +127,26 @@ sub ##buffername##.Push(item as datatype)
 	end if
 	this._size +=1
 	this._version +=1
+	#if CreateThreadSafe = true
+	mutexunlock(this._mutex)
+	#endif
 end sub
 				
 sub ##buffername##.SetCapacity(newSize as uinteger)
 	if ( newSize <= this._size) then
 		exit sub
 	end if
-	
+	#if CreateThreadSafe = true
+	mutexlock(this._mutex)
+	#endif
 	this._arraySize = newSize
-	this._array =  reallocate(this._array ,sizeof(datatype)*this._arraySize)
+	this._array = reallocate(this._array ,sizeof(datatype)*this._arraySize)
 	this._tail = _size
 	this._head = 0
 	this._version +=1
+	#if CreateThreadSafe = true
+	mutexunlock(this._mutex)
+	#endif
 end sub
 		
 property ##buffername##.Count() as uinteger

@@ -29,7 +29,7 @@ sub uiEventListener( callback as any ptr  )
 			newEvent = new uiEvent()
 			newEvent->Mouse = oldMouse
 			
-			select case event.type
+			select case as const event.type
 				case FB.EVENT_KEY_PRESS
 					if ( event.ascii > 0 ) then
 						newEvent->keyPress.key = chr(event.ascii)
@@ -74,6 +74,6 @@ sub uiEventListener( callback as any ptr  )
 			end if
 			oldMouse = newEvent->Mouse
 		end if
-		sleep 1,1		
+		sleep 10	
 	loop until shutdownEventListener
 end sub

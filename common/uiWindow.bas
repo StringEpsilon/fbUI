@@ -7,7 +7,7 @@
 
 SCREENRES 1,1, 32,, FB.GFX_NULL
 
-declarebuffer(IRenderable ptr, RenderableBuffer)
+declarebuffer(IRenderable ptr, RenderableBuffer,true)
 
 type uiWindow extends IDrawing
 	private:
@@ -72,10 +72,7 @@ sub uiWindow.DrawAll()
 	mutexlock(this._mutex)
 	for i as integer = 0 to this._children->count -1
 		child = this._children->item(i)
-		mutexlock(GFXMUTEX)
 		PUT (child->dimensions.x, child->dimensions.y), child->Render, Alpha
-		mutexunlock(GFXMUTEX)
-		
 	next	
 	mutexunlock(this._mutex)
 end sub
@@ -90,7 +87,6 @@ function uiWindow.GetElementAt(x as integer, y as integer) as uiElement ptr
 		with child->dimensions
 			if (( x >= .x) AND ( x <= .x + .w ) and ( y >= .y) and (y <= .y + .h)) then
 				result = child
-				
 			end if
 		end with
 		i+=1
@@ -150,9 +146,7 @@ end sub
 
 sub uiWindow.DrawElement( renderable as IRenderable ptr)
 	if ( renderable <> 0  ) then
-		mutexlock(this._mutex)
 		this._RenderBuffer->Push(renderable)
-		mutexunlock(this._mutex)
 	end if
 end sub
 
@@ -229,19 +223,15 @@ sub uiWindow.Main()
 	do
 		if (this._RenderBuffer->count > 0) then
 			while this._RenderBuffer->count > 0
-				mutexlock(this._mutex)
 				element = this._RenderBuffer->Pop()
-				mutexunlock(this._mutex)
-				mutexlock(GFXMUTEX)
 				with element->dimensions
 					LINE (.x, .y)-(.x+.w, .y+.h),BackgroundColor, BF
 					PUT (.x, .y), element->Render(), alpha
 				end with
-				mutexunlock(GFXMUTEX)
 			wend			
 		end if
 		screensync
-		sleep 1,1
+		'sleep 5
 	loop until this.ShutDown
 	ThreadWait(eventThread)
 end sub

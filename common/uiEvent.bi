@@ -1,9 +1,6 @@
 ' uiEvent.bi - Do what the f... you want (WTFPL). 
 ' Author: StringEpsilon, 2015
 
-dim shared GFXMUTEX as any ptr 
-GFXMUTEX = mutexcreate
-
 #ifndef bool
 enum bool
 	false = 0
