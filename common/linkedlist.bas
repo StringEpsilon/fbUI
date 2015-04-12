@@ -28,6 +28,8 @@ TYPE ##listname##
 		_first as ##listname##Element ptr
 		_last as ##listname##Element ptr
 		_count as uinteger
+		_lastAccessPtr as ##listname##Element ptr
+		_lastAccessIndex as uinteger = -1
 
 		declare function GetElement(index as uinteger) as  ##listname##Element ptr
 	PUBLIC:
@@ -63,22 +65,27 @@ function ##listname##.GetElement(index as uinteger) as ##listname##Element ptr
 	if ( index <= 0 ) then return this._first
 	dim p_tmp_item as ##listname##Element ptr
 	dim i as integer
-	if (index < (this._count-1) / 2) then
-		i = 0
-		p_tmp_item = this._first
-		while (i < index)
-			p_tmp_item = p_tmp_item->nextElement
-			i += 1
-		wend
+	if ( this._lastAccessIndex = index-1) then
+		p_tmp_item =  this._lastAccessPtr->nextElement
 	else
-		i = this._count - 1
-		p_tmp_item = this._last
-		while (i > index)
-			p_tmp_item = p_tmp_item->previousElement
-			i -= 1
-		wend
+		if (index < (this._count-1) / 2) then
+			i = 0
+			p_tmp_item = this._first
+			while (i < index)
+				p_tmp_item = p_tmp_item->nextElement
+				i += 1
+			wend
+		else
+			i = this._count - 1
+			p_tmp_item = this._last
+			while (i > index)
+				p_tmp_item = p_tmp_item->previousElement
+				i -= 1
+			wend
+		end if
 	end if
-
+	this._lastAccessIndex = index
+	this._lastAccessPtr = p_tmp_item
 	return p_tmp_item
 end function
 
