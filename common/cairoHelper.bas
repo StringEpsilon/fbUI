@@ -1,8 +1,7 @@
 ' uiBaseElement.bas - Do what the f... you want (WTFPL). 
 ' Author: StringEpsilon, 2015
 
-
-#include once "cairo/cairo.bi"
+#include once "pango/pangocairo.bi"
 
 #DEFINE RGBA_R(c) (CDBL((c) SHR 16 AND 255)/255)
 #DEFINE RGBA_G(c) (CDBL((c) SHR  8 AND 255)/255)
@@ -23,9 +22,16 @@ const ElementTextColor = 0 ' Black
 
 'const BackgroundColor = &hE8E8E8
 
-const CAIRO_FONTSIZE = 12
-const CAIRO_FONTWIDTH = 7
+const as string FONT = "monospace 9"
+dim shared as PangoFontDescription ptr desc
+desc = pango_font_description_from_string (FONT)
+const CAIRO_FONTSIZE = 13
+const CAIRO_FONTWIDTH = 8
 Const PI = 3.14159265358979323846
+
+sub PangoDestuctor
+	pango_font_description_free (desc)
+end sub
 
 
 sub DrawRadio(c as cairo_t ptr, x as double, y as double , radius as double, active as byte )
@@ -137,9 +143,17 @@ sub DrawCheckbox(c as cairo_t ptr,x as double, y as double,size as double, check
 end sub
 
 sub DrawLabel(c as cairo_t ptr, x as double,y as double,text as string )
-	cairo_set_source_rgb(c,0,0,0)
-	cairo_move_to (c, x, y+CAIRO_FONTSIZE-2)
-	cairo_show_text (c, text)
+	'exit sub
+	dim as PangoLayout ptr layout
+	layout = pango_cairo_create_layout (c)
+	pango_layout_set_text (layout, text, -1)
+	pango_layout_set_font_description (layout, desc)
+
+	cairo_set_source_rgb (c, 0, 0,0)
+	pango_cairo_update_layout (c, layout)
+	cairo_move_to (c,x,y)
+	pango_cairo_show_layout (c, layout)
+	g_object_unref (layout)
 end sub
 
 sub DrawTextbox(c as cairo_t ptr,w as double, h as double)
