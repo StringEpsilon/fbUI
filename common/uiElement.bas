@@ -120,19 +120,12 @@ sub UiElement.OnFocus(focus as bool)
 end sub
 
 sub uiElement.CreateBuffer()
-	if (this._buffer <> 0) then
-		ImageDestroy(this._buffer)
-	end if
-	this._buffer = IMAGECREATE(this._dimensions.w,this._dimensions.h,&h000000FF)
-	if (this._buffer = 0) then	
-		exit sub
-	end if
 	if ( this._cairo <> 0) then
 		cairo_destroy(this._cairo)
 		cairo_surface_destroy(this._surface)
 	end if
 
-	this._surface = cairo_image_surface_create_for_data(cast(any ptr,this._buffer)+32, CAIRO_FORMAT_ARGB32, this._dimensions.w, this._dimensions.h, this._buffer->pitch)
+	this._surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, this._dimensions.w, this._dimensions.h)
 	this._cairo = cairo_create(this._surface)
 	cairo_select_font_face (this._cairo , "mono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
 	cairo_set_font_size (this._cairo , CAIRO_FONTSIZE)

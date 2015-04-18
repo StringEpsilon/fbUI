@@ -15,7 +15,7 @@ type uiTextbox extends uiElement
 		declare constructor overload( x as integer, y as integer,length as integer, newText as string = "")
 		declare constructor(dimensions as uiDimensions, newText as string = "")
 
-		declare function Render() as fb.image  ptr
+		declare function Render() as  cairo_surface_t  ptr
 		declare virtual sub OnKeypress( keypress as uiKeyEvent )
 		declare virtual sub OnClick( mouse as uiMouseEvent )
 		declare virtual sub OnMouseMove( mouse as uiMouseEvent )
@@ -119,7 +119,7 @@ sub uiTextbox.RemoveSelected()
 	this._cursor.SelectionEnd = -1
 end sub
 
-function uiTextbox.Render() as fb.image  ptr
+function uiTextbox.Render() as  cairo_surface_t  ptr
 	with this._dimensions
 		cairo_rectangle (this._cairo, 0, 0, .w, .h)
 		cairo_set_source_rgb(this._cairo,1,1,1)
@@ -149,7 +149,7 @@ function uiTextbox.Render() as fb.image  ptr
 		
 		DrawTextbox(this._cairo,.w,.h)			
 	end with
-	return this._buffer
+	return this._surface
 end function
 
 sub uiTextbox.OnClick( mouse as uiMouseEvent )

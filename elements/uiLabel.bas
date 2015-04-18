@@ -7,7 +7,7 @@ type uiLabel extends uiElement
 	private:
 		_Text as string 
 	public:
-		declare function Render() as fb.image  ptr
+		declare function Render() as cairo_surface_t  ptr
 		
 		declare constructor overload( x as integer, y as integer,newText as string,  length as integer = 0)
 
@@ -38,7 +38,7 @@ property uiLabel.Text() as string
 	return this._Text
 end property
 
-function uiLabel.Render() as fb.image  ptr
+function uiLabel.Render() as cairo_surface_t ptr
 	with this._dimensions
 		cairo_save (this._cairo)
 		cairo_set_source_rgba(this._cairo,0,0,0,0)
@@ -49,5 +49,5 @@ function uiLabel.Render() as fb.image  ptr
 		DrawLabel(this._cairo, 2, (.h - CAIRO_FONTSIZE)/2, this._text)
 		
 	end with
-	return this._buffer
+	return this._surface
 end function

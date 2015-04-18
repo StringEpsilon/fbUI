@@ -11,7 +11,7 @@ type uiButton extends uiElement
 	public:
 		dim as bool IsChecked = true
 		
-		declare virtual function Render() as fb.image  ptr
+		declare virtual function Render() as cairo_surface_t  ptr
 		declare virtual sub OnClick( mouse as uiMouseEvent)	
 		declare virtual sub Onfocus( focus as bool)
 		
@@ -44,12 +44,12 @@ property uiButton.Label() as string
 	return this._label
 end property
 
-function uiButton.Render() as fb.image  ptr
+function uiButton.Render() as cairo_surface_t  ptr
 	with this._dimensions
 		DrawButton(this._cairo,.w,.h, this._Hold)
 		DrawLabel(this._cairo,10, (.h - CAIRO_FONTSIZE)/2, this._Label)
 	end with
-	return this._buffer
+	return this._surface
 end function
 
 sub uiButton.OnClick( mouse as uiMouseEvent )
