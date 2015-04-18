@@ -2,6 +2,17 @@
 
 UI toolkit written in FreeBASIC with the help of Cairo.
 
-More a proof of concept than anything useful right now. Parts of the code are still a mess and the multithreading is poorly optimized. Unfortunately, I can't get rid of the GFXMUTEX completly, due to some internal mutexing issues in the GFXlib. If you insist that it's threadsafe, remove the locks and spam click and move events ;) I don't have enough information to file a bug report on it.
+### Design-Goals
 
-Refer to the todo.txt for future plans.
+I wanted to create an object oriented, multithreading capable UI-toolkit. All events will spawn a new thread of uiWindow.HandleEvent() (see todo.txt), while uiWindow.Main() handles drawing-requests from it's children. 
+
+I doubt this project will ever reach the quality of existing toolkits, but I saw sGUI from MuttonHead and wanted to make something similar myself. So far, it's been a great learning experience and it helped me to find some bugs in the rtlib and gfxlib2 of FreeBasic (thanks DKL for fixing them so fast).
+
+### Known issues
+
+I have a problem with a severe lag in handling user input using ScreenEvent() on one of my Linux machines. I am not sure if the problem is in the gfxlib or if it's caused by my setup. If you have a similar experience, please let me know. 
+
+### Dependencies
+
+* FreeBASIC 1.03 or higher
+* cairo
