@@ -5,7 +5,7 @@ Features:
 [ ] More basic elements for a first release:
 	[X] Radio buttons
 	[X] Labels
-	[ ] Listbox 
+	[-] Listbox 
 	[X] Scrollbars (vertical / horizontal)
 	[ ] ...
 	
@@ -24,14 +24,12 @@ Features:
 
 In the future:	
 
-[ ] Proper movement of elements.
+[ ] Implement a mechanism to move elements around
 
 [ ] Inactive elements
 	[ ] Won't receive events
 	[ ] Different rendering...?
 	
-
-
 Internal / Performance / style:
 
 [ ] Better strategy for routing click-events. Right now, it'is terrible for overlapping elements
@@ -44,11 +42,10 @@ Internal / Performance / style:
 	or worse: The threads queue up because of mutexing-issues.
 	(Doesn't help that the GFXlib occasionally has deadlocks without a global gfx-mutex)
 	Ideas:
-		[ ] Event-buffer with multiple workers
-		[ ] Handle mousemove (main source of event-threads) differently
-		[ ] Just have one event-thread alltogether...
+		* Event-buffer with multiple workers
+		* Handle mousemove (main source of event-threads) differently
 
-[ ] Use common base class or for vertical and horizontal scollbars.
+[-] Use common base class or for vertical and horizontal scollbars.
 	[ ] Add some properties to adjust min and max after creation.
 
 [X] uiElement.Parent should be a property with proper mutex-locking. 
@@ -57,7 +54,7 @@ Internal / Performance / style:
 
 [ ] Graphics overhaul: Prettier code, new constants.
 	[X] Get rid of sGui_Drawing.bas and the global variables in it.
-	[ ] Introduce properly named constants instead (sorry Muttonhead)
+	[ ] Introduce properly named constants instead
 		Alternative: Color and TextColor could be properties on uiElement with decent-looking defaults
 
 BUGS:
