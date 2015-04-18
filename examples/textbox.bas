@@ -11,19 +11,14 @@ dim shared label as uiLabel ptr
 label = new uiLabel(5,5,"",25)
 dim as uiTextbox ptr textbox = new uiTextbox( 5, 25, 190)
 
-
-
 textbox->callback = @ElementCallback
 
 fbGUI->AddElement(label)
 fbGUI->AddElement(textbox)
-fbGUI->CreateWindow(200,100)
+fbGUI->CreateWindow(100,200)
 
-' Start the event loop and the main UI thread:
 fbGUI->Main()
-' You can exit the UI with ctrl+q
 
-' Destroy the uiEl
 delete(textbox)
 
 sub ElementCallback (payload as any ptr)
