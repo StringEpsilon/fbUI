@@ -20,6 +20,7 @@ sub uiEventListener( callback as any ptr  )
 	dim as uiMouseEvent oldMouse 
 	dim as uiEvent ptr newEvent
 	dim event as fb.event
+	dim as double beforeEvent
 	'Thanks to Muttonhead, for the inspiration and the event-code prior to the screenevent version.
 	do
 		if ( SCREENEVENT(@event)  )THEN
@@ -70,11 +71,12 @@ sub uiEventListener( callback as any ptr  )
 					newEvent->EventType = uiShutDown
 			end select
 			if ( newEvent->eventType <> 0  ) then
+				
 				threaddetach( threadcreate (cast(any ptr, callback), newEvent ))
 			end if
 			oldMouse = newEvent->Mouse
 		end if
-		sleep 10	
+		sleep 1
 	loop until shutdownEventListener
 	delete newEvent
 end sub
