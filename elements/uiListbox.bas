@@ -11,7 +11,7 @@ type uiListBox extends uiElementContainer
 		_scrollbar as uiVScrollbar ptr
 		declare function GetElementAt(x as integer, y as integer) as uiElement ptr
 	public:
-		declare function Render() as fb.image  ptr
+		declare function Render() as cairo_surface_t ptr
 		Callback as sub(payload as any ptr)
 		
 		declare destructor()
@@ -27,7 +27,7 @@ constructor uiListBox(x as integer, y as integer,h as integer, w as integer, lis
 	this._dimensions.h = h
 	this._dimensions.w = w
 	
-	this._scrollbar = new uiVScrollbar(w-11, 2, h-4,ubound(list), lbound(list))
+	this._scrollbar = new uiVScrollbar(w-11, 2, h-4,ubound(list)-h/16+1, lbound(list))
 	this._scrollbar->Parent = @this
 	this._children->Append(this._scrollbar)
 	
@@ -37,8 +37,7 @@ constructor uiListBox(x as integer, y as integer,h as integer, w as integer, lis
 		child->Parent = @this
 		this._children->Append(child)
 	next
-	
-	
+		
 	this.CreateBuffer()
 end constructor 
 
@@ -108,23 +107,20 @@ sub uiListBox.OnKeypress(keypress as uiKeyEvent)
 end sub
 
 
-function uiListBox.Render() as FB.image ptr
+function uiListBox.Render() as cairo_surface_t ptr
 	dim as integer offset = 16 * this._scrollbar->Value
 	dim element as uiElement ptr
 
-	cairo_set_source_rgba(this._cairo,1,1,1,1)
+	cairo_set_source_rgb(this._cairo,1,1,1)
 	cairo_paint(this._cairo)
 	
 	for i as integer = 1 to this._dimensions.h/16
 		element = this._children->item(i+this._scrollbar->Value)
-		if (element = this._selection) then
-			cairo_set_source_rgba(this._cairo,0,0,.5,.5)
-			cairo_rectangle(this._cairo, 2, (i-1)*16, this.dimensions.w-4, 16)
-			cairo_fill(this._cairo)
-		end if
-		PUT this._buffer, (2, (i-1)*16-.5), element->Render(), alpha
+		cairo_set_source_surface (this._cairo, element->Render(), 2, (i-1)*16)
+		cairo_paint (this._cairo)
 	next
-	PUT this._buffer, (this._scrollbar->dimensions.x, this._scrollbar->dimensions.y), this._scrollbar->Render(), pset
-	return this._buffer
+	cairo_set_source_surface (this._cairo,this._scrollbar->Render(), this._scrollbar->dimensions.x, this._scrollbar->dimensions.y)
+	cairo_paint (this._cairo)
+	return this._surface
 end function
 
