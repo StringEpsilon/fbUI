@@ -1,5 +1,3 @@
-#INCLUDE once "fbgfx.bi"
-
 #include once "../common/uiWindow.bas"
 #include once "../elements/uiToggleButton.bas"
 #include once "../elements/uiSpinner.bas"
@@ -17,8 +15,7 @@ toggleButton->callback = @btnCallback
 
 fbGUI->AddElement(spinner)
 fbGUI->AddElement(toggleButton)
-fbGUI->CreateWindow(200,100)
-
+fbGUI->CreateWindow(100,200)
 ' Start the event loop and the main UI thread:
 fbGUI->Main()
 ' You can exit the UI with ctrl+q

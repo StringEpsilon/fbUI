@@ -6,45 +6,57 @@
 #include once "../elements/uiLabel.bas"
 
 declare sub ElementCallback (payload as any ptr)
+declare sub ElementCallback2 (payload as any ptr)
+declare sub ElementCallback3 (payload as any ptr)
 
 dim as uiWindow ptr fbGUI = uiWindow.GetInstance()
-dim as uiVScrollbar ptr vscrollbar = new uiVScrollbar( 5, 15, 80,10,1)
-dim as uiHScrollbar ptr hscrollbar = new uiHScrollbar( 5, 5, 180,10,1)
-dim shared as uiLabel ptr labelV, labelH 
+dim as uiVScrollbar ptr vscrollbar = new uiVScrollbar( 5, 16, 80,10,1)
+dim as uiVScrollbar ptr vscrollbar2 = new uiVScrollbar( 20, 16, 80,10,1,2)
+dim as uiVScrollbar ptr vscrollbar3 = new uiVScrollbar( 35, 16, 80,10,1,3)
+dim shared as uiLabel ptr label1, label2, label3
 
-labelV = new uiLabel(50, 16, "Vertical: 0",12)
-labelH = new uiLabel(50, 32, "Horizontal: 0",14)
+label1 = new uiLabel(60, 16, "Range 1: 0",12)
+label2 = new uiLabel(60, 32, "Range 2: 0",14)
+label3 = new uiLabel(60, 48, "Range 3: 0",14)
 
 vscrollbar->callback = @ElementCallback
-hscrollbar->callback = @ElementCallback
+vscrollbar2->callback = @ElementCallback2
+vscrollbar3->callback = @ElementCallback3
+
 
 fbGUI->AddElement(vscrollbar)
-fbGUI->AddElement(hscrollbar)
-fbGUI->AddElement(labelV)
-fbGUI->AddElement(labelH)
-fbGUI->CreateWindow(200,100)
+fbGUI->AddElement(vscrollbar2)
+fbGUI->AddElement(vscrollbar3)
+fbGUI->AddElement(label1)
+fbGUI->AddElement(label2)
+fbGUI->AddElement(label3)
+fbGUI->CreateWindow(100,200)
 
 ' Start the event loop and the main UI thread:
 fbGUI->Main()
-' You can exit the UI with ctrl+q
 
-' Destroy the uiEl
-delete(vscrollbar)
-delete(hscrollbar)
-delete(labelV)
-delete(labelH)
 
 sub ElementCallback (payload as any ptr)
 	if (payload <> 0 ) then
 		' The payload should be always a pointer of the calling element
 		dim element as uiElement ptr = cast(uiElement ptr, payload)
-		' Who needs seperate callbacks anyway?
-		if (*element is uiVScrollbar) then
-			dim vscrollbar as uiVScrollbar ptr = cast(uiVScrollbar ptr, element)
-			labelV->Text =  "Vertical: " & vscrollbar->Value
-		else
-			dim hscrollbar as uiHScrollbar ptr = cast(uiHScrollbar ptr, element)
-			labelH->Text =  "Horizontal: " & hscrollbar->Value
-		end if
+		dim vscrollbar as uiVScrollbar ptr = cast(uiVScrollbar ptr, element)
+		label1->Text =  "Vertical: " & vscrollbar->Value
+	end if
+end sub
+sub ElementCallback2 (payload as any ptr)
+	if (payload <> 0 ) then
+		' The payload should be always a pointer of the calling element
+		dim element as uiElement ptr = cast(uiElement ptr, payload)
+		dim vscrollbar as uiVScrollbar ptr = cast(uiVScrollbar ptr, element)
+		label2->Text =  "Vertical: " & vscrollbar->Value
+	end if
+end sub     
+sub ElementCallback3 (payload as any ptr)
+	if (payload <> 0 ) then
+		' The payload should be always a pointer of the calling element
+		dim element as uiElement ptr = cast(uiElement ptr, payload)
+		dim vscrollbar as uiVScrollbar ptr = cast(uiVScrollbar ptr, element)
+		label3->Text =  "Vertical: " & vscrollbar->Value
 	end if
 end sub     
