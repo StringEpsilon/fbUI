@@ -1,6 +1,8 @@
 ' uiBaseElement.bas - Do what the f... you want (WTFPL). 
 ' Author: StringEpsilon, 2015
 
+#include once "cairo/cairo.bi"
+
 type uiDimensions
 	h as integer
 	w as integer
@@ -23,7 +25,7 @@ end constructor
 
 type IRenderable extends object
 	declare abstract property Dimensions() as uiDimensions
-	declare abstract function Render() as fb.image ptr
+	declare abstract function Render() as cairo_surface_t ptr
 end type
 
 type IDrawing extends object

@@ -18,7 +18,7 @@ type uiRadiobutton extends uiElement
 		_group as _uiRadioButtonlist ptr
 		declare sub SelectElement(selection as uiRadiobutton ptr)
 	public:
-		declare function Render() as fb.image  ptr
+		declare function Render() as  cairo_surface_t  ptr
 		
 		declare virtual sub OnClick(mouse as uiMouseEvent)
 		declare virtual sub OnKeypress(keypress as uiKeyEvent)
@@ -97,14 +97,14 @@ property uiRadiobutton.IsSelected() as bool
 	return this._isSelected
 end property
 
-function uiRadiobutton.Render() as fb.image  ptr
+function uiRadiobutton.Render() as  cairo_surface_t ptr
 	with this._dimensions
 		cairo_set_source_rgba(this._cairo,&hE8/255,&hE8/255,&hE8/255,1)
 		cairo_paint(this._cairo)
 		DrawRadio(this._cairo,this._boxOffset,this._boxOffset, 6, this._isSelected)
 		DrawLabel(this._cairo, 20, (.h - CAIRO_FONTSIZE)/2, this._label)
 	end with
-	return this._buffer
+	return this._surface
 end function
 
 sub uiRadiobutton.OnClick(mouse as UiMouseEvent)

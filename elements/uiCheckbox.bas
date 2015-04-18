@@ -11,7 +11,7 @@ type uiCheckBox extends uiElement
 		_IsChecked as bool  = false
 		
 	public:
-		declare function Render() as fb.image  ptr
+		declare function Render() as cairo_surface_t  ptr
 		
 		declare virtual sub OnClick(mouse as uiMouseEvent)
 		declare virtual sub OnKeypress(keypress as uiKeyEvent)
@@ -77,7 +77,7 @@ property uiCheckBox.IsChecked() as bool
 	return this._isChecked
 end property
 
-function uiCheckBox.Render() as fb.image  ptr
+function uiCheckBox.Render() as  cairo_surface_t  ptr
 	with this._dimensions
 		cairo_set_source_surface(this._cairo, this._surface, .w, .h)
 		cairo_set_source_rgba(this._cairo,&hE8/255,&hE8/255,&hE8/255,1)
@@ -85,7 +85,7 @@ function uiCheckBox.Render() as fb.image  ptr
 		DrawCheckbox(this._cairo, this._boxOffset, this._boxOffset, 12, this._isChecked)
 		DrawLabel(this._cairo, 20, (.h - CAIRO_FONTSIZE)/2, this._label)
 	end with
-	return this._buffer
+	return this._surface
 end function
 
 sub uiCheckBox.OnClick(mouse as UiMouseEvent)

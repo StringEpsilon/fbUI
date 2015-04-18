@@ -1,11 +1,10 @@
 ' uiWindow.bas - Do what the f... you want (WTFPL). 
 ' Author: StringEpsilon, 2015
+#include once "cairo/cairo.bi"
 #include once "fbthread.bi"
-#include once "uiEvents.bas"
 #include once "uiElement.bas"
 #include once "buffer.bas"
-
-SCREENRES 1,1, 32,, FB.GFX_NULL
+#include once "uiEvents.bas"
 
 declarebuffer(IRenderable ptr, RenderableBuffer,true)
 
@@ -16,7 +15,8 @@ type uiWindow extends IDrawing
 		_children as uiElementList ptr
 		_focus as uiElement ptr
 		_RenderBuffer as RenderableBuffer ptr
-		_mouseOver as uiElement ptr 'For tracking mouseLeave
+		_mouseOver as uiElement ptr
+		_cairoContext as cairo_t ptr
 		
 		declare Constructor()
 		declare Destructor()
@@ -67,13 +67,15 @@ end destructor
 
 sub uiWindow.DrawAll()
 	dim as uiElement ptr child
-	COLOR 0,BackGroundColor
-	cls
 	mutexlock(this._mutex)
 	for i as integer = 0 to this._children->count -1
 		child = this._children->item(i)
-		PUT (child->dimensions.x, child->dimensions.y), child->Render, Alpha
-	next	
+		
+		screenlock
+		cairo_set_source_surface (this._cairoContext, child->Render(), child->dimensions.x, child->dimensions.y)
+		cairo_paint (this._cairoContext)
+		screenunlock
+	next
 	mutexunlock(this._mutex)
 end sub
 
@@ -105,10 +107,12 @@ sub uiWindow.AddElement( element as uiElement ptr)
 end sub
 
 sub uiWindow.CreateWindow(h as integer, w as integer)
-	screenres h, w, 32
+	screenres w, h, 32
 	COLOR 0,BackGroundColor
 	cls
-			
+	
+	this._cairoContext = cairo_create(cairo_image_surface_create_for_data(ScreenPtr(), CAIRO_FORMAT_ARGB32, w, h, w * 4))
+	
 	if( screenptr = 0 ) then 
 		end 2
 	end if
@@ -159,7 +163,6 @@ function uiWindow.GetInstance() as uiWindow ptr
 end function
 
 sub uiWindow.HandleEvent(event as uiEvent)
-	'if (screenptr = 0) then exit sub
 	select case as const event.eventType 
 		case uiShutdown
 			mutexlock(this._mutex)
@@ -225,8 +228,13 @@ sub uiWindow.Main()
 			while this._RenderBuffer->count > 0
 				element = this._RenderBuffer->Pop()
 				with element->dimensions
-					LINE (.x, .y)-(.x+.w, .y+.h),BackgroundColor, BF
-					PUT (.x, .y), element->Render(), alpha
+					screenlock
+					cairo_set_source_rgb(this._cairoContext,RGBA_R(BackGroundColor),RGBA_G(BackGroundColor),RGBA_B(BackGroundColor))
+					cairo_rectangle (this._cairoContext, .x, .y, .w, .h)
+					cairo_fill_preserve (this._cairoContext)
+					cairo_set_source_surface (this._cairoContext, element->Render(), .x, .y)
+					cairo_fill (this._cairoContext)
+					screenunlock
 				end with
 			wend			
 		end if

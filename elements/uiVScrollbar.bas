@@ -2,22 +2,23 @@
 ' Author: StringEpsilon, 2015
 
 #include once "../common/uiElement.bas"
-
+#define uiCeil(d) (-Int(-d))
 
 
 type uiVScrollbar extends uiElement
 	private:
 		_min as integer
 		_max as integer
+		_range as integer
 		_segments as integer
 		_value as integer
 		_knobSize as double
 		_hold as bool = false
 		declare sub CalculateValue(position as integer)
 	public:
-		declare function Render() as fb.image  ptr
+		declare function Render() as cairo_surface_t  ptr
 		
-		declare constructor overload( x as integer, y as integer, h as integer, max as integer, min as integer = 1)
+		declare constructor overload( x as integer, y as integer, h as integer, max as integer, min as integer = 1, range as integer = 1)
 		declare constructor(dimensions as uiDimensions)
 
 		declare property Value() as integer
@@ -27,7 +28,7 @@ type uiVScrollbar extends uiElement
 		declare virtual sub OnClick( mouse as uiMouseEvent ) 
 end type
 
-constructor uiVScrollbar( x as integer, y as integer, h as integer, max as integer, min as integer = 1)
+constructor uiVScrollbar( x as integer, y as integer, h as integer, max as integer, min as integer = 1, range as integer = 1)
 	base()
 	with this._dimensions
 		.h = h
@@ -38,7 +39,8 @@ constructor uiVScrollbar( x as integer, y as integer, h as integer, max as integ
 	this._max = max
 	this._min = min
 	this._value = this._min
-	this._segments = (this._max - this._min + 1) 
+	this._range = IIF(range > 0, range, 1)
+	this._segments = uiCeil((this._max - this._min + 1 ) / this._range)
 	this._knobSize = (this.dimensions.h-1) / this._segments
 	this.CreateBuffer()
 end constructor
@@ -50,7 +52,7 @@ constructor uiVScrollbar(newdim as uiDimensions)
 end constructor
 
 property uiVScrollbar.Value() as integer
-	return this._value
+	return this._value * this._range
 end property
 
 
@@ -63,7 +65,9 @@ end property
 
 sub uiVScrollbar.OnMouseMove( mouse as uiMouseEvent )
 	if (mouse.lmb = hit  OR mouse.lmb = hold) then
+		mutexlock(this._mutex)
 		dim y as integer = mouse.y - this._dimensions.y 
+		mutexunlock(this._mutex)
 		if ( y > 0 and y < this._dimensions.h and this._hold ) then
 			mutexlock(this._mutex)
 			this.CalculateValue(y)
@@ -75,7 +79,7 @@ end sub
 sub uiVScrollbar.CalculateValue(position as integer)
 	dim as integer newValue =  int( position / (this.dimensions.h+1) * this._segments)  + this._min
 	if (this._value <> newValue ) then
-		this._value = newValue
+		this._value = newValue 
 		this.Redraw()
 		
 		if (this.callback <> 0) then
@@ -104,7 +108,7 @@ sub uiVScrollbar.OnClick( mouse as uiMouseEvent )
 	end if
 end sub
 
-function uiVScrollbar.Render() as fb.image  ptr
+function uiVScrollbar.Render() as cairo_surface_t  ptr
 	with this._dimensions
 		dim knobY as integer = (this._knobSize * (this._value - this._min))
 		
@@ -121,5 +125,5 @@ function uiVScrollbar.Render() as fb.image  ptr
 		cairo_set_source_rgb(this._cairo,RGBA_R(ElementDark),RGBA_G(ElementDark),RGBA_B(ElementDark))
 		cairo_fill(this._cairo)		
 	end with
-	return this._buffer
+	return this._surface
 end function

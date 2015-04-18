@@ -14,7 +14,7 @@ type uiHScrollbar extends uiElement
 		_hold as bool = false
 		declare sub CalculateValue(position as integer)
 	public:
-		declare function Render() as fb.image  ptr
+		declare function Render() as cairo_surface_t  ptr
 		
 		declare constructor overload( x as integer, y as integer, w as integer, max as integer, min as integer = 1)
 		declare constructor(dimensions as uiDimensions)
@@ -102,7 +102,7 @@ sub uiHScrollbar.OnClick( mouse as uiMouseEvent )
 	end if
 end sub
 
-function uiHScrollbar.Render() as fb.image  ptr
+function uiHScrollbar.Render() as cairo_surface_t  ptr
 	with this._dimensions
 		dim knobX as integer = (this._knobSize * (this._value - this._min))
 		
@@ -119,5 +119,5 @@ function uiHScrollbar.Render() as fb.image  ptr
 		cairo_set_source_rgb(this._cairo,RGBA_R(ElementDark),RGBA_G(ElementDark),RGBA_B(ElementDark))
 		cairo_fill(this._cairo)		
 	end with
-	return this._buffer
+	return this._surface
 end function

@@ -12,7 +12,7 @@ type uiSpinner extends uiElement
 		_threadHandle as any ptr
 		_exitAnimation as bool = false
 	public:
-		declare function Render() as fb.image  ptr
+		declare function Render() as cairo_surface_t  ptr
 		
 		declare constructor overload( x as integer, y as integer, d as integer)
 		declare destructor()
@@ -73,7 +73,7 @@ sub uiSpinner.AnimationLoop()
 	loop until this._exitAnimation
 end sub
 
-function uiSpinner.Render() as fb.image  ptr
+function uiSpinner.Render() as cairo_surface_t ptr
 	with this._dimensions
 		dim as double angle1 = this._currentFrame * (PI/50)
 		dim as double angle2 = angle1 + 180.0 * (PI/180.0)
@@ -90,7 +90,7 @@ function uiSpinner.Render() as fb.image  ptr
 		'DrawLabel(this._cairo, 2, (.h - CAIRO_FONTSIZE)/2, this._text)
 		
 	end with
-	return this._buffer
+	return this._surface
 end function
 
 sub StartSpinnerAnimation(element as any ptr)
