@@ -11,6 +11,16 @@ type uiTextCurser
 end type
 
 type uiTextbox extends uiElement
+	private:
+		dim as uiTextCurser _cursor
+		dim as integer _boxOffset
+		dim as string _Text
+		dim as integer _length	
+		dim as integer _offset = 0
+		
+		declare sub MoveTo(value as integer)
+		declare sub MoveBy(value as integer)	
+		declare sub RemoveSelected()
 	public: 
 		declare constructor overload( x as integer, y as integer,length as integer, newText as string = "")
 		declare constructor(dimensions as uiDimensions, newText as string = "")
@@ -22,16 +32,7 @@ type uiTextbox extends uiElement
 		
 		declare property Text() as string
 		declare property Text(value as string)
-	private:
-		dim as uiTextCurser _cursor
-		dim as integer _boxOffset
-		dim as string _Text
-		dim as integer _length	
-		dim as integer _offset = 0
-		
-		declare sub MoveTo(value as integer)
-		declare sub MoveBy(value as integer)	
-		declare sub RemoveSelected()
+
 end type
 
 constructor uiTextbox( x as integer, y as integer, w as integer, newText as string = "")
@@ -140,13 +141,14 @@ function uiTextbox.Render() as  cairo_surface_t  ptr
 			cairo_fill(this._cairo)
 		end if
 		
-		if (this._offset <> 0 ) then
-			dim offsetText as string = mid(this._text, _offset+1, this._length)
-			DrawLabel(this._cairo,3, (.h - CAIRO_FONTSIZE)/2, offsetText)
-		else
-			DrawLabel(this._cairo,3, (.h - CAIRO_FONTSIZE)/2, this._text)
+		if (len(this._text) <> 0) then
+			if (this._offset <> 0 ) then
+				dim offsetText as string = mid(this._text, _offset+1, this._length)
+				DrawLabel(this._cairo,3, (.h - CAIRO_FONTSIZE)/2, offsetText)
+			else
+				DrawLabel(this._cairo,3, (.h - CAIRO_FONTSIZE)/2, this._text)
+			end if
 		end if
-		
 		DrawTextbox(this._cairo,.w,.h)			
 	end with
 	return this._surface

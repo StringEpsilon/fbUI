@@ -46,7 +46,9 @@ function uiLabel.Render() as cairo_surface_t ptr
 		cairo_paint(this._cairo)
 		cairo_restore (this._cairo)
 		
-		DrawLabel(this._cairo, 2, (.h - CAIRO_FONTSIZE)/2, this._text)
+		if (len(this._text) <> 0) then
+			DrawLabel(this._cairo, 2, (.h - CAIRO_FONTSIZE)/2, this._text)
+		end if
 		
 	end with
 	return this._surface

@@ -26,7 +26,7 @@ const as string FONT = "monospace 9"
 dim shared as PangoFontDescription ptr desc
 desc = pango_font_description_from_string (FONT)
 const CAIRO_FONTSIZE = 13
-const CAIRO_FONTWIDTH = 8
+const CAIRO_FONTWIDTH = 7
 Const PI = 3.14159265358979323846
 
 sub PangoDestuctor
