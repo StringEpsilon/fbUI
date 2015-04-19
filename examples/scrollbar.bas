@@ -5,9 +5,9 @@
 
 #include once "../elements/uiLabel.bas"
 
-declare sub ElementCallback (payload as any ptr)
-declare sub ElementCallback2 (payload as any ptr)
-declare sub ElementCallback3 (payload as any ptr)
+declare sub ElementCallback (payload as uiElement ptr)
+declare sub ElementCallback2 (payload as uiElement ptr)
+declare sub ElementCallback3 (payload as uiElement ptr)
 
 dim as uiWindow ptr fbGUI = uiWindow.GetInstance()
 dim as uiScrollBar ptr vscrollbar = new uiScrollBar( 5, 16, 80,10,1)
@@ -36,7 +36,7 @@ fbGUI->CreateWindow(100,200)
 fbGUI->Main()
 
 
-sub ElementCallback (payload as any ptr)
+sub ElementCallback (payload as uiElement ptr)
 	if (payload <> 0 ) then
 		' The payload should be always a pointer of the calling element
 		dim element as uiElement ptr = cast(uiElement ptr, payload)
@@ -44,7 +44,7 @@ sub ElementCallback (payload as any ptr)
 		label1->Text =  "Vertical: " & vscrollbar->Value
 	end if
 end sub
-sub ElementCallback2 (payload as any ptr)
+sub ElementCallback2 (payload as uiElement ptr)
 	if (payload <> 0 ) then
 		' The payload should be always a pointer of the calling element
 		dim element as uiElement ptr = cast(uiElement ptr, payload)
@@ -52,7 +52,7 @@ sub ElementCallback2 (payload as any ptr)
 		label2->Text =  "Vertical: " & vscrollbar->Value
 	end if
 end sub     
-sub ElementCallback3 (payload as any ptr)
+sub ElementCallback3 (payload as uiElement ptr)
 	if (payload <> 0 ) then
 		' The payload should be always a pointer of the calling element
 		dim element as uiElement ptr = cast(uiElement ptr, payload)

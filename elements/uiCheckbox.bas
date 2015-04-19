@@ -102,9 +102,7 @@ sub uiCheckBox.OnClick(mouse as UiMouseEvent)
 			mutexlock(this._mutex)
 			this._IsChecked = not(this._IsChecked)
 			mutexunlock(this._mutex)
-			if ( this.callback <> 0 ) then
-				this.callback(@this)
-			end if
+			this.DoCallback()
 			this.Redraw()
 		end if
 	end if
@@ -115,9 +113,7 @@ sub uiCheckBox.OnKeyPress( keyPress as uiKeyEvent )
 		mutexlock(this._mutex)
 		this._IsChecked = not(this._IsChecked)
 		mutexunlock(this._mutex)
-		if ( this.callback <> 0 ) then
-			this.callback(@this)
-		end if
+		this.DoCallback()
 		this.Redraw()
 	end if
 end sub

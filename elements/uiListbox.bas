@@ -3,12 +3,12 @@
 
 #include once "../common/uiElementContainer.bas"
 #include once "uiLabel.bas"
-#include once "uiVScrollbar.bas"
+#include once "uiScrollbar.bas"
 
 type uiListBox extends uiElementContainer
 	private:
 		_selection as uiLabel ptr
-		_scrollbar as uiVScrollbar ptr
+		_scrollbar as uiScrollbar ptr
 		declare function GetElementAt(x as integer, y as integer) as uiElement ptr
 	public:
 		declare function Render() as cairo_surface_t ptr
@@ -27,7 +27,7 @@ constructor uiListBox(x as integer, y as integer,h as integer, w as integer, lis
 	this._dimensions.h = h
 	this._dimensions.w = w
 	
-	this._scrollbar = new uiVScrollbar(w-11, 2, h-4,ubound(list)-h/16+1, lbound(list))
+	this._scrollbar = new uiScrollbar(w-11, 2, h-4,ubound(list)-h/16+1, lbound(list))
 	this._scrollbar->Parent = @this
 	this._children->Append(this._scrollbar)
 	
@@ -82,7 +82,7 @@ sub uiListBox.OnuiClick(mouse as uiMouseEvent)
 			this._selection = cast(uiLabel ptr, uiClickedElement)
 			this.Redraw()
 		else
-			uiClickedElement->OnuiClick(mouse)
+			uiClickedElement->OnClick(mouse)
 		end if
 	elseif (this._focus <> 0) then
 		this._focus->OnFocus(false)

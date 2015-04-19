@@ -93,9 +93,7 @@ sub uiScrollBar.CalculateValue(position as integer)
 		this._knob.Position = this._knob.Size * (this._value - this._min)
 		this.Redraw()
 		
-		if (this.callback <> 0) then
-			threaddetach(threadcreate(this.callback, @this))
-		end if
+		this.DoCallback()
 	end if
 end sub
 
@@ -119,13 +117,11 @@ sub uiScrollBar.OnMouseWheel( mouse as uiMouseEvent )
 	
 	if (mouse.wheel < 0 AND this._value > this._min ) OR (mouse.wheel > 0 AND this._value < this._segments-this._min+1 ) then
 		mutexlock(this._mutex)
-		this._value += mouse.w
+		this._value += mouse.wheel
 		this._knob.Position = this._knob.Size * (this._value - this._min)
 		mutexunlock(this._mutex)
 		this.Redraw()
-		if (this.callback <> 0) then
-			threaddetach(threadcreate(this.callback, @this))
-		end if
+		this.DoCallback()
 	end if
 end sub
 

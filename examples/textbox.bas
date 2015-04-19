@@ -4,7 +4,7 @@
 #include once "../elements/uiTextbox.bas"
 #include once "../elements/uiLabel.bas"
 
-declare sub ElementCallback (payload as any ptr)
+declare sub ElementCallback (payload as uiElement ptr)
 
 dim as uiWindow ptr fbGUI = uiWindow.GetInstance()
 dim shared label as uiLabel ptr
@@ -21,7 +21,7 @@ fbGUI->Main()
 
 delete(textbox)
 
-sub ElementCallback (payload as any ptr)
+sub ElementCallback (payload as uiElement ptr)
 	if (payload <> 0 ) then
 		label->Text = cast(uiTextbox ptr, payload)->Text
 	end if

@@ -11,6 +11,7 @@ type uiElement extends IRenderable
 	private:
 		_parent as IDrawing	ptr
 		_parentElement as uiElement ptr
+		_callback as sub(payload as any ptr)
 	protected:
 		_mutex as any ptr
 		_isActive as bool = true
@@ -22,15 +23,16 @@ type uiElement extends IRenderable
 		declare constructor (x as integer, y as integer)
 		declare virtual sub CreateBuffer()
 		declare sub Redraw()
+		declare sub DoCallback()
 	public:
-		Callback as sub(payload as any ptr)
+		declare property Callback(cb as sub(payload as uiElement ptr)) 
 		declare property Dimensions () as uiDimensions ' Part of IRenderable
 		declare property Parent(value as IDrawing ptr)
 		declare property Parent(value as uiElement ptr)
 		
 		declare destructor()
 		declare constructor overload()
-		
+				
 		' General events:
 		declare virtual sub OnFocus(focus as bool)
 		' Keyboard events:
@@ -98,6 +100,20 @@ sub uiElement.CreateBuffer()
 	this._cairo = cairo_create(this._surface)
 	cairo_select_font_face (this._cairo , "mono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
 	cairo_set_font_size (this._cairo , CAIRO_FONTSIZE)
+end sub
+
+property uiElement.Callback(cb as sub(payload as uiElement ptr)) 
+	mutexlock(this._mutex)
+	if (cb <> 0) then
+		this._callback = cast(sub(payload as any ptr),cb)
+	end if
+	mutexunlock(this._mutex)
+end property
+
+sub uiElement.DoCallback()
+	if (this._callback <> 0) then
+		threaddetach(threadcreate(this._callback, @this))
+	end if
 end sub
 
 ' The event handling methods:

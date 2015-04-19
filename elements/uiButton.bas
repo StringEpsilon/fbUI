@@ -57,9 +57,7 @@ sub uiButton.OnClick( mouse as uiMouseEvent )
 		mutexlock(this._mutex)
 		this._hold = false
 		mutexunlock(this._mutex)
-		if ( this.callback <> 0 ) then
-			threaddetach(threadcreate(this.callback, @this))
-		end if
+		this.DoCallback()
 		base.Redraw()
 	elseif ( mouse.lmb = uiClick OR mouse.lmb = uiHold ) then
 		mutexlock(this._mutex)

@@ -221,9 +221,7 @@ sub uiTextbox.OnKeypress( keypress as uiKeyEvent )
 			case 9:
 				
 			case 13 ' Enter
-				if ( this.callback <> 0 ) then
-					this.callback(@this)
-				end if
+				this.DoCallback()
 			case 32 to 254:
 				if (this._cursor.SelectionStart <> -1) then
 					this.RemoveSelected()

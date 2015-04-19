@@ -119,9 +119,7 @@ sub uiRadiobutton.OnClick(mouse as UiMouseEvent)
 		
 		if ( x >= boxOffset ) AND ( x <= boxOffset +12 ) AND (y >= boxOffset) AND (y <= boxOffset +12) then
 			this.IsSelected = true
-			if ( this.callback <> 0 ) then
-				this.callback(@this)
-			end if
+			this.DoCallback()
 		end if
 	end if
 end sub
@@ -148,9 +146,7 @@ end sub
 sub uiRadiobutton.OnKeyPress( keyPress as uiKeyEvent )
 	if ( keyPress.key = " " ) then
 		this.IsSelected = true
-		if ( this.callback <> 0 ) then
-			this.callback(@this)
-		end if
+		this.DoCallback()
 	end if
 end sub
 

@@ -2,7 +2,7 @@
 #include once "../elements/uiToggleButton.bas"
 #include once "../elements/uiSpinner.bas"
 
-declare sub btnCallback (payload as any ptr)
+declare sub btnCallback (payload as uiElement ptr)
 
 dim as uiWindow ptr fbGUI = uiWindow.GetInstance()
 dim as uiToggleButton ptr toggleButton
@@ -27,7 +27,7 @@ delete(spinner)
 
 end
 
-sub btnCallback (payload as any ptr)
+sub btnCallback (payload as uiElement ptr)
 	if (payload <> 0 ) then
 		' The payload should be always a pointer of the calling element
 		dim button as uiToggleButton ptr = cast(uiToggleButton ptr, payload)
