@@ -174,7 +174,7 @@ sub uiWindow.HandleEvent(event as uiEvent)
 			if (this._focus <> 0) then
 				this._focus->OnKeypress(event.keypress)
 			end if
-		case uiMouseuiClick
+		case uiMouseClick
 			dim uiClickedElement as uiElement ptr = this.GetElementAt(event.mouse.x, event.mouse.y)
 			if (uiClickedElement <> 0) then
 				if (this._focus <> uiClickedElement) then
@@ -215,6 +215,13 @@ sub uiWindow.HandleEvent(event as uiEvent)
 			
 			if (mouseLeave <> 0) then mouseLeave->OnMouseLeave(event.mouse)
 			if (mouseEnter <> 0) then mouseEnter->OnMouseOver(event.mouse)
+		case uiMouseWheel
+			
+			if (this._focus <> 0) then
+				this._focus->OnMouseWheel(event.mouse)
+			elseif (this._mouseOver <> 0) then
+				this._mouseOver->OnMouseWheel(event.mouse)
+			end if
 	end select
 end sub
 

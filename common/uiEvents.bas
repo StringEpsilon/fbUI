@@ -21,6 +21,7 @@ sub uiEventListener( callback as any ptr  )
 	dim as uiEvent ptr newEvent
 	dim event as fb.event
 	dim as double beforeEvent
+	dim wheelValue as integer
 	'Thanks to Muttonhead, for the inspiration and the event-code prior to the screenevent version.
 	do
 		if ( SCREENEVENT(@event)  )THEN
@@ -57,7 +58,7 @@ sub uiEventListener( callback as any ptr  )
 					ELSEIF event.button = FB.BUTTON_MIDDLE THEN
 						newEvent->mouse.MMB = uiClick
 					END IF
-					newEvent->eventType = uimouseuiClick
+					newEvent->eventType = uiMouseClick
 				case FB.EVENT_MOUSE_BUTTON_RELEASE
 					IF event.button = FB.BUTTON_LEFT  THEN
 						newEvent->mouse.lmb = uiReleased
@@ -66,7 +67,11 @@ sub uiEventListener( callback as any ptr  )
 					ELSEIF event.button = FB.BUTTON_MIDDLE THEN
 						newEvent->mouse.MMB = uiReleased
 					END IF
-					newEvent->eventType = uimouseuiClick
+					newEvent->eventType = uiMouseClick
+				case FB.EVENT_MOUSE_WHEEL
+					newEvent->mouse.Wheel = wheelValue - event.z
+					wheelValue = event.z
+					newEvent->eventType = uiMouseWheel
 				case FB.EVENT_WINDOW_CLOSE
 					newEvent->EventType = uiShutDown
 			end select

@@ -11,8 +11,8 @@ end enum
 enum uiEventType
 	none = 			&b00000000
 	uiKeyPress = 	&b00000001
-	uiMouseuiClick = 	&b00000010
-	uiDoubleuiClick = &b00000100
+	uiMouseClick = &b00000010
+	uiDoubleClick = &b00000100
 	uiMouseMove = 	&b00001000
 	uiMouseWheel =  &b00010000
 	uiShutDown =	&b10000000
