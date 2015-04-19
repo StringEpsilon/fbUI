@@ -127,7 +127,6 @@ function uiScrollBar.Render() as cairo_surface_t  ptr
 			cairo_rectangle(this._cairo, .5, this._knob.Position+.5, .w-1,this._knob.Size)
 		else
 			cairo_rectangle(this._cairo, this._knob.Position+.5, .5, this._knob.Size, .h-1)
-			shell "echo knob: "& this._knob.position & " " & this._knob.Size
 		end if
 		cairo_stroke_preserve (this._cairo)
 		cairo_set_source_rgb(this._cairo,RGBA_R(ElementDark),RGBA_G(ElementDark),RGBA_B(ElementDark))
