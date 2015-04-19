@@ -33,6 +33,7 @@ type uiScrollBar extends uiElement
 		
 		declare virtual sub OnMouseMove( mouse as uiMouseEvent )
 		declare virtual sub OnClick( mouse as uiMouseEvent ) 
+		declare virtual sub OnMouseWheel( mouse as uiMouseEvent )
 end type
 
 constructor uiScrollBar(x as integer, y as integer, size as integer, max as integer, min as integer = 1, range as integer = 1, orientation as uiOrientation = vertical)
@@ -89,7 +90,7 @@ sub uiScrollBar.CalculateValue(position as integer)
 	dim as integer newValue =  int( position / (l+1) * this._segments)  + this._min
 	if (this._value <> newValue ) then
 		this._value = newValue 
-		this._knob.Position = (this._knob.Size * (this._value - this._min))
+		this._knob.Position = this._knob.Size * (this._value - this._min)
 		this.Redraw()
 		
 		if (this.callback <> 0) then
@@ -111,6 +112,20 @@ sub uiScrollBar.OnClick( mouse as uiMouseEvent )
 		end if
 	else
 		this._hold = false
+	end if
+end sub
+
+sub uiScrollBar.OnMouseWheel( mouse as uiMouseEvent )
+	
+	if (mouse.wheel < 0 AND this._value > this._min ) OR (mouse.wheel > 0 AND this._value < this._segments-this._min+1 ) then
+		mutexlock(this._mutex)
+		this._value += mouse.w
+		this._knob.Position = this._knob.Size * (this._value - this._min)
+		mutexunlock(this._mutex)
+		this.Redraw()
+		if (this.callback <> 0) then
+			threaddetach(threadcreate(this.callback, @this))
+		end if
 	end if
 end sub
 
