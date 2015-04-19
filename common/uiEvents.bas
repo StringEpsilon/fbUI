@@ -39,34 +39,34 @@ sub uiEventListener( callback as any ptr  )
 						newEvent->keyPress.Extended = true
 						newEvent->keyPress.keycode = event.scancode
 					end if
-					newEvent->eventType += keyPress
+					newEvent->eventType += uikeyPress
 				case FB.EVENT_MOUSE_MOVE
-					newEvent->eventType += mouseMove
+					newEvent->eventType += uimouseMove
 					with newEvent->Mouse
 						.x = event.x
 						.y = event.y
-						.LMB = iif( .LMB >= hit,HOLD, 0 )
-						.RMB = iif( .RMB >= hit,HOLD, 0 )
-						.MMB = iif( .MMB >= hit,HOLD, 0 )
+						.LMB = iif( .LMB >= uiClick,uiHold, 0 )
+						.RMB = iif( .RMB >= uiClick,uiHold, 0 )
+						.MMB = iif( .MMB >= uiClick,uiHold, 0 )
 					end with
 				case FB.EVENT_MOUSE_BUTTON_PRESS
 					IF event.button = FB.BUTTON_LEFT  THEN
-						newEvent->mouse.lmb = HIT
+						newEvent->mouse.lmb = uiClick
 					ELSEIF event.button = FB.BUTTON_RIGHT THEN
-						newEvent->mouse.RMB = HIT
+						newEvent->mouse.RMB = uiClick
 					ELSEIF event.button = FB.BUTTON_MIDDLE THEN
-						newEvent->mouse.MMB = HIT
+						newEvent->mouse.MMB = uiClick
 					END IF
-					newEvent->eventType = mouseClick
+					newEvent->eventType = uimouseuiClick
 				case FB.EVENT_MOUSE_BUTTON_RELEASE
 					IF event.button = FB.BUTTON_LEFT  THEN
-						newEvent->mouse.lmb = released
+						newEvent->mouse.lmb = uiReleased
 					ELSEIF event.button = FB.BUTTON_RIGHT THEN
-						newEvent->mouse.RMB = released
+						newEvent->mouse.RMB = uiReleased
 					ELSEIF event.button = FB.BUTTON_MIDDLE THEN
-						newEvent->mouse.MMB = released
+						newEvent->mouse.MMB = uiReleased
 					END IF
-					newEvent->eventType = mouseClick
+					newEvent->eventType = uimouseuiClick
 				case FB.EVENT_WINDOW_CLOSE
 					newEvent->EventType = uiShutDown
 			end select

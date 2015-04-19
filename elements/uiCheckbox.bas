@@ -89,7 +89,7 @@ function uiCheckBox.Render() as  cairo_surface_t  ptr
 end function
 
 sub uiCheckBox.OnClick(mouse as UiMouseEvent)
-	if ( mouse.lmb = released ) then
+	if ( mouse.lmb = uiReleased ) then
 		dim as integer x, y, boxOffset
 		
 		with this._dimensions

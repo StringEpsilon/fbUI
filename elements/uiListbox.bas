@@ -17,7 +17,7 @@ type uiListBox extends uiElementContainer
 		declare destructor()
 		declare constructor (x as integer, y as integer,h as integer, w as integer, list() as string)
 				
-		declare sub OnClick(mouse as uiMouseEvent)
+		declare sub OnuiClick(mouse as uiMouseEvent)
 		declare sub OnKeypress(keypress as uiKeyEvent)
 		declare sub OnMouseMove(mouse as uiMouseEvent)
 end type
@@ -63,26 +63,26 @@ function uiListBox.GetElementAt(x as integer, y as integer) as uiElement ptr
 end function
 
 
-sub uiListBox.OnClick(mouse as uiMouseEvent)
+sub uiListBox.OnuiClick(mouse as uiMouseEvent)
 	mouse.x = mouse.x - this.dimensions.x
 	mouse.y = mouse.y - this.dimensions.y
 	
-	dim clickedElement as uiElement ptr = this.GetElementAt(mouse.x, mouse.y)
-	if (clickedElement <> 0) then
-		if (this._focus <> clickedElement) then
+	dim uiClickedElement as uiElement ptr = this.GetElementAt(mouse.x, mouse.y)
+	if (uiClickedElement <> 0) then
+		if (this._focus <> uiClickedElement) then
 			if (this._focus <> 0 ) then
 				this._focus->OnFocus(false)
 			end if
 			mutexlock(this._mutex)
-			this._focus = clickedElement
+			this._focus = uiClickedElement
 			mutexunlock(this._mutex)
 			this._focus->OnFocus(true)
 		end if
-		if (*clickedElement is uiLabel) then
-			this._selection = cast(uiLabel ptr, clickedElement)
+		if (*uiClickedElement is uiLabel) then
+			this._selection = cast(uiLabel ptr, uiClickedElement)
 			this.Redraw()
 		else
-			clickedElement->OnClick(mouse)
+			uiClickedElement->OnuiClick(mouse)
 		end if
 	elseif (this._focus <> 0) then
 		this._focus->OnFocus(false)

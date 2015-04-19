@@ -35,7 +35,7 @@ function uiToggleButton.Render() as cairo_surface_t  ptr
 end function
 
 sub uiToggleButton.OnClick( mouse as uiMouseEvent )
-	if ( mouse.lmb = released  ) then
+	if ( mouse.lmb = uiReleased  ) then
 		mutexlock(this._mutex)
 		this.State = not(this.State)
 		this._hold = false
@@ -44,7 +44,7 @@ sub uiToggleButton.OnClick( mouse as uiMouseEvent )
 			threaddetach(threadcreate(this.callback, @this))
 		end if
 		this.Redraw()
-	elseif ( mouse.lmb = hit OR mouse.lmb = hold ) then
+	elseif ( mouse.lmb = uiClick OR mouse.lmb = uiHold ) then
 		mutexlock(this._mutex)
 		this._hold = true
 		mutexunlock(this._mutex)

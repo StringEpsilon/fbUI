@@ -10,37 +10,32 @@ end enum
 
 enum uiEventType
 	none = 			&b00000000
-	mouseClick = 	&b00000001
-	mouseMove = 	&b00000010
-	keyPress = 		&b00000100
+	uiKeyPress = 	&b00000001
+	uiMouseuiClick = 	&b00000010
+	uiDoubleuiClick = &b00000100
+	uiMouseMove = 	&b00001000
+	uiMouseWheel =  &b00010000
 	uiShutDown =	&b10000000
 end enum
 
-enum uiMouseButtoSstate
-	released = 0
-	hit = 1
-	hold = 2
+enum uiMouseButtonState
+	uiReleased = 0
+	uiClick = 1
+	uiHold = 2
 end enum
 
 type uiMouseEvent
 	x as integer
 	y as integer
 	
-	lmb as uiMouseButtoSstate = -1
-	mmb as uiMouseButtoSstate = -1
-	rmb as uiMouseButtoSstate = -1
+	lmb as uiMouseButtonState = -1
+	mmb as uiMouseButtonState = -1
+	rmb as uiMouseButtonState = -1
 	
 	wheel as integer
-	button as integer
-	
-	doubleclick as bool = false
 end type
 
 type uiKeyEvent
-	shift as bool = false
-	ctrl as bool = false
-	mod4 as bool = false
-	alt as bool = false
 	extended as bool = false
 	
 	keycode as integer = -1

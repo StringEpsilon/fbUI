@@ -65,7 +65,7 @@ property uiScrollBar.Value(newValue as integer)
 end property
 
 sub uiScrollBar.OnMouseMove( mouse as uiMouseEvent )
-	if (mouse.lmb = hit  OR mouse.lmb = hold and this._hold) then
+	if (mouse.lmb = uiClick  OR mouse.lmb = uiHold and this._hold) then
 		if (this._orientation = vertical) then
 			mutexlock(this._mutex)
 			dim y as integer = mouse.y - this._dimensions.y 
@@ -100,11 +100,11 @@ end sub
 
 sub uiScrollBar.OnClick( mouse as uiMouseEvent )
 	dim p as integer = IIF(this._orientation=vertical, mouse.y - this._dimensions.y, mouse.x - this._dimensions.x)
-	if ( mouse.lmb = hit ) then
+	if ( mouse.lmb = uiClick ) then
 		if (p >= this._knob.Position and p <= this._knob.Position + this._knob.Size) then
 			this._hold = true
 		end if
-	elseif ( mouse.lmb = released ) then
+	elseif ( mouse.lmb = uiReleased ) then
 		this._hold = false
 		if (p < this._knob.Position or p > this._knob.Position + this._knob.Size) then
 			this.CalculateValue(p)

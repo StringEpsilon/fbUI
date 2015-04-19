@@ -4,7 +4,7 @@
 #include once "fbthread.bi"
 #include once "../common/uiElement.bas"
 
-type uiTextCurser
+type uiTextBoxCursor
 	position as integer
 	SelectionStart as integer = -1
 	SelectionEnd as integer = -1
@@ -12,7 +12,7 @@ end type
 
 type uiTextbox extends uiElement
 	private:
-		dim as uiTextCurser _cursor
+		dim as uiTextBoxCursor _cursor
 		dim as integer _boxOffset
 		dim as string _Text
 		dim as integer _length	
@@ -155,7 +155,7 @@ function uiTextbox.Render() as  cairo_surface_t  ptr
 end function
 
 sub uiTextbox.OnClick( mouse as uiMouseEvent )
-	if ( mouse.lmb = hit ) then
+	if ( mouse.lmb = uiClick ) then
 		dim as integer newCursor = (mouse.x - this.dimensions.x - 3 ) / CAIRO_FONTWIDTH +this._offset
 		if ( newCursor > len(this._text) ) then
 			newCursor = len(this._text)
@@ -170,7 +170,7 @@ sub uiTextbox.OnClick( mouse as uiMouseEvent )
 end sub
 
 sub uiTextbox.OnMouseMove( mouse as uiMouseEvent )
-	if (mouse.lmb = hold and mouse.x <> -1 and mouse.y <> -1 ) then
+	if (mouse.lmb = uiHold and mouse.x <> -1 and mouse.y <> -1 ) then
 		dim as integer newCursor = (mouse.x - this.dimensions.x - 3 ) / CAIRO_FONTWIDTH + this._offset
 		if ( newCursor > len(this._text) ) then
 			newCursor = len(this._text)

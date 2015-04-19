@@ -108,7 +108,7 @@ function uiRadiobutton.Render() as  cairo_surface_t ptr
 end function
 
 sub uiRadiobutton.OnClick(mouse as UiMouseEvent)
-	if ( mouse.lmb = released ) then
+	if ( mouse.lmb = uiReleased ) then
 		dim as integer x, y, boxOffset
 		
 		with this._dimensions

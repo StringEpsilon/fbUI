@@ -14,8 +14,8 @@ type uiWindow extends IDrawing
 		_mutex as any ptr
 		_children as uiElementList ptr
 		_focus as uiElement ptr
-		_RenderBuffer as RenderableBuffer ptr
 		_mouseOver as uiElement ptr
+		_RenderBuffer as RenderableBuffer ptr
 		_cairoContext as cairo_t ptr
 		
 		declare Constructor()
@@ -170,43 +170,43 @@ sub uiWindow.HandleEvent(event as uiEvent)
 			mutexunlock(this._mutex)
 			shutdownEventListener = true
 			exit sub
-		case keyPress
+		case uikeyPress
 			if (this._focus <> 0) then
 				this._focus->OnKeypress(event.keypress)
 			end if
-		case mouseClick
-			dim clickedElement as uiElement ptr = this.GetElementAt(event.mouse.x, event.mouse.y)
-			if (clickedElement <> 0) then
-				if (this._focus <> clickedElement) then
+		case uiMouseuiClick
+			dim uiClickedElement as uiElement ptr = this.GetElementAt(event.mouse.x, event.mouse.y)
+			if (uiClickedElement <> 0) then
+				if (this._focus <> uiClickedElement) then
 					if (this._focus <> 0 ) then
 						this._focus->OnFocus(false)
 					end if
 					mutexlock(this._mutex)
-					this._focus = clickedElement
+					this._focus = uiClickedElement
 					mutexunlock(this._mutex)
 					this._focus->OnFocus(true)
 				end if
-				clickedElement->OnClick(event.Mouse)
+				uiClickedElement->OnClick(event.Mouse)
 			elseif (this._focus <> 0) then
 				this._focus->OnFocus(false)
 				mutexlock(this._mutex)
 				this._focus = 0
 				mutexunlock(this._mutex)
 			end if
-		case mouseMove
+		case uiMouseMove
 			if ( this._focus <> 0 ) then
 				this._focus->OnMouseMove(event.mouse)
 			end if
 			
 			dim as uielement ptr mouseLeave, mouseEnter
-			dim clickedElement as uiElement ptr = this.GetElementAt(event.mouse.x, event.mouse.y)
+			dim uiClickedElement as uiElement ptr = this.GetElementAt(event.mouse.x, event.mouse.y)
 			
 			mutexlock(this._mutex)
-			if ( this._mouseOver <> clickedElement) then
+			if ( this._mouseOver <> uiClickedElement) then
 				if (this._mouseOver <> 0) then
 					mouseLeave = this._mouseOver
 				end if
-				this._mouseOver = clickedElement
+				this._mouseOver = uiClickedElement
 				if (this._mouseOver <> 0) then
 					mouseEnter = this._mouseOver
 				end if
