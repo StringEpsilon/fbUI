@@ -12,6 +12,7 @@ type uiElement extends IRenderable
 		_parent as IDrawing	ptr
 		_parentElement as uiElement ptr
 		_callback as sub(payload as any ptr)
+		_zindex as integer = 0
 	protected:
 		_mutex as any ptr
 		_isActive as bool = true
@@ -25,8 +26,12 @@ type uiElement extends IRenderable
 		declare sub Redraw()
 		declare sub DoCallback()
 	public:
+		' IRenderable:
+		declare property Dimensions () as uiDimensions
+		declare property ZIndex() as integer
+		declare property ZIndex(value as integer)
+		
 		declare property Callback(cb as sub(payload as uiElement ptr)) 
-		declare property Dimensions () as uiDimensions ' Part of IRenderable
 		declare property Parent(value as IDrawing ptr)
 		declare property Parent(value as uiElement ptr)
 		
@@ -68,6 +73,16 @@ end destructor
 
 property uiElement.Dimensions() as uiDimensions
 	return this._dimensions
+end property
+
+property uiElement.ZIndex() as integer
+	return this._zindex
+end property
+
+property uiElement.ZIndex(value as integer)
+	mutexlock(this._mutex)
+	this._zindex = value
+	mutexunlock(this._mutex)
 end property
 
 property uiElement.Parent(value as IDrawing ptr)

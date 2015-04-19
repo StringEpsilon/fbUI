@@ -26,6 +26,8 @@ end constructor
 type IRenderable extends object
 	declare abstract property Dimensions() as uiDimensions
 	declare abstract function Render() as cairo_surface_t ptr
+	declare abstract property ZIndex() as integer
+	declare abstract property ZIndex(value as integer)
 end type
 
 type IDrawing extends object

@@ -98,18 +98,18 @@ end sub
 
 function uiWindow.GetElementAt(x as integer, y as integer) as uiElement ptr
 	dim result as uiElement ptr = 0
-	dim i as integer = 0
 	dim child as uiElement ptr
 	
-	while i < this._children->count and result = 0
+	for i as integer = 1 to this._children->count -1
 		child = this._children->item(i)
 		with child->dimensions
 			if (( x >= .x) AND ( x <= .x + .w ) and ( y >= .y) and (y <= .y + .h)) then
-				result = child
+				if (result = 0 OrElse result->zindex < child->zindex) then
+					result = child
+				end if
 			end if
 		end with
-		i+=1
-	wend
+	next
 	return result
 end function
 
