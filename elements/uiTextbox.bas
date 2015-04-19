@@ -23,7 +23,6 @@ type uiTextbox extends uiElement
 		declare sub RemoveSelected()
 	public: 
 		declare constructor overload( x as integer, y as integer,length as integer, newText as string = "")
-		declare constructor(dimensions as uiDimensions, newText as string = "")
 
 		declare function Render() as  cairo_surface_t  ptr
 		declare virtual sub OnKeypress( keypress as uiKeyEvent )
@@ -43,13 +42,6 @@ constructor uiTextbox( x as integer, y as integer, w as integer, newText as stri
 	
 	this._length = (w - 12) / CAIRO_FONTWIDTH
 	this._text = newText
-	this.CreateBuffer()
-end constructor
-
-constructor uiTextbox(newdim as uiDimensions, newText as string = "")
-	base(newdim)
-	
-	this._boxOffset = ( this._dimensions.h-12 ) \ 2
 	this.CreateBuffer()
 end constructor
 

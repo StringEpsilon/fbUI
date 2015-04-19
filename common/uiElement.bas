@@ -1,7 +1,6 @@
 ' uiElement.bas - Do what the f... you want (WTFPL). 
 ' Author: StringEpsilon, 2015
 
-#include once "fbgfx.bi"
 #include once "fbthread.bi"
 #include once "uiEvent.bi"
 #include once "linkedlist.bas"
@@ -14,7 +13,6 @@ type uiElement extends IRenderable
 		_parentElement as uiElement ptr
 	protected:
 		_mutex as any ptr
-		_buffer as fb.image ptr
 		_isActive as bool = true
 		_hasFocus as bool = false
 		_surface as cairo_surface_t ptr 
@@ -31,15 +29,18 @@ type uiElement extends IRenderable
 		declare property Parent(value as uiElement ptr)
 		
 		declare destructor()
-		declare constructor(dimensions as uiDimensions)
 		declare constructor overload()
 		
-		declare virtual sub OnClick(mouse as uiMouseEvent)
-		declare virtual sub OnKeypress(keypress as uiKeyEvent)
-		declare virtual sub OnMouseMove(mouse as uiMouseEvent)
+		' General events:
 		declare virtual sub OnFocus(focus as bool)
+		' Keyboard events:
+		declare virtual sub OnKeypress(keypress as uiKeyEvent)
+		' Mouse events:
+		declare virtual sub OnClick(mouse as uiMouseEvent)
+		declare virtual sub OnMouseMove(mouse as uiMouseEvent)
 		declare virtual sub OnMouseOver(mouse as uiMouseEvent)
 		declare virtual sub OnMouseLeave(mouse as uiMouseEvent)
+		declare virtual sub OnMouseWheel(mouse as uiMouseEvent)
 end type
 
 declareList(uiElement ptr, uiElementList)
@@ -54,20 +55,10 @@ constructor uiElement(x as integer, y as integer)
 	this._dimensions.y = y
 end constructor 
 
-constructor uiElement(newDimensions as uiDimensions)
-	this.constructor()
-	this._dimensions = newDimensions
-end constructor 
-
-
 Destructor uiElement()
 	if (this._mutex <> 0 ) then
 		mutexdestroy(this._mutex)
 		this._mutex = 0
-	end if
-	if (this._buffer <> 0 ) then
-		imagedestroy(this._buffer)
-		this._buffer = 0
 	end if
 	cairo_surface_destroy (this._surface)
 	cairo_destroy(this._cairo)
@@ -97,6 +88,29 @@ sub uiElement.Redraw()
 	end if
 end sub
 
+sub uiElement.CreateBuffer()
+	if ( this._cairo <> 0) then
+		cairo_destroy(this._cairo)
+		cairo_surface_destroy(this._surface)
+	end if
+
+	this._surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, this._dimensions.w, this._dimensions.h)
+	this._cairo = cairo_create(this._surface)
+	cairo_select_font_face (this._cairo , "mono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
+	cairo_set_font_size (this._cairo , CAIRO_FONTSIZE)
+end sub
+
+' The event handling methods:
+sub UiElement.OnFocus(focus as bool)
+	mutexlock(this._mutex)
+	this._hasFocus = focus
+	mutexunlock(this._mutex)
+	this.Redraw()
+end sub
+
+sub UiElement.OnKeypress(keypress as uiKeyEvent)
+end sub
+
 sub UiElement.OnClick(mouse as uiMouseEvent)
 end sub
 
@@ -109,24 +123,6 @@ end sub
 sub UiElement.OnMouseLeave(mouse as uiMouseEvent)
 end sub
 
-sub UiElement.OnKeypress(keypress as uiKeyEvent)
+sub UiElement.OnMouseWheel(mouse as uiMouseEvent)
 end sub
 
-sub UiElement.OnFocus(focus as bool)
-	mutexlock(this._mutex)
-	this._hasFocus = focus
-	mutexunlock(this._mutex)
-	this.Redraw()
-end sub
-
-sub uiElement.CreateBuffer()
-	if ( this._cairo <> 0) then
-		cairo_destroy(this._cairo)
-		cairo_surface_destroy(this._surface)
-	end if
-
-	this._surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, this._dimensions.w, this._dimensions.h)
-	this._cairo = cairo_create(this._surface)
-	cairo_select_font_face (this._cairo , "mono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
-	cairo_set_font_size (this._cairo , CAIRO_FONTSIZE)
-end sub
