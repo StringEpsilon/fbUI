@@ -17,23 +17,28 @@ type uiWindow extends IDrawing
 		_mouseOver as uiElement ptr
 		_RenderBuffer as RenderableBuffer ptr
 		_cairoContext as cairo_t ptr
+		_title as string
 		
 		declare Constructor()
 		declare Destructor()
 		declare sub DrawAll()	
 		declare function GetElementAt(x as integer, y as integer) as uiElement ptr
 	public:
+		declare property Title() as string
+		declare property Title(newTitle as string)
+	
 		'IDrawing:
 		declare virtual sub DrawElement( element as IRenderable ptr)
 		
 		declare static function GetInstance() as uiWindow ptr
 		declare static sub DestroyInstance()
-		declare sub CreateWindow(h as integer, w as integer)
+		
+		declare sub CreateWindow(h as integer, w as integer, newTitle as string = "")
 		declare sub HandleEvent(event as uiEvent)
 		declare sub Main()
 		declare sub AddElement( uiElement as uiElement ptr)
 		declare sub RemoveElement( uiElement as uiElement ptr)
-				
+		
 		shutdown as bool = false
 end type
 
@@ -64,6 +69,18 @@ Destructor uiWindow()
 	delete this._RenderBuffer
 	mutexdestroy(this._mutex)
 end destructor
+
+
+property uiWindow.Title() as string
+	return this._title
+end property
+
+property uiWindow.Title(newTitle as string)
+	mutexlock(this._mutex)
+	this._title = newTitle
+	WindowTitle(this._title)
+	mutexunlock(this._mutex)
+end property
 
 sub uiWindow.DrawAll()
 	dim as uiElement ptr child
@@ -106,17 +123,17 @@ sub uiWindow.AddElement( element as uiElement ptr)
 	end if
 end sub
 
-sub uiWindow.CreateWindow(h as integer, w as integer)
+sub uiWindow.CreateWindow(h as integer, w as integer, newTitle as string = "")
+	mutexlock(this._mutex)
+	this._title = newTitle
 	screenres w, h, 32
+	WINDOWTITLE(this._title)
 	COLOR 0,BackGroundColor
 	cls
 	
 	this._cairoContext = cairo_create(cairo_image_surface_create_for_data(ScreenPtr(), CAIRO_FORMAT_ARGB32, w, h, w * 4))
 	
-	if( screenptr = 0 ) then 
-		end 2
-	end if
-	cls
+	mutexunlock(this._mutex)
 end sub
 
 sub uiWindow.DestroyInstance()
