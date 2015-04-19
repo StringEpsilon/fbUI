@@ -98,8 +98,6 @@ sub uiElement.CreateBuffer()
 
 	this._surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, this._dimensions.w, this._dimensions.h)
 	this._cairo = cairo_create(this._surface)
-	cairo_select_font_face (this._cairo , "mono", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
-	cairo_set_font_size (this._cairo , CAIRO_FONTSIZE)
 end sub
 
 property uiElement.Callback(cb as sub(payload as uiElement ptr)) 
