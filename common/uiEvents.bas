@@ -49,6 +49,7 @@ sub uiEventListener( callback as any ptr  )
 						.LMB = iif( .LMB >= uiClick,uiHold, 0 )
 						.RMB = iif( .RMB >= uiClick,uiHold, 0 )
 						.MMB = iif( .MMB >= uiClick,uiHold, 0 )
+						.last = iif( .last >= uiClick,uiHold, 0 )
 					end with
 				case FB.EVENT_MOUSE_BUTTON_PRESS
 					IF event.button = FB.BUTTON_LEFT  THEN
@@ -58,6 +59,7 @@ sub uiEventListener( callback as any ptr  )
 					ELSEIF event.button = FB.BUTTON_MIDDLE THEN
 						newEvent->mouse.MMB = uiClick
 					END IF
+					newEvent->mouse.last = uiClick
 					newEvent->eventType = uiMouseClick
 				case FB.EVENT_MOUSE_BUTTON_RELEASE
 					IF event.button = FB.BUTTON_LEFT  THEN
@@ -67,6 +69,7 @@ sub uiEventListener( callback as any ptr  )
 					ELSEIF event.button = FB.BUTTON_MIDDLE THEN
 						newEvent->mouse.MMB = uiReleased
 					END IF
+					newEvent->mouse.last = uiReleased
 					newEvent->eventType = uiMouseClick
 				case FB.EVENT_MOUSE_WHEEL
 					newEvent->mouse.Wheel = wheelValue - event.z

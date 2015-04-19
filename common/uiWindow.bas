@@ -193,22 +193,27 @@ sub uiWindow.HandleEvent(event as uiEvent)
 			end if
 		case uiMouseClick
 			dim uiClickedElement as uiElement ptr = this.GetElementAt(event.mouse.x, event.mouse.y)
-			if (uiClickedElement <> 0) then
-				if (this._focus <> uiClickedElement) then
-					if (this._focus <> 0 ) then
-						this._focus->OnFocus(false)
+			' Always forward the release event to the element last clicked.
+			if ( event.mouse.last = uiReleased and this._focus <> 0 ) then
+				this._focus->OnClick(event.mouse)
+			else
+				if (uiClickedElement <> 0) then
+					if ( this._focus <> uiClickedElement ) then
+						if (this._focus <> 0 ) then
+							this._focus->OnFocus(false)
+						end if
+						mutexlock(this._mutex)
+						this._focus = uiClickedElement
+						mutexunlock(this._mutex)
+						this._focus->OnFocus(true)
 					end if
+					uiClickedElement->OnClick(event.Mouse)
+				elseif (this._focus <> 0) then
+					this._focus->OnFocus(false)
 					mutexlock(this._mutex)
-					this._focus = uiClickedElement
+					this._focus = 0
 					mutexunlock(this._mutex)
-					this._focus->OnFocus(true)
 				end if
-				uiClickedElement->OnClick(event.Mouse)
-			elseif (this._focus <> 0) then
-				this._focus->OnFocus(false)
-				mutexlock(this._mutex)
-				this._focus = 0
-				mutexunlock(this._mutex)
 			end if
 		case uiMouseMove
 			if ( this._focus <> 0 ) then
@@ -233,7 +238,6 @@ sub uiWindow.HandleEvent(event as uiEvent)
 			if (mouseLeave <> 0) then mouseLeave->OnMouseLeave(event.mouse)
 			if (mouseEnter <> 0) then mouseEnter->OnMouseOver(event.mouse)
 		case uiMouseWheel
-			
 			if (this._focus <> 0) then
 				this._focus->OnMouseWheel(event.mouse)
 			elseif (this._mouseOver <> 0) then

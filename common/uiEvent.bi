@@ -28,19 +28,18 @@ type uiMouseEvent
 	x as integer
 	y as integer
 	
-	lmb as uiMouseButtonState = -1
-	mmb as uiMouseButtonState = -1
-	rmb as uiMouseButtonState = -1
+	lmb as uiMouseButtonState
+	mmb as uiMouseButtonState
+	rmb as uiMouseButtonState 
+	last as uiMouseButtonState
 	
 	wheel as integer
 end type
 
 type uiKeyEvent
 	extended as bool = false
-	
 	keycode as integer = -1
 	key as string
-	
 end type
 
 type uiEvent
