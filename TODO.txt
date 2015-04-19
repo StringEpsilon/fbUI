@@ -6,7 +6,9 @@ Features:
 	[X] Radio buttons
 	[X] Labels
 	[-] Listbox 
-	[X] Scrollbars (vertical / horizontal)
+	[X] Scrollbars 
+	[ ] Textarea / Multiline textbox
+	[ ] Dropdown / Combobox
 	[ ] ...
 	
 [ ] uiTextbox / Textcontrols:
@@ -36,7 +38,7 @@ Internal / Performance / style:
 	For example: Clicking on a dropdown that overlaps with a button would trigger both.
 	I think I might need a z-Index and a way to check that stuff fast.
 
-[ ] The focus/unfocus in code  uiWindow.HandleEvent is terrible.
+[X] The focus/unfocus in code  uiWindow.HandleEvent is terrible.
 
 [ ] Better event-handling in general. By just making threads, it can happen that events reach the uiElement in the wrong order
 	or worse: The threads queue up because of mutexing-issues.
