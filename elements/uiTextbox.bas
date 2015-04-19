@@ -1,17 +1,16 @@
-' uiTextbox.bas - Do what the f... you want (WTFPL). 
-' Author: StringEpsilon, 2015
 #INCLUDE once "fbgfx.bi"
-#include once "fbthread.bi"
 #include once "../common/uiElement.bas"
 
 type uiTextBoxCursor
-	position as integer
-	SelectionStart as integer = -1
-	SelectionEnd as integer = -1
+	position as integer = 0
+	selectStart as integer = -1
+	selectEnd as integer = -1
 end type
 
 type uiTextbox extends uiElement
 	private:
+		_layout as PangoLayout ptr
+		_selection as PangoAttribute ptr
 		dim as uiTextBoxCursor _cursor
 		dim as integer _boxOffset
 		dim as string _Text
@@ -43,6 +42,18 @@ constructor uiTextbox( x as integer, y as integer, w as integer, newText as stri
 	this._length = (w - 12) / CAIRO_FONTWIDTH
 	this._text = newText
 	this.CreateBuffer()
+	this._layout = pango_cairo_create_layout (this._cairo)
+	pango_layout_set_font_description (this._layout, desc)
+	
+	dim as PangoAttrList ptr list = pango_attr_list_new()
+	this._selection = pango_attr_background_new(65535*.75,65535*.75,65535*.75)
+
+	this._selection->start_index = -1 ' this._cursor.selectStart
+	this._selection->end_index = -1' this._cursor.selectEnd
+
+	pango_attr_list_insert (list,this._selection)
+
+	pango_layout_set_attributes (this._layout, list)
 end constructor
 
 property uiTextbox.Text(value as string)
@@ -62,15 +73,15 @@ end property
 sub uiTextbox.MoveTo(value as integer)
 	with this._cursor
 		if ( multikey(FB.SC_LSHIFT) ) then
-			if ( .selectionStart = -1) then
-				.selectionStart = .Position
-				.selectionEnd = value
+			if ( .selectStart = -1) then
+				.selectStart = .Position
+				.selectEnd = value
 			else
-				.selectionEnd = value
+				.selectEnd = value
 			end if
 		else
-			.selectionStart = -1
-			.selectionEnd = -1
+			.selectStart = -1
+			.selectEnd = -1
 		end if
 		.Position = value
 		if (.Position - this._offset > this._length ) then
@@ -91,57 +102,65 @@ sub uiTextbox.MoveBy(value as integer)
 			this._offset += value
 		end if
 		if ( multikey(FB.SC_LSHIFT) ) then
-			if (.selectionStart = -1) then
-				.selectionStart = .Position -value
-				.selectionEnd = .Position
+			if (.selectStart = -1) then
+				.selectStart = .Position -value
+				.selectEnd = .Position
 			else
-				.selectionEnd = .Position
+				.selectEnd = .Position
 			end if
 		else
-			.selectionStart = -1
-			.selectionEnd = -1
+			.selectStart = -1
+			.selectEnd = -1
 		end if
 	end with
 end sub
 
 sub uiTextbox.RemoveSelected()
-	if this._cursor.SelectionStart > this._cursor.SelectionEnd then swap this._cursor.SelectionStart, this._cursor.SelectionEnd
-	this._text = left(text, this._cursor.SelectionStart) + right (text, len(this._text) -this._cursor.SelectionEnd )
-	this._cursor.Position = this._cursor.selectionStart
-	this._cursor.SelectionStart = -1
-	this._cursor.SelectionEnd = -1
+	if this._cursor.selectStart > this._cursor.selectEnd then swap this._cursor.selectStart, this._cursor.selectEnd
+	this._text = left(text, this._cursor.selectStart) + right (text, len(this._text) -this._cursor.selectEnd )
+	this._cursor.Position = this._cursor.selectStart
+	this._cursor.selectStart = -1
+	this._cursor.selectEnd = -1
 end sub
 
 function uiTextbox.Render() as  cairo_surface_t  ptr
 	with this._dimensions
-		cairo_rectangle (this._cairo, 0, 0, .w, .h)
-		cairo_set_source_rgb(this._cairo,1,1,1)
-		cairo_fill(this._cairo)
-			
-		if (this._hasFocus) then
-			if (this._cursor.SelectionStart >= 0 AND this._cursor.SelectionEnd >= 0) then
-				dim as integer selectionX, selectionWidth
-				selectionX = (this._cursor.SelectionStart - this._offset) * CAIRO_FONTWIDTH
-				selectionWidth = (this._cursor.SelectionEnd - this._offset) * CAIRO_FONTWIDTH -selectionX
-				
-				cairo_rectangle (this._cairo, selectionX+3, 1, selectionWidth, .h-2)
-				cairo_set_source_rgb(this._cairo,0.75,.75,.75)
-				cairo_fill(this._cairo)
-			end if
-			cairo_rectangle (this._cairo, 3 +(this._cursor.Position-this._offset)*CAIRO_FONTWIDTH, 1, 1, .h-2)
-			cairo_set_source_rgb(this._cairo,0,0,0)
-			cairo_fill(this._cairo)
-		end if
-		
+		DrawTextbox(this._cairo,.w,.h)	
+		cairo_set_source_rgb(this._cairo,0,0,0)
 		if (len(this._text) <> 0) then
 			if (this._offset <> 0 ) then
 				dim offsetText as string = mid(this._text, _offset+1, this._length)
-				DrawLabel(this._cairo,3, (.h - CAIRO_FONTSIZE)/2, offsetText)
+				pango_layout_set_text(this._layout, offsetText, -1)
 			else
-				DrawLabel(this._cairo,3, (.h - CAIRO_FONTSIZE)/2, this._text)
+				pango_layout_set_text(this._layout, this._text, -1)
+			end if
+			if (this._hasFocus) then
+				if (this._cursor.selectStart >= 0 AND this._cursor.selectEnd >= 0) then
+					IF (this._cursor.selectStart > this._cursor.selectEnd) then 
+						this._selection->start_index = this._cursor.selectEnd
+						this._selection->end_index = this._cursor.selectStart
+					else
+						this._selection->start_index = this._cursor.selectStart
+						this._selection->end_index = this._cursor.selectEnd
+					end if
+				else
+					this._selection->start_index = -1 
+					this._selection->end_index = -1
+				end if
+				pango_cairo_update_layout(this._cairo, this._layout)
+				cairo_move_to(this._cairo,3,(.h - CAIRO_FONTSIZE)/2)
+				pango_cairo_show_layout(this._cairo, this._layout)
+				
+				dim cursorRect as PangoRectangle ptr = new PangoRectangle
+				pango_layout_get_cursor_pos(this._layout, this._cursor.position,cursorRect ,0)
+				cairo_rectangle (this._cairo, 3 + cursorRect->x / PANGO_SCALE, cursorRect->y  / PANGO_SCALE, 1, cursorRect->height)
+				cairo_fill(this._cairo)
+			else
+				pango_cairo_update_layout(this._cairo, this._layout)
+				cairo_move_to(this._cairo,3,(.h - CAIRO_FONTSIZE)/2)
+				pango_cairo_show_layout(this._cairo, this._layout)
 			end if
 		end if
-		DrawTextbox(this._cairo,.w,.h)			
 	end with
 	return this._surface
 end function
@@ -169,10 +188,10 @@ sub uiTextbox.OnMouseMove( mouse as uiMouseEvent )
 		elseif newCursor < 0 then 
 			newCursor = 0
 		end if
-		if ( this._cursor.selectionStart <> -1  and this._cursor.selectionStart <> newCursor) then
-			this._cursor.selectionEnd = newCursor
+		if ( this._cursor.selectStart <> -1  and this._cursor.selectStart <> newCursor) then
+			this._cursor.selectEnd = newCursor
 		else
-			this._cursor.selectionStart = this._cursor.Position
+			this._cursor.selectStart = this._cursor.Position
 		end if
 		this.Redraw()
 	end if
@@ -193,7 +212,7 @@ sub uiTextbox.OnKeypress( keypress as uiKeyEvent )
 			case 77 ' arrow right
 				this.MoveBy(+1)
 			case 83 'Delete
-				if (this._cursor.SelectionStart <> -1) then
+				if (this._cursor.selectStart <> -1) then
 					this.RemoveSelected()
 				else
 					this._text = left(text, this._cursor.Position) + right (text, len(this._text) -this._cursor.Position -1)
@@ -203,10 +222,10 @@ sub uiTextbox.OnKeypress( keypress as uiKeyEvent )
 		select case keypress.keycode
 			case 1 'ctrl + a
 				this.MoveTo(0)
-				this._cursor.SelectionStart = 0
-				this._cursor.SelectionEnd = len(this._text)
+				this._cursor.selectStart = 0
+				this._cursor.selectEnd = len(this._text)
 			case 8 ' Backspace
-				if (this._cursor.SelectionStart <> -1) then
+				if (this._cursor.selectStart <> -1) then
 					this.RemoveSelected()
 				else
 					if (this._cursor.Position > 0) then
@@ -218,12 +237,12 @@ sub uiTextbox.OnKeypress( keypress as uiKeyEvent )
 						this.MoveBy(-1)
 					end if
 				end if
-			case 9:
+			case 9: 'tab
 				
 			case 13 ' Enter
 				this.DoCallback()
 			case 32 to 254:
-				if (this._cursor.SelectionStart <> -1) then
+				if (this._cursor.selectStart <> -1) then
 					this.RemoveSelected()
 				end if
 				if ( len(this._text) < 255  ) then
@@ -234,7 +253,7 @@ sub uiTextbox.OnKeypress( keypress as uiKeyEvent )
 						this._text = left(text, this._cursor.Position) + keypress.key + right (text, len(this._text) - this._cursor.Position )
 					end if
 					this.MoveBy(+1)
-					this._cursor.SelectionStart = -1
+					this._cursor.selectStart = -1
 				end if
 			case else:
 		end select

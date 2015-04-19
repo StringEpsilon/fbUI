@@ -160,6 +160,11 @@ sub DrawTextbox(c as cairo_t ptr,w as double, h as double)
 	dim as uinteger col = ElementLight
 	dim as uinteger col2 = ElementDark
 	dim as cairo_pattern_t ptr pat = cairo_pattern_create_linear(0,h,0,0)
+	
+	cairo_rectangle (c, 0, 0, .w, .h)
+	cairo_set_source_rgb(c,1,1,1)
+	cairo_fill(c)
+	
 	cairo_pattern_add_color_stop_rgb (pat,0,RGBA_R(col),RGBA_G(col),RGBA_B(col))
 	cairo_pattern_add_color_stop_rgb (pat,1,RGBA_R(col2),RGBA_G(col2),RGBA_B(col2))
 	cairo_rectangle (c, .5, .5, w-1, h-1)
