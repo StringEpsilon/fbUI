@@ -1,7 +1,5 @@
 Features:
 
-[X] Deletion of elements.
-
 [ ] More basic elements for a first release:
 	[X] Radio buttons
 	[X] Labels
@@ -16,11 +14,7 @@ Features:
 	[X] Handling of CRTL+A
 	[ ] Copy & Paste
 
-[-] Handling of OnMouseMove. Important for scrollbars and stuff.
-	[X] Introduce "OnMouseOver(mouse as uiMouseEvent"
-	[X] Introduce OnMouseLeave()
-	[ ] Call OnMouseMove() of the focused element only if a button is on "hold"
-		Otherwise, notify the _mouseOver element. 
+[X] Handling of OnMouseMove. Important for scrollbars and stuff.
 
 [ ] Write a readme and proper example code.
 
@@ -32,13 +26,16 @@ In the future:
 	[ ] Won't receive events
 	[ ] Different rendering...?
 	
+[ ] Write API-documentation, once it's stable enough.
+	
 Internal / Performance / style:
+
+[ ] Add layers! Background, active, floating. That should be enough to make overlapping sub-elements work (menues, comboboxes, ...)
 
 [ ] Better strategy for routing click-events. Right now, it'is terrible for overlapping elements
 	For example: Clicking on a dropdown that overlaps with a button would trigger both.
 	I think I might need a z-Index and a way to check that stuff fast.
 
-[X] The focus/unfocus in code  uiWindow.HandleEvent is terrible.
 
 [ ] Better event-handling in general. By just making threads, it can happen that events reach the uiElement in the wrong order
 	or worse: The threads queue up because of mutexing-issues.
@@ -47,15 +44,7 @@ Internal / Performance / style:
 		* Event-buffer with multiple workers
 		* Handle mousemove (main source of event-threads) differently
 
-[-] Use common base class or for vertical and horizontal scollbars.
-	[ ] Add some properties to adjust min and max after creation.
-
-[X] uiElement.Parent should be a property with proper mutex-locking. 
-
-[X] calls to this._parent->DrawElement() should be null-checked and probably done in a method in uiElement
-
 [ ] Graphics overhaul: Prettier code, new constants.
-	[X] Get rid of sGui_Drawing.bas and the global variables in it.
 	[ ] Introduce properly named constants instead
 		Alternative: Color and TextColor could be properties on uiElement with decent-looking defaults
 
