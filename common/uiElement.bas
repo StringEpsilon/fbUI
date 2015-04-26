@@ -12,7 +12,7 @@ type uiElement extends IRenderable
 		_parent as IDrawing	ptr
 		_parentElement as uiElement ptr
 		_callback as sub(payload as any ptr)
-		_zindex as integer = 0
+		_layer as integer = normal
 	protected:
 		_mutex as any ptr
 		_isActive as bool = true
@@ -28,8 +28,7 @@ type uiElement extends IRenderable
 	public:
 		' IRenderable:
 		declare property Dimensions () as uiDimensions
-		declare property ZIndex() as integer
-		declare property ZIndex(value as integer)
+		declare property Layer() as integer
 		
 		declare property Callback(cb as sub(payload as uiElement ptr)) 
 		declare property Parent(value as IDrawing ptr)
@@ -75,15 +74,10 @@ property uiElement.Dimensions() as uiDimensions
 	return this._dimensions
 end property
 
-property uiElement.ZIndex() as integer
-	return this._zindex
+property uiElement.Layer() as integer
+	return this._layer
 end property
 
-property uiElement.ZIndex(value as integer)
-	mutexlock(this._mutex)
-	this._zindex = value
-	mutexunlock(this._mutex)
-end property
 
 property uiElement.Parent(value as IDrawing ptr)
 	mutexlock(this._mutex)

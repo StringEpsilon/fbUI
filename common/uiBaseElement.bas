@@ -3,6 +3,12 @@
 
 #include once "cairo/cairo.bi"
 
+enum uiLayer
+	background = -1
+	normal = 0
+	floating = 1
+end enum
+
 type uiDimensions
 	h as integer
 	w as integer
@@ -26,8 +32,7 @@ end constructor
 type IRenderable extends object
 	declare abstract property Dimensions() as uiDimensions
 	declare abstract function Render() as cairo_surface_t ptr
-	declare abstract property ZIndex() as integer
-	declare abstract property ZIndex(value as integer)
+	declare abstract property Layer() as uiLayer
 end type
 
 type IDrawing extends object

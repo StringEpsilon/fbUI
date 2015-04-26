@@ -102,9 +102,12 @@ function uiWindow.GetElementAt(x as integer, y as integer) as uiElement ptr
 	
 	for i as integer = 1 to this._children->count -1
 		child = this._children->item(i)
+		if child->Layer = background then 
+			continue for
+		end if
 		with child->dimensions
 			if (( x >= .x) AND ( x <= .x + .w ) and ( y >= .y) and (y <= .y + .h)) then
-				if (result = 0 OrElse result->zindex < child->zindex) then
+				if (result = 0 OrElse result->layer < child->layer) then
 					result = child
 				end if
 			end if
