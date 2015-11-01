@@ -1,5 +1,7 @@
 Features:
 
+[ ] Fix TextBox.
+
 [ ] More basic elements for a first release:
 	[X] Radio buttons
 	[X] Labels
@@ -23,7 +25,7 @@ In the future:
 [ ] Implement a mechanism to move elements around
 
 [ ] Inactive elements
-	[ ] Won't receive events
+	[ ] Ignored in event-handling.
 	[ ] Different rendering...?
 	
 [ ] Write API-documentation, once it's stable enough.
@@ -50,4 +52,4 @@ Internal / Performance / style:
 
 BUGS:
 
-Project is WIP.... so, yeah.
+A LOT.

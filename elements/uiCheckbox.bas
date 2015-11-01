@@ -11,7 +11,7 @@ type uiCheckBox extends uiElement
 		_IsChecked as boolean  = false
 		
 	public:
-		declare function Render() as cairo_surface_t  ptr
+		declare function Render() as fb.image  ptr
 		
 		declare virtual sub OnClick(mouse as uiMouseEvent)
 		declare virtual sub OnKeypress(keypress as uiKeyEvent)
@@ -32,7 +32,7 @@ constructor uiCheckBox( x as integer, y as integer, newLabel as string = "")
 	
 	with this._dimensions
 		.h = 16
-		.w = 20 + (len(newlabel)*CAIRO_FONTWIDTH)
+		.w = 20 + (len(newlabel)*FONT_WIDTH)
 		.x = x
 		.y = y
 		this._boxOffset = ( .h-12 ) \ 2
@@ -56,7 +56,7 @@ property uiCheckBox.Label(value as string)
 	else
 		mutexlock(this._mutex)
 		this._label = value
-		this._dimensions.w = 20 + len(value) * CAIRO_FONTWIDTH
+		this._dimensions.w = 20 + len(value) * FONT_WIDTH
 		this.CreateBuffer()
 		mutexunlock(this._mutex)
 	end if
@@ -77,13 +77,20 @@ property uiCheckBox.IsChecked() as boolean
 	return this._isChecked
 end property
 
-function uiCheckBox.Render() as  cairo_surface_t  ptr
+function uiCheckBox.Render() as  fb.image  ptr
 	with this._dimensions
-		cairo_set_source_surface(this._cairo, this._surface, .w, .h)
-		cairo_set_source_rgba(this._cairo,&hE8/255,&hE8/255,&hE8/255,1)
-		cairo_paint(this._cairo)
-		DrawCheckbox(this._cairo, this._boxOffset, this._boxOffset, 12, this._isChecked)
-		DrawLabel(this._cairo, 20, (.h - CAIRO_FONTSIZE)/2, this._label)
+		line this._surface, (1, 1) - (.h-2, .h-2), ElementLight, BF
+		line this._surface, (1, 1) - (.h-2, .h-2), ElementBorderColor, B
+		
+		if (this._IsChecked) then
+			line this._surface, (.h-2, 1) - (1, .h-2), ElementBorderColor
+			line this._surface, (.h-3, 1) - (1, .h-3), ElementBorderColor
+			
+			line this._surface, (.h-2,.h-2) - (1,1), ElementBorderColor
+			line this._surface, (.h-2,.h-3) - (2,1), ElementBorderColor
+		end if
+		
+		draw string this._surface, (.h+3, (.h - FONT_HEIGHT)/2 ), this.label
 	end with
 	return this._surface
 end function

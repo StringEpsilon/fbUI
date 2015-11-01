@@ -28,7 +28,7 @@ type uiScrollBar extends uiElement
 		declare sub CalculateValue(position as integer)
 		declare sub Readjust()
 	public:
-		declare function Render() as cairo_surface_t  ptr
+		declare function Render() as fb.image  ptr
 		
 		declare constructor overload(x as integer, y as integer, size as integer, max as integer, min as integer = 1, range as integer = 1, orientation as uiOrientation = vertical)
 		declare property Value() as integer
@@ -58,6 +58,7 @@ constructor uiScrollBar(x as integer, y as integer, size as integer, max as inte
 	this._value = this._min
 	this._orientation = orientation
 	this._size = size
+	this._range = p_range
 	this.Readjust()
 	this.CreateBuffer()
 end constructor
@@ -177,23 +178,21 @@ sub uiScrollBar.OnMouseWheel( mouse as uiMouseEvent )
 	end if
 end sub
 
-function uiScrollBar.Render() as cairo_surface_t  ptr
-	with this._dimensions
-		cairo_set_source_rgb(this._cairo,RGBA_R(ElementLight),RGBA_G(ElementLight),RGBA_B(ElementLight))
-		cairo_paint(this._cairo)
-		cairo_rectangle (this._cairo, .5, .5, .w-1, .h-1)
-		cairo_set_line_width(this._cairo, 1)
-		cairo_set_source_rgb(this._cairo,0,0,0)
-		
-		cairo_stroke (this._cairo)
-		if (this._orientation = vertical) then
-			cairo_rectangle(this._cairo, .5, this._knob.Position+.5, .w-1,this._knob.Size)
-		else
-			cairo_rectangle(this._cairo, this._knob.Position+.5, .5, this._knob.Size, .h-1)
-		end if
-		cairo_stroke_preserve (this._cairo)
-		cairo_set_source_rgb(this._cairo,RGBA_R(ElementDark),RGBA_G(ElementDark),RGBA_B(ElementDark))
-		cairo_fill(this._cairo)		
-	end with
+function uiScrollBar.Render() as fb.image  ptr
+	if ( this._stateChanged ) then
+		with this._dimensions
+			line this._surface, (0,0) - (.w-1, .h-1), ElementLight, BF
+			line this._surface, (0,0) - (.w-1, .h-1), ElementBorderColor, B
+			
+			if (this._orientation = vertical) then
+				line this._surface, (0, this._knob.position) - (.w-1, this._knob.position + this._knob.size-1), ElementDark, BF
+				line this._surface, (0, this._knob.position) - (.w-1, this._knob.position + this._knob.size-1), ElementBorderColor, B
+			else			
+				line this._surface, (this._knob.position,0) - (this._knob.position + this._knob.size-1, .h-1), ElementDark, BF
+				line this._surface, (this._knob.position,0) - (this._knob.position + this._knob.size-1, .h-1), ElementBorderColor, B
+			end if	
+		end with
+		this._stateChanged = false
+	end if
 	return this._surface
 end function

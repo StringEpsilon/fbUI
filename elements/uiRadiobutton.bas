@@ -18,7 +18,7 @@ type uiRadiobutton extends uiElement
 		_group as _uiRadioButtonlist ptr
 		declare sub SelectElement(selection as uiRadiobutton ptr)
 	public:
-		declare function Render() as  cairo_surface_t  ptr
+		declare function Render() as  fb.image  ptr
 		
 		declare virtual sub OnClick(mouse as uiMouseEvent)
 		declare virtual sub OnKeypress(keypress as uiKeyEvent)
@@ -39,7 +39,7 @@ constructor uiRadiobutton( x as integer, y as integer, newLabel as string = "", 
 	base()
 	with this._dimensions
 		.h = 16
-		.w = 20 + len(newlabel) * CAIRO_FONTWIDTH
+		.w = 20 + len(newlabel) * FONT_WIDTH
 		.x = x
 		.y = y
 		this._boxOffset = ( .h-12 ) \ 2
@@ -63,7 +63,7 @@ property uiRadiobutton.Label(value as string)
 	else
 		mutexlock(this._mutex)
 		this._label = value
-		this._dimensions.w = 20 + len(value)* CAIRO_FONTWIDTH
+		this._dimensions.w = 20 + len(value)* FONT_WIDTH
 		this.CreateBuffer()
 		mutexunlock(this._mutex)
 	end if
@@ -97,12 +97,18 @@ property uiRadiobutton.IsSelected() as boolean
 	return this._isSelected
 end property
 
-function uiRadiobutton.Render() as  cairo_surface_t ptr
-	with this._dimensions
-		cairo_set_source_rgba(this._cairo,&hE8/255,&hE8/255,&hE8/255,1)
-		cairo_paint(this._cairo)
-		DrawRadio(this._cairo,this._boxOffset,this._boxOffset, 6, this._isSelected)
-		DrawLabel(this._cairo, 20, (.h - CAIRO_FONTSIZE)/2, this._label)
+function uiRadiobutton.Render() as  fb.image ptr
+	with this._dimensions		
+		CIRCLE this._surface, (.h/2,.h/2), .h/2-1,ElementBorderColor
+		
+		if (this._isSelected) then
+			CIRCLE this._surface, (.h/2,.h/2), .h/4,ElementBorderColor,,,,F
+		else
+			CIRCLE this._surface, (.h/2,.h/2), .h/4,BackgroundColor,,,,F
+		end if
+		
+		draw string this._surface, ((.w - FONT_HEIGHT * len(this.Label)) / 2 +.h/2+1 ,(.h - FONT_HEIGHT)/2 ), this.label, ElementTextColor
+		
 	end with
 	return this._surface
 end function

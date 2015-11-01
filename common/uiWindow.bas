@@ -1,6 +1,8 @@
 ' uiWindow.bas - Do what the f... you want (WTFPL). 
 ' Author: StringEpsilon, 2015
-#include once "cairo/cairo.bi"
+
+SCREENRES 1, 1,32,,-1
+
 #include once "fbthread.bi"
 #include once "uiElement.bas"
 #include once "buffer.bas"
@@ -16,7 +18,6 @@ type uiWindow extends IDrawing
 		_focus as uiElement ptr
 		_mouseOver as uiElement ptr
 		_RenderBuffer as RenderableBuffer ptr
-		_cairoContext as cairo_t ptr
 		_title as string
 		
 		declare Constructor()
@@ -89,8 +90,9 @@ sub uiWindow.DrawAll()
 		child = this._children->item(i)
 		
 		screenlock
-		cairo_set_source_surface (this._cairoContext, child->Render(), child->dimensions.x, child->dimensions.y)
-		cairo_paint (this._cairoContext)
+		
+		put (child->dimensions.x, child->dimensions.y), child->Render(), ALPHA
+		
 		screenunlock
 	next
 	mutexunlock(this._mutex)
@@ -133,9 +135,7 @@ sub uiWindow.CreateWindow(h as integer, w as integer, newTitle as string = "")
 	WINDOWTITLE(this._title)
 	COLOR 0,BackGroundColor
 	cls
-	
-	this._cairoContext = cairo_create(cairo_image_surface_create_for_data(ScreenPtr(), CAIRO_FORMAT_ARGB32, w, h, w * 4))
-	
+		
 	mutexunlock(this._mutex)
 end sub
 
@@ -260,11 +260,7 @@ sub uiWindow.Main()
 				element = this._RenderBuffer->Pop()
 				with element->dimensions
 					screenlock
-					cairo_set_source_rgb(this._cairoContext,RGBA_R(BackGroundColor),RGBA_G(BackGroundColor),RGBA_B(BackGroundColor))
-					cairo_rectangle (this._cairoContext, .x, .y, .w, .h)
-					cairo_fill_preserve (this._cairoContext)
-					cairo_set_source_surface (this._cairoContext, element->Render(), .x, .y)
-					cairo_fill (this._cairoContext)
+					put (element->dimensions.x, element->dimensions.y), element->Render(), ALPHA
 					screenunlock
 				end with
 			wend			

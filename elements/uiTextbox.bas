@@ -9,8 +9,7 @@ end type
 
 type uiTextbox extends uiElement
 	private:
-		_layout as PangoLayout ptr
-		_selection as PangoAttribute ptr
+		_selection as uiTextboxCursor
 		dim as uiTextBoxCursor _cursor
 		dim as integer _boxOffset
 		dim as string _Text
@@ -23,7 +22,7 @@ type uiTextbox extends uiElement
 	public: 
 		declare constructor overload( x as integer, y as integer,length as integer, newText as string = "")
 
-		declare function Render() as  cairo_surface_t  ptr
+		declare function Render() as  fb.image  ptr
 		declare virtual sub OnKeypress( keypress as uiKeyEvent )
 		declare virtual sub OnClick( mouse as uiMouseEvent )
 		declare virtual sub OnMouseMove( mouse as uiMouseEvent )
@@ -36,24 +35,12 @@ end type
 constructor uiTextbox( x as integer, y as integer, w as integer, newText as string = "")
 	base(x,y)
 	
-	this._dimensions.h = 16
+	this._dimensions.h = 14
 	this._dimensions.w = w
 	
-	this._length = (w - 12) / CAIRO_FONTWIDTH
+	this._length = (w - 12) / FONT_WIDTH
 	this._text = newText
 	this.CreateBuffer()
-	this._layout = pango_cairo_create_layout (this._cairo)
-	pango_layout_set_font_description (this._layout, desc)
-	
-	dim as PangoAttrList ptr list = pango_attr_list_new()
-	this._selection = pango_attr_background_new(65535*.75,65535*.75,65535*.75)
-
-	this._selection->start_index = -1 ' this._cursor.selectStart
-	this._selection->end_index = -1' this._cursor.selectEnd
-
-	pango_attr_list_insert (list,this._selection)
-
-	pango_layout_set_attributes (this._layout, list)
 end constructor
 
 property uiTextbox.Text(value as string)
@@ -123,42 +110,53 @@ sub uiTextbox.RemoveSelected()
 	this._cursor.selectEnd = -1
 end sub
 
-function uiTextbox.Render() as  cairo_surface_t  ptr
+function uiTextbox.Render() as fb.image ptr
 	with this._dimensions
-		DrawTextbox(this._cairo,.w,.h)	
-		cairo_set_source_rgb(this._cairo,0,0,0)
+		line this._surface, (1, 1) - (.w-2, .h-2), ElementLight, BF
+		line this._surface, (0, 0) - (.w-1, .h-1), ElementBorderColor, B
+		
+		
 		if (len(this._text) <> 0) then
+			
 			if (this._offset <> 0 ) then
 				dim offsetText as string = mid(this._text, _offset+1, this._length)
-				pango_layout_set_text(this._layout, offsetText, -1)
+				'pango_layout_set_text(this._layout, offsetText, -1)
+				draw string this._surface, (3 ,(.h - FONT_HEIGHT)/2 ), offsetText,ElementTextColor
 			else
-				pango_layout_set_text(this._layout, this._text, -1)
+				'pango_layout_set_text(this._layout, this._text, -1)
+				draw string this._surface, (3 ,(.h - FONT_HEIGHT)/2 ), this._text,ElementTextColor
 			end if
 			if (this._hasFocus) then
+				shell "echo hat focus"
 				if (this._cursor.selectStart >= 0 AND this._cursor.selectEnd >= 0) then
 					IF (this._cursor.selectStart > this._cursor.selectEnd) then 
-						this._selection->start_index = this._cursor.selectEnd
-						this._selection->end_index = this._cursor.selectStart
+						this._selection.selectEnd = this._cursor.selectEnd
+						this._selection.selectStart = this._cursor.selectStart
 					else
-						this._selection->start_index = this._cursor.selectStart
-						this._selection->end_index = this._cursor.selectEnd
+						this._selection.selectStart = this._cursor.selectStart
+						this._selection.selectEnd = this._cursor.selectEnd
 					end if
 				else
-					this._selection->start_index = -1 
-					this._selection->end_index = -1
+					this._selection.selectStart = -1 
+					this._selection.selectEnd = -1
 				end if
-				pango_cairo_update_layout(this._cairo, this._layout)
-				cairo_move_to(this._cairo,3,(.h - CAIRO_FONTSIZE)/2)
-				pango_cairo_show_layout(this._cairo, this._layout)
 				
-				dim cursorRect as PangoRectangle ptr = new PangoRectangle
-				pango_layout_get_cursor_pos(this._layout, this._cursor.position,cursorRect ,0)
-				cairo_rectangle (this._cairo, 3 + cursorRect->x / PANGO_SCALE, cursorRect->y  / PANGO_SCALE, 1, cursorRect->height)
-				cairo_fill(this._cairo)
-			else
-				pango_cairo_update_layout(this._cairo, this._layout)
-				cairo_move_to(this._cairo,3,(.h - CAIRO_FONTSIZE)/2)
-				pango_cairo_show_layout(this._cairo, this._layout)
+				
+				'pango_cairo_update_layout(this._cairo, this._layout)
+				'cairo_move_to(this._cairo,3,(.h - CAIRO_FONTSIZE)/2)
+				'pango_cairo_show_layout(this._cairo, this._layout)
+				
+				'dim cursorRect as PangoRectangle ptr = new PangoRectangle
+				'pango_layout_get_cursor_pos(this._layout, this._cursor.position,cursorRect ,0)
+				'cairo_rectangle (this._cairo, 3 + cursorRect->x / PANGO_SCALE, cursorRect->y  / PANGO_SCALE, 1, cursorRect->height)
+				'cairo_fill(this._cairo)
+				
+				
+				
+				line this._surface, (this._cursor.position, 2) - (this._cursor.position-1, .h-2), 0
+				'pango_cairo_update_layout(this._cairo, this._layout)
+				'cairo_move_to(this._cairo,3,(.h - CAIRO_FONTSIZE)/2)
+				'pango_cairo_show_layout(this._cairo, this._layout)
 			end if
 		end if
 	end with
@@ -167,7 +165,8 @@ end function
 
 sub uiTextbox.OnClick( mouse as uiMouseEvent )
 	if ( mouse.lmb = uiClick ) then
-		dim as integer newCursor = (mouse.x - this.dimensions.x - 3 ) / CAIRO_FONTWIDTH +this._offset
+		shell "echo textbox click"
+		dim as integer newCursor = (mouse.x - this.dimensions.x - 3 ) / FONT_WIDTH + this._offset
 		if ( newCursor > len(this._text) ) then
 			newCursor = len(this._text)
 		end if
@@ -182,7 +181,7 @@ end sub
 
 sub uiTextbox.OnMouseMove( mouse as uiMouseEvent )
 	if (mouse.lmb = uiHold and mouse.x <> -1 and mouse.y <> -1 ) then
-		dim as integer newCursor = (mouse.x - this.dimensions.x - 3 ) / CAIRO_FONTWIDTH + this._offset
+		dim as integer newCursor = (mouse.x - this.dimensions.x - 3 ) / FONT_WIDTH + this._offset
 		if ( newCursor > len(this._text) ) then
 			newCursor = len(this._text)
 		elseif newCursor < 0 then 
@@ -199,7 +198,9 @@ end sub
 
 
 sub uiTextbox.OnKeypress( keypress as uiKeyEvent )
+	
 	mutexlock(this._mutex)
+	
 	if ( keypress.extended ) then
 		' In this case, we got a 2 character key.
 		select case keypress.keycode

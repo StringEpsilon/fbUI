@@ -1,11 +1,10 @@
 ' uiElement.bas - Do what the f... you want (WTFPL). 
 ' Author: StringEpsilon, 2015
 
-#include once "fbthread.bi"
-#include once "uiEvent.bi"
-#include once "linkedlist.bas"
-#include once "cairoHelper.bas"
-#include once "uiBaseElement.bas"
+#include "fbthread.bi"
+#include "uiEvent.bi"
+#include "linkedlist.bas"
+#include "uiBaseElement.bas"
 
 type uiElement extends IRenderable
 	private:
@@ -17,9 +16,9 @@ type uiElement extends IRenderable
 		_mutex as any ptr
 		_isActive as boolean = true
 		_hasFocus as boolean = false
-		_surface as cairo_surface_t ptr 
-		_cairo as cairo_t ptr
+		_surface as fb.image ptr 
 		_dimensions as uiDimensions
+		_stateChanged as boolean = true
 		
 		declare constructor (x as integer, y as integer)
 		declare virtual sub CreateBuffer()
@@ -66,8 +65,7 @@ Destructor uiElement()
 		mutexdestroy(this._mutex)
 		this._mutex = 0
 	end if
-	cairo_surface_destroy (this._surface)
-	cairo_destroy(this._cairo)
+	imagedestroy( this._surface )
 end destructor
 
 property uiElement.Dimensions() as uiDimensions
@@ -92,21 +90,21 @@ property uiElement.Parent(value as uiElement ptr)
 end property
 
 sub uiElement.Redraw()
+	' We assume that if an element requested to be redrawn, it has changes.
+	this._stateChanged = true
 	if (this._parentElement <> 0) then
 		this._parentElement->Redraw()
 	elseif ( this._parent ) then
-		this._parent->DrawElement(@this)		
+		this._parent->DrawElement(@this)
 	end if
 end sub
 
 sub uiElement.CreateBuffer()
-	if ( this._cairo <> 0) then
-		cairo_destroy(this._cairo)
-		cairo_surface_destroy(this._surface)
+	if ( this._surface <> 0) then
+		imagedestroy( this._surface )
 	end if
-
-	this._surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, this._dimensions.w, this._dimensions.h)
-	this._cairo = cairo_create(this._surface)
+	
+	this._surface = imagecreate(this._dimensions.w, this._dimensions.h, &h00ffffff, 32)
 end sub
 
 property uiElement.Callback(cb as sub(payload as uiElement ptr)) 

@@ -11,7 +11,7 @@ type uiListBox extends uiElementContainer
 		_scrollbar as uiScrollbar ptr
 		declare function GetElementAt(x as integer, y as integer) as uiElement ptr
 	public:
-		declare function Render() as cairo_surface_t ptr
+		declare function Render() as fb.image ptr
 		Callback as sub(payload as any ptr)
 		
 		declare destructor()
@@ -107,20 +107,21 @@ sub uiListBox.OnKeypress(keypress as uiKeyEvent)
 end sub
 
 
-function uiListBox.Render() as cairo_surface_t ptr
-	dim as integer offset = 16 * this._scrollbar->Value
-	dim element as uiElement ptr
-
-	cairo_set_source_rgb(this._cairo,1,1,1)
-	cairo_paint(this._cairo)
-	
-	for i as integer = 1 to this._dimensions.h/16
-		element = this._children->item(i+this._scrollbar->Value)
-		cairo_set_source_surface (this._cairo, element->Render(), 2, (i-1)*16)
-		cairo_paint (this._cairo)
-	next
-	cairo_set_source_surface (this._cairo,this._scrollbar->Render(), this._scrollbar->dimensions.x, this._scrollbar->dimensions.y)
-	cairo_paint (this._cairo)
+function uiListBox.Render() as fb.image ptr
+	if ( this._stateChanged ) then
+		dim as integer offset = 16 * this._scrollbar->Value
+		dim element as uiElement ptr
+		with this.dimensions
+			line this._surface, (1, 1) - (.w-2, .h-2), ElementLight, BF
+			line this._surface, (0, 0) - (.w-1, .h-1), 0, B
+			
+			for i as integer = 1 to this._dimensions.h/16
+				put this._surface, (2, (i-1)*16), this._children->item(i+this._scrollbar->Value)->render(), ALPHA
+				
+			next
+		end with
+		put this._surface, (this._scrollbar->dimensions.x, this._scrollbar->dimensions.y),this._scrollbar->Render(),ALPHA
+	end if
 	return this._surface
 end function
 

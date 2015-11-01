@@ -5,8 +5,7 @@
 
 dim as string list(10) 
 for i as integer = 0 to 10
-	list(i) = "Item #"&i
-
+	list(i) = "Item "& i
 next
 
 dim as uiWindow ptr fbGUI = uiWindow.GetInstance()

@@ -6,7 +6,7 @@
 type uiToggleButton extends uiButton
 	dim as boolean State = false
 	
-	declare virtual function Render() as cairo_surface_t  ptr
+	declare virtual function Render() as fb.image  ptr
 	declare virtual sub OnClick( mouse as uiMouseEvent)	
 	
 	declare constructor( x as integer, y as integer, newLabel as string = "")
@@ -26,10 +26,16 @@ constructor uiToggleButton( x as integer, y as integer, newLabel as string = "")
 end constructor
 
 
-function uiToggleButton.Render() as cairo_surface_t  ptr
+function uiToggleButton.Render() as fb.image  ptr
 	with this.dimensions
-		DrawButton(this._cairo,.w,.h,  this.State OR this._hold)
-		DrawLabel(this._cairo, 10, (.h - CAIRO_FONTSIZE)/2 , this._Label)
+		if (this._hold OR this.State ) then
+			line this._surface, (1, 1) - (.w-2, .h-2), ElementDark, BF
+		else
+			line this._surface, (1, 1) - (.w-2, .h-2), ElementLight, BF
+		end if
+		line this._surface, (0, 0) - (.w-1, .h-1), ElementBorderColor, B
+		draw string this._surface, ((.w - FONT_HEIGHT * len(this.Label)) / 2 ,(.h - FONT_HEIGHT)/2 ), this.label,ElementTextColor
+		
 	end with
 	return this._surface
 end function

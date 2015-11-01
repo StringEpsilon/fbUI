@@ -11,7 +11,7 @@ type uiButton extends uiElement
 	public:
 		dim as boolean IsChecked = true
 		
-		declare virtual function Render() as cairo_surface_t  ptr
+		declare virtual function Render() as fb.image  ptr
 		declare virtual sub OnClick( mouse as uiMouseEvent)	
 		declare virtual sub Onfocus( focus as boolean)
 		
@@ -24,8 +24,8 @@ end type
 constructor uiButton( x as integer, y as integer, newLabel as string = "", length as integer = 0)
 	base()
 	with this._dimensions
-		.h = CAIRO_FONTSIZE + 4
-		.w = 20 + IIF(length = 0, (len(newlabel)*CAIRO_FONTWIDTH), length * CAIRO_FONTWIDTH)
+		.h = FONT_HEIGHT + 6
+		.w = 20 + IIF(length = 0, (len(newlabel)*FONT_WIDTH), length * FONT_WIDTH)
 		.x = x
 		.y = y
 	end with
@@ -44,10 +44,17 @@ property uiButton.Label() as string
 	return this._label
 end property
 
-function uiButton.Render() as cairo_surface_t  ptr
+function uiButton.Render() as fb.image  ptr
 	with this._dimensions
-		DrawButton(this._cairo,.w,.h, this._Hold)
-		DrawLabel(this._cairo,10, (.h - CAIRO_FONTSIZE)/2, this._Label)
+		'DrawButton(this._cairo,.w,.h, this._Hold)
+		if (this._hold ) then
+			line this._surface, (1, 1) - (.w-2, .h-2), ElementDark, BF
+		else
+			line this._surface, (1, 1) - (.w-2, .h-2), ElementLight, BF
+		end if
+		line this._surface, (0, 0) - (.w-1, .h-1), ElementBorderColor, B
+		draw string this._surface, ((.w - FONT_HEIGHT * len(this.Label)) / 2 ,(.h - FONT_HEIGHT)/2 ), this.label,ElementTextColor
+		
 	end with
 	return this._surface
 end function
