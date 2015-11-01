@@ -21,6 +21,7 @@ type uiWindow extends IDrawing
 		_mouseOver as Control ptr
 		_RenderBuffer as RenderableBuffer ptr
 		_title as string
+		_shutdown as boolean = false
 		
 		declare Constructor()
 		declare Destructor()
@@ -41,8 +42,6 @@ type uiWindow extends IDrawing
 		declare sub Main()
 		declare sub AddElement( Control as Control ptr)
 		declare sub RemoveElement( Control as Control ptr)
-		
-		shutdown as boolean = false
 end type
 
 dim uiWindow._instance as uiWindow ptr = 0
@@ -59,7 +58,6 @@ end sub
 sub uiWindowStart(dummyParameter as uinteger)
 	uiWindow.GetInstance()->Main()
 end sub
-
 
 Constructor uiWindow()
 	this._mutex = mutexcreate
@@ -88,13 +86,13 @@ end property
 sub uiWindow.DrawAll()
 	dim as Control ptr child
 	mutexlock(this._mutex)
+	
+	cls
 	for i as integer = 0 to this._children->count -1
 		child = this._children->item(i)
 		
 		screenlock
-		
 		put (child->dimensions.x, child->dimensions.y), child->Render(), ALPHA
-		
 		screenunlock
 	next
 	mutexunlock(this._mutex)
@@ -188,7 +186,7 @@ sub uiWindow.HandleEvent(event as uiEvent)
 	select case as const event.eventType 
 		case uiShutdown
 			mutexlock(this._mutex)
-			this.shutdown = true
+			this._shutdown = true
 			mutexunlock(this._mutex)
 			shutdownEventListener = true
 			exit sub
@@ -268,7 +266,7 @@ sub uiWindow.Main()
 			wend			
 		end if
 		screensync
-	loop until this.ShutDown
+	loop until this._shutDown
 	ThreadWait(eventThread)
 end sub
 

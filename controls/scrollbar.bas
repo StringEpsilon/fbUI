@@ -132,7 +132,7 @@ sub uiScrollBar.CalculateValue(position as integer)
 end sub
 
 sub uiScrollBar.OnMouseMove( mouse as uiMouseEvent )
-	if ( mouse.lmb = uiClick OR (mouse.lmb = uiHold and this._hold = true) ) then
+	if ( mouse.lmb = uiClick OR (mouse.lmb = uiHold and this._hold) ) then
 		if (this._orientation = vertical) then
 			mutexlock(this._mutex)
 			dim y as integer = mouse.y - this._dimensions.y 
