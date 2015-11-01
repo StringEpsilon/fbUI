@@ -93,6 +93,7 @@ sub uiElement.Redraw()
 	' We assume that if an element requested to be redrawn, it has changes.
 	this._stateChanged = true
 	if (this._parentElement <> 0) then
+		this._parentElement->_stateChanged = true
 		this._parentElement->Redraw()
 	elseif ( this._parent ) then
 		this._parent->DrawElement(@this)

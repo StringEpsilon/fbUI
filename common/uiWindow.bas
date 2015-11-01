@@ -102,7 +102,7 @@ function uiWindow.GetElementAt(x as integer, y as integer) as uiElement ptr
 	dim result as uiElement ptr = 0
 	dim child as uiElement ptr
 	
-	for i as integer = 1 to this._children->count -1
+	for i as integer = 0 to this._children->count -1
 		child = this._children->item(i)
 		if child->Layer = background then 
 			continue for
