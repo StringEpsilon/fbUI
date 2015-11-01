@@ -2,13 +2,6 @@
 ' Author: StringEpsilon, 2015
 ' Like the hashtable, this is heavily inspired by mono / .net
 
-#ifndef bool
-enum bool
-	false = 0
-	true = not false
-end enum
-#endif
-
 #MACRO DeclareBuffer(datatype, buffername, CreateThreadSafe)
 
 type ##buffername##
@@ -28,7 +21,7 @@ type ##buffername##
 		declare constructor overload ()
 		declare constructor (initialCount as uinteger)
 		
-		declare function Contains(item as datatype) as bool
+		declare function Contains(item as datatype) as boolean
 		declare sub clear()
 		declare function Pop () as datatype
 		declare sub Push (element as datatype)
@@ -42,9 +35,6 @@ end type
 constructor ##buffername##()
 	#if CreateThreadSafe = true
 	this._mutex = mutexcreate()
-	shell "echo Threadsafe buffer"
-	#else
-	shell "echo Unsafe buffer"
 	#endif
 	this._array = callocate(sizeof(datatype))
 end constructor
@@ -97,7 +87,7 @@ function ##buffername##.Pop() as datatype
 	return element
 end function
 
-function ##buffername##.Contains(item as datatype) as bool
+function ##buffername##.Contains(item as datatype) as boolean
 	if (this._size = 0) then return false
 	dim i as integer = 0
 	while i < this._size
@@ -152,6 +142,5 @@ end property
 property ##buffername##.Capacity() as uinteger
 	return this._arraySize
 end property
-
 
 #endmacro

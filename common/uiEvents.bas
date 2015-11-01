@@ -5,14 +5,7 @@
 #include once "fbthread.bi"
 #INCLUDE once "fbgfx.bi"
 
-#ifndef bool
-enum bool
-	false = 0
-	true = not false
-end enum
-#endif
-
-dim shared shutdownEventListener as bool = false
+dim shared shutdownEventListener as boolean = false
 
 declare sub uiEventListener( callback as any ptr  )
 

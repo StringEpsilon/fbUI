@@ -15,8 +15,8 @@ type uiElement extends IRenderable
 		_layer as integer = normal
 	protected:
 		_mutex as any ptr
-		_isActive as bool = true
-		_hasFocus as bool = false
+		_isActive as boolean = true
+		_hasFocus as boolean = false
 		_surface as cairo_surface_t ptr 
 		_cairo as cairo_t ptr
 		_dimensions as uiDimensions
@@ -38,7 +38,7 @@ type uiElement extends IRenderable
 		declare constructor overload()
 				
 		' General events:
-		declare virtual sub OnFocus(focus as bool)
+		declare virtual sub OnFocus(focus as boolean)
 		' Keyboard events:
 		declare virtual sub OnKeypress(keypress as uiKeyEvent)
 		' Mouse events:
@@ -124,7 +124,7 @@ sub uiElement.DoCallback()
 end sub
 
 ' The event handling methods:
-sub UiElement.OnFocus(focus as bool)
+sub UiElement.OnFocus(focus as boolean)
 	mutexlock(this._mutex)
 	this._hasFocus = focus
 	mutexunlock(this._mutex)

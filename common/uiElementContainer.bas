@@ -21,7 +21,7 @@ type uiElementContainer extends uiElement
 		declare virtual sub OnClick(mouse as uiMouseEvent)
 		declare virtual sub OnKeypress(keypress as uiKeyEvent)
 		declare virtual sub OnMouseMove(mouse as uiMouseEvent)
-		declare virtual sub OnFocus(focus as bool)
+		declare virtual sub OnFocus(focus as boolean)
 end type
 
 constructor uiElementContainer()
@@ -65,7 +65,7 @@ sub uiElementContainer.OnKeypress(keypress as uiKeyEvent)
 end sub
 
 
-sub uiElementContainer.OnFocus(focus as bool)
+sub uiElementContainer.OnFocus(focus as boolean)
 	base.OnFocus(focus)
 	if ( this._focus <> 0 ) then
 		this._focus->OnFocus(false)

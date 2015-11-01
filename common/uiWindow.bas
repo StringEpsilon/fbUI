@@ -39,7 +39,7 @@ type uiWindow extends IDrawing
 		declare sub AddElement( uiElement as uiElement ptr)
 		declare sub RemoveElement( uiElement as uiElement ptr)
 		
-		shutdown as bool = false
+		shutdown as boolean = false
 end type
 
 dim uiWindow._instance as uiWindow ptr = 0

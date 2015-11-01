@@ -1,13 +1,6 @@
 ' uiEvent.bi - Do what the f... you want (WTFPL). 
 ' Author: StringEpsilon, 2015
 
-#ifndef bool
-enum bool
-	false = 0
-	true = not false
-end enum
-#endif
-
 enum uiEventType
 	none = 			&b00000000
 	uiKeyPress = 	&b00000001
@@ -37,7 +30,7 @@ type uiMouseEvent
 end type
 
 type uiKeyEvent
-	extended as bool = false
+	extended as boolean = false
 	keycode as integer = -1
 	key as string
 end type

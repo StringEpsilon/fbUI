@@ -22,7 +22,7 @@ type uiScrollBar extends uiElement
 		_segments as integer
 		_value as integer
 		_knob as uiScrollbarKnob
-		_hold as bool = false
+		_hold as boolean = false
 		_orientation as uiOrientation
 		_size as integer
 		declare sub CalculateValue(position as integer)
@@ -129,7 +129,7 @@ sub uiScrollBar.CalculateValue(position as integer)
 end sub
 
 sub uiScrollBar.OnMouseMove( mouse as uiMouseEvent )
-	if (mouse.lmb = uiClick  OR mouse.lmb = uiHold and this._hold) then
+	if ( mouse.lmb = uiClick OR (mouse.lmb = uiHold and this._hold = true) ) then
 		if (this._orientation = vertical) then
 			mutexlock(this._mutex)
 			dim y as integer = mouse.y - this._dimensions.y 

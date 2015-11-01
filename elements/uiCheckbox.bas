@@ -8,7 +8,7 @@ type uiCheckBox extends uiElement
 	private:
 		_boxOffset as integer
 		_Label as string 
-		_IsChecked as bool  = false
+		_IsChecked as boolean  = false
 		
 	public:
 		declare function Render() as cairo_surface_t  ptr
@@ -22,8 +22,8 @@ type uiCheckBox extends uiElement
 		declare property Label() as string
 		declare property Label(value as string)
 			
-		declare property IsChecked() as bool
-		declare property IsChecked(value as bool)
+		declare property IsChecked() as boolean
+		declare property IsChecked(value as boolean)
 
 end type
 
@@ -66,14 +66,14 @@ property uiCheckBox.Label() as string
 	return this._label
 end property
 
-property uiCheckBox.IsChecked(value as bool)
+property uiCheckBox.IsChecked(value as boolean)
 	mutexlock(this._mutex)
 	this._isChecked = value
 	mutexunlock(this._mutex)
 	this.Redraw()
 end property
 
-property uiCheckBox.IsChecked() as bool
+property uiCheckBox.IsChecked() as boolean
 	return this._isChecked
 end property
 

@@ -7,13 +7,13 @@
 type uiButton extends uiElement
 	protected:
 		dim as string _Label
-		dim as bool _hold
+		dim as boolean _hold
 	public:
-		dim as bool IsChecked = true
+		dim as boolean IsChecked = true
 		
 		declare virtual function Render() as cairo_surface_t  ptr
 		declare virtual sub OnClick( mouse as uiMouseEvent)	
-		declare virtual sub Onfocus( focus as bool)
+		declare virtual sub Onfocus( focus as boolean)
 		
 		declare constructor overload( x as integer, y as integer, newLabel as string = "", length as integer = 0)
 
@@ -67,7 +67,7 @@ sub uiButton.OnClick( mouse as uiMouseEvent )
 	end if
 end sub
 
-sub uiButton.OnFocus( focus as bool )
+sub uiButton.OnFocus( focus as boolean )
 	if (focus = false) then
 		this._hold = false
 		base.Redraw()

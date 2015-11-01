@@ -8,12 +8,6 @@
 #DEFINE RGBA_B(c) (CDBL((c)        AND 255)/255)
 #DEFINE RGBA_A(c) (CDBL((c) SHR 24        )/255)
 
-#ifndef bool
-enum bool
-	false = 0
-	true = not false
-end enum
-#endif
 
 const BackgroundColor = &hE8E8E8
 const ElementLight = &hFFFFFF
@@ -58,7 +52,7 @@ sub DrawRadio(c as cairo_t ptr, x as double, y as double , radius as double, act
 	cairo_pattern_destroy (pat)
 end sub
 
-sub DrawButton(c as cairo_t ptr,w as double,h as double,  invert as bool = false)
+sub DrawButton(c as cairo_t ptr,w as double,h as double,  invert as boolean = false)
 	'dim c as cairo_t ptr = cairo_create(surface)
 	dim x as double = 0.5
 	dim y as double = 0.5

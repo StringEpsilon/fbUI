@@ -12,7 +12,7 @@ type uiRadiobutton extends uiElement
 	private:
 		_boxOffset as integer
 		_Label as string 
-		_isSelected as bool  = false
+		_isSelected as boolean = false
 		_head as uiRadiobutton ptr
 	protected:
 		_group as _uiRadioButtonlist ptr
@@ -28,8 +28,8 @@ type uiRadiobutton extends uiElement
 		declare property Label() as string
 		declare property Label(value as string)
 			
-		declare property IsSelected() as bool
-		declare property IsSelected(value as bool)
+		declare property IsSelected() as boolean
+		declare property IsSelected(value as boolean)
 
 end type
 
@@ -73,7 +73,7 @@ property uiRadiobutton.Label() as string
 	return this._label
 end property
 
-property uiRadiobutton.IsSelected(value as bool)
+property uiRadiobutton.IsSelected(value as boolean)
 	if (value = this._isSelected) then exit property
 	
 	if (value = true) then
@@ -93,7 +93,7 @@ property uiRadiobutton.IsSelected(value as bool)
 	
 end property
 
-property uiRadiobutton.IsSelected() as bool
+property uiRadiobutton.IsSelected() as boolean
 	return this._isSelected
 end property
 

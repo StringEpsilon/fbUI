@@ -4,7 +4,7 @@
 #include once "uiButton.bas"
 
 type uiToggleButton extends uiButton
-	dim as bool State = false
+	dim as boolean State = false
 	
 	declare virtual function Render() as cairo_surface_t  ptr
 	declare virtual sub OnClick( mouse as uiMouseEvent)	
