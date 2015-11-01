@@ -111,23 +111,11 @@ sub uiTextbox.RemoveSelected()
 end sub
 
 function uiTextbox.Render() as fb.image ptr
-	with this._dimensions
-		line this._surface, (1, 1) - (.w-2, .h-2), ElementLight, BF
-		line this._surface, (0, 0) - (.w-1, .h-1), ElementBorderColor, B
-		
-		
-		if (len(this._text) <> 0) then
-			
-			if (this._offset <> 0 ) then
-				dim offsetText as string = mid(this._text, _offset+1, this._length)
-				'pango_layout_set_text(this._layout, offsetText, -1)
-				draw string this._surface, (3 ,(.h - FONT_HEIGHT)/2 ), offsetText,ElementTextColor
-			else
-				'pango_layout_set_text(this._layout, this._text, -1)
-				draw string this._surface, (3 ,(.h - FONT_HEIGHT)/2 ), this._text,ElementTextColor
-			end if
-			if (this._hasFocus) then
-				shell "echo hat focus"
+	if ( this._stateChanged ) then
+		with this._dimensions
+			line this._surface, (1, 1) - (.w-2, .h-2), ElementLight, BF
+			line this._surface, (0, 0) - (.w-1, .h-1), ElementBorderColor, B
+			if (len(this._text) <> 0) then
 				if (this._cursor.selectStart >= 0 AND this._cursor.selectEnd >= 0) then
 					IF (this._cursor.selectStart > this._cursor.selectEnd) then 
 						this._selection.selectEnd = this._cursor.selectEnd
@@ -136,36 +124,33 @@ function uiTextbox.Render() as fb.image ptr
 						this._selection.selectStart = this._cursor.selectStart
 						this._selection.selectEnd = this._cursor.selectEnd
 					end if
+					with this._selection
+						line this._surface, ((.selectStart - _offset)  * FONT_WIDTH +2, 2) - ((.selectEnd - _offset) * FONT_WIDTH +2, this._dimensions.h-3), &hFFA0A0FF, BF
+					end with
 				else
 					this._selection.selectStart = -1 
 					this._selection.selectEnd = -1
 				end if
 				
-				
-				'pango_cairo_update_layout(this._cairo, this._layout)
-				'cairo_move_to(this._cairo,3,(.h - CAIRO_FONTSIZE)/2)
-				'pango_cairo_show_layout(this._cairo, this._layout)
-				
-				'dim cursorRect as PangoRectangle ptr = new PangoRectangle
-				'pango_layout_get_cursor_pos(this._layout, this._cursor.position,cursorRect ,0)
-				'cairo_rectangle (this._cairo, 3 + cursorRect->x / PANGO_SCALE, cursorRect->y  / PANGO_SCALE, 1, cursorRect->height)
-				'cairo_fill(this._cairo)
-				
-				
-				
-				line this._surface, (this._cursor.position, 2) - (this._cursor.position-1, .h-2), 0
-				'pango_cairo_update_layout(this._cairo, this._layout)
-				'cairo_move_to(this._cairo,3,(.h - CAIRO_FONTSIZE)/2)
-				'pango_cairo_show_layout(this._cairo, this._layout)
+				if (this._offset <> 0 ) then
+					dim offsetText as string = mid(this._text, _offset+1, this._length)
+					draw string this._surface, (3 ,(.h - FONT_HEIGHT)/2 ), offsetText,ElementTextColor
+				else
+					draw string this._surface, (3 ,(.h - FONT_HEIGHT)/2 ), this._text,ElementTextColor
+				end if
 			end if
-		end if
-	end with
+			
+			if (this._hasFocus) then			
+				line this._surface, ((this._cursor.position - _offset)  * FONT_WIDTH +2, 2) - ((this._cursor.position- _offset) * FONT_WIDTH +2, .h-3), ElementBorderColor, 
+			end if
+		end with
+	end if 
 	return this._surface
 end function
 
 sub uiTextbox.OnClick( mouse as uiMouseEvent )
 	if ( mouse.lmb = uiClick ) then
-		shell "echo textbox click"
+		
 		dim as integer newCursor = (mouse.x - this.dimensions.x - 3 ) / FONT_WIDTH + this._offset
 		if ( newCursor > len(this._text) ) then
 			newCursor = len(this._text)
@@ -198,9 +183,7 @@ end sub
 
 
 sub uiTextbox.OnKeypress( keypress as uiKeyEvent )
-	
 	mutexlock(this._mutex)
-	
 	if ( keypress.extended ) then
 		' In this case, we got a 2 character key.
 		select case keypress.keycode
