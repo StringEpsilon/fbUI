@@ -1,6 +1,6 @@
-#include once "../common/uiWindow.bas"
-#include once "../elements/uiToggleButton.bas"
-#include once "../elements/uiSpinner.bas"
+#include once "../common/window.bas"
+#include once "../controls/toggleButton.bas"
+#include once "../controls/spinner.bas"
 
 declare sub btnCallback (payload as uiElement ptr)
 

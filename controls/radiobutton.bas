@@ -2,13 +2,13 @@
 ' uiRadiobutton.bas - Do what the f... you want (WTFPL). 
 ' Author: StringEpsilon, 2015
 
-#include once "../common/uiElement.bas"
+#include once "../common/control.bas"
+
+namespace fbUI
 
 type _uiRadioButtonlist as uiRadioButtonlist
 
-
-
-type uiRadiobutton extends uiElement
+type uiRadiobutton extends Control
 	private:
 		_boxOffset as integer
 		_Label as string 
@@ -156,3 +156,4 @@ sub uiRadiobutton.OnKeyPress( keyPress as uiKeyEvent )
 	end if
 end sub
 
+end namespace

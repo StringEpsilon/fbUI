@@ -1,5 +1,7 @@
 #INCLUDE once "fbgfx.bi"
-#include once "../common/uiElement.bas"
+#include once "../common/control.bas"
+
+namespace fbUI
 
 type uiTextBoxCursor
 	position as integer = 0
@@ -7,7 +9,7 @@ type uiTextBoxCursor
 	selectEnd as integer = -1
 end type
 
-type uiTextbox extends uiElement
+type uiTextbox extends Control
 	private:
 		_selection as uiTextboxCursor
 		dim as uiTextBoxCursor _cursor
@@ -232,7 +234,6 @@ sub uiTextbox.OnKeypress( keypress as uiKeyEvent )
 				if ( len(this._text) < 255  ) then
 					if ( this._cursor.Position = len(this._text) ) then
 						this._Text += keypress.key
-						
 					else
 						this._text = left(text, this._cursor.Position) + keypress.key + right (text, len(this._text) - this._cursor.Position )
 					end if
@@ -245,3 +246,5 @@ sub uiTextbox.OnKeypress( keypress as uiKeyEvent )
 	mutexunlock(this._mutex)
 	this.Redraw()
 end sub
+
+end namespace

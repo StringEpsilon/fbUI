@@ -1,7 +1,9 @@
 ' uiButton.bas - Do what the f... you want (WTFPL). 
 ' Author: StringEpsilon, 2015
 
-#include once "uiButton.bas"
+#include once "button.bas"
+
+namespace fbUI
 
 type uiToggleButton extends uiButton
 	dim as boolean State = false
@@ -55,3 +57,5 @@ sub uiToggleButton.OnClick( mouse as uiMouseEvent )
 		base.Redraw()
 	end if
 end sub
+
+end namespace

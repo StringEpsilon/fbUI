@@ -1,8 +1,8 @@
 #INCLUDE once "fbgfx.bi"
 
-#include once "../common/uiWindow.bas"
-#include once "../elements/uiTextbox.bas"
-#include once "../elements/uiLabel.bas"
+#include once "../common/window.bas"
+#include once "../elements/textbox.bas"
+#include once "../elements/label.bas"
 
 declare sub ElementCallback (payload as uiElement ptr)
 

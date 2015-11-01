@@ -1,20 +1,21 @@
-' uiElement.bas - Do what the f... you want (WTFPL). 
+' control.bas - Do what the f... you want (WTFPL). 
 ' Author: StringEpsilon, 2015
 
-#include once "uiElement.bas"
+#include once "control.bas"
 
-type uiElementContainer extends uiElement
+namespace fbUI
+
+type controlContainer extends control
 	protected:
-		_children as uiElementList ptr
-		_focus as uiElement ptr
+		_children as controlList ptr
+		_focus as control ptr
 		
-		declare function GetElementAt(x as integer, y as integer) as uiElement ptr
+		declare function GetElementAt(x as integer, y as integer) as control ptr
 		declare constructor (x as integer, y as integer)
 	
 	public:
 		Callback as sub(payload as any ptr)
-		
-		
+				
 		declare destructor()
 		declare constructor overload()
 				
@@ -24,25 +25,25 @@ type uiElementContainer extends uiElement
 		declare virtual sub OnFocus(focus as boolean)
 end type
 
-constructor uiElementContainer()
+constructor controlContainer()
 	base()
-	this._children = new uiElementList()
+	this._children = new controlList()
 end constructor 
 
-constructor uiElementContainer(x as integer, y as integer)
+constructor controlContainer(x as integer, y as integer)
 	base(x,y)
-	this._children = new uiElementList()
+	this._children = new controlList()
 end constructor 
 
-Destructor uiElementContainer()
+Destructor controlContainer()
 	base.Destructor()
 	delete this._children
 end destructor
 
-function uiElementContainer.GetElementAt(x as integer, y as integer) as uiElement ptr
-	dim result as uiElement ptr = 0
+function controlContainer.GetElementAt(x as integer, y as integer) as control ptr
+	dim result as control ptr = 0
 	dim i as integer = 0
-	dim child as uiElement ptr
+	dim child as control ptr
 	while i < this._children->count and result = 0
 		child = this._children->item(i)
 		with child->dimensions
@@ -55,21 +56,21 @@ function uiElementContainer.GetElementAt(x as integer, y as integer) as uiElemen
 	return result
 end function
 
-sub uiElementContainer.OnClick(mouse as uiMouseEvent)
+sub controlContainer.OnClick(mouse as uiMouseEvent)
 end sub
 
-sub uiElementContainer.OnMouseMove(mouse as uiMouseEvent)
+sub controlContainer.OnMouseMove(mouse as uiMouseEvent)
 end sub
 
-sub uiElementContainer.OnKeypress(keypress as uiKeyEvent)
+sub controlContainer.OnKeypress(keypress as uiKeyEvent)
 end sub
 
 
-sub uiElementContainer.OnFocus(focus as boolean)
+sub controlContainer.OnFocus(focus as boolean)
 	base.OnFocus(focus)
 	if ( this._focus <> 0 ) then
 		this._focus->OnFocus(false)
 	end if
 end sub
 
-
+end namespace

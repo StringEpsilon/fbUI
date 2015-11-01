@@ -1,7 +1,8 @@
 #INCLUDE once "fbgfx.bi"
 
-#include once "../common/uiWindow.bas"
-#include once "../elements/uiListbox.bas"
+#include once "../common/window.bas"
+#include once "../controls/listbox.bas"
+using fbUI
 
 dim as string list(10) 
 for i as integer = 0 to 10
@@ -17,3 +18,5 @@ fbGUI->CreateWindow(100,200)
 
 fbGUI->Main()
 delete(listbox)
+
+

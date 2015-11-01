@@ -4,12 +4,14 @@
 #include "fbthread.bi"
 #include "uiEvent.bi"
 #include "linkedlist.bas"
-#include "uiBaseElement.bas"
+#include "controlBase.bas"
 
-type uiElement extends IRenderable
+namespace fbUI
+
+type Control extends IRenderable
 	private:
 		_parent as IDrawing	ptr
-		_parentElement as uiElement ptr
+		_parentElement as control ptr
 		_callback as sub(payload as any ptr)
 		_layer as integer = normal
 	protected:
@@ -29,9 +31,9 @@ type uiElement extends IRenderable
 		declare property Dimensions () as uiDimensions
 		declare property Layer() as integer
 		
-		declare property Callback(cb as sub(payload as uiElement ptr)) 
+		declare property Callback(cb as sub(payload as control ptr)) 
 		declare property Parent(value as IDrawing ptr)
-		declare property Parent(value as uiElement ptr)
+		declare property Parent(value as control ptr)
 		
 		declare destructor()
 		declare constructor overload()
@@ -48,19 +50,19 @@ type uiElement extends IRenderable
 		declare virtual sub OnMouseWheel(mouse as uiMouseEvent)
 end type
 
-declareList(uiElement ptr, uiElementList)
+declareList(Control ptr, controlList)
 
-constructor uiElement()
+constructor Control()
 	this._mutex = mutexCreate()
 end constructor 
 
-constructor uiElement(x as integer, y as integer)
+constructor Control(x as integer, y as integer)
 	this.constructor()
 	this._dimensions.x = x
 	this._dimensions.y = y
 end constructor 
 
-Destructor uiElement()
+Destructor Control()
 	if (this._mutex <> 0 ) then
 		mutexdestroy(this._mutex)
 		this._mutex = 0
@@ -68,28 +70,28 @@ Destructor uiElement()
 	imagedestroy( this._surface )
 end destructor
 
-property uiElement.Dimensions() as uiDimensions
+property Control.Dimensions() as uiDimensions
 	return this._dimensions
 end property
 
-property uiElement.Layer() as integer
+property Control.Layer() as integer
 	return this._layer
 end property
 
 
-property uiElement.Parent(value as IDrawing ptr)
+property Control.Parent(value as IDrawing ptr)
 	mutexlock(this._mutex)
 	this._parent = value
 	mutexunlock(this._mutex)
 end property
 
-property uiElement.Parent(value as uiElement ptr)
+property Control.Parent(value as Control ptr)
 	mutexlock(this._mutex)
 	this._parentElement = value
 	mutexunlock(this._mutex)
 end property
 
-sub uiElement.Redraw()
+sub Control.Redraw()
 	' We assume that if an element requested to be redrawn, it has changes.
 	this._stateChanged = true
 	if (this._parentElement <> 0) then
@@ -100,7 +102,7 @@ sub uiElement.Redraw()
 	end if
 end sub
 
-sub uiElement.CreateBuffer()
+sub Control.CreateBuffer()
 	if ( this._surface <> 0) then
 		imagedestroy( this._surface )
 	end if
@@ -108,7 +110,7 @@ sub uiElement.CreateBuffer()
 	this._surface = imagecreate(this._dimensions.w, this._dimensions.h, &h00ffffff, 32)
 end sub
 
-property uiElement.Callback(cb as sub(payload as uiElement ptr)) 
+property Control.Callback(cb as sub(payload as Control ptr)) 
 	mutexlock(this._mutex)
 	if (cb <> 0) then
 		this._callback = cast(sub(payload as any ptr),cb)
@@ -116,35 +118,36 @@ property uiElement.Callback(cb as sub(payload as uiElement ptr))
 	mutexunlock(this._mutex)
 end property
 
-sub uiElement.DoCallback()
+sub Control.DoCallback()
 	if (this._callback <> 0) then
 		threaddetach(threadcreate(this._callback, @this))
 	end if
 end sub
 
 ' The event handling methods:
-sub UiElement.OnFocus(focus as boolean)
+sub Control.OnFocus(focus as boolean)
 	mutexlock(this._mutex)
 	this._hasFocus = focus
 	mutexunlock(this._mutex)
 	this.Redraw()
 end sub
 
-sub UiElement.OnKeypress(keypress as uiKeyEvent)
+sub Control.OnKeypress(keypress as uiKeyEvent)
 end sub
 
-sub UiElement.OnClick(mouse as uiMouseEvent)
+sub Control.OnClick(mouse as uiMouseEvent)
 end sub
 
-sub UiElement.OnMouseMove(mouse as uiMouseEvent)
+sub Control.OnMouseMove(mouse as uiMouseEvent)
 end sub
 
-sub UiElement.OnMouseOver(mouse as uiMouseEvent)
+sub Control.OnMouseOver(mouse as uiMouseEvent)
 end sub
 
-sub UiElement.OnMouseLeave(mouse as uiMouseEvent)
+sub Control.OnMouseLeave(mouse as uiMouseEvent)
 end sub
 
-sub UiElement.OnMouseWheel(mouse as uiMouseEvent)
+sub Control.OnMouseWheel(mouse as uiMouseEvent)
 end sub
 
+end namespace

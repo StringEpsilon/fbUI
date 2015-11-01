@@ -1,10 +1,11 @@
 ' uiCheckBox.bas - Do what the f... you want (WTFPL). 
 ' Author: StringEpsilon, 2015
 
-#include once "../common/uiElement.bas"
+#include once "../common/control.bas"
 
+namespace fbUI
 
-type uiCheckBox extends uiElement
+type uiCheckBox extends Control
 	private:
 		_boxOffset as integer
 		_Label as string 
@@ -125,3 +126,4 @@ sub uiCheckBox.OnKeyPress( keyPress as uiKeyEvent )
 	end if
 end sub
 
+end namespace

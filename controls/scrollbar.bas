@@ -1,8 +1,10 @@
 ' uiScrollBar.bas - Do what the f... you want (WTFPL). 
 ' Author: StringEpsilon, 2015
 
-#include once "../common/uiElement.bas"
+#include once "../common/control.bas"
 #define uiCeil(d) (-Int(-d))
+
+namespace fbUI
 
 type uiScrollbarKnob
 	Size as double
@@ -14,7 +16,7 @@ enum uiOrientation
 	horizontal = 1
 end enum
 
-type uiScrollBar extends uiElement
+type uiScrollBar extends control
 	private:
 		_min as integer
 		_max as integer
@@ -196,3 +198,5 @@ function uiScrollBar.Render() as fb.image  ptr
 	end if
 	return this._surface
 end function
+
+end namespace

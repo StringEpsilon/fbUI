@@ -1,9 +1,11 @@
 ' uiLabel.bas - Do what the f... you want (WTFPL). 
 ' Author: StringEpsilon, 2015
 
-#include once "../common/uiElement.bas"
+#include once "../common/control.bas"
 
-type uiLabel extends uiElement
+namespace fbUI
+
+type uiLabel extends Control
 	private:
 		_Text as string 
 	public:
@@ -50,3 +52,5 @@ function uiLabel.Render() as fb.image ptr
 	end if
 	return this._surface
 end function
+
+end namespace

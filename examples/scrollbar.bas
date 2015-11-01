@@ -1,15 +1,14 @@
 #INCLUDE once "fbgfx.bi"
 
+#include once "../common/window.bas"
+#include once "../controls/scrollbar.bas"
 
+#include once "../controls/label.bas"
+using fbUI
 
-#include once "../common/uiWindow.bas"
-#include once "../elements/uiScrollbar.bas"
-
-#include once "../elements/uiLabel.bas"
-
-declare sub ElementCallback (payload as uiElement ptr)
-declare sub ElementCallback2 (payload as uiElement ptr)
-declare sub ElementCallback3 (payload as uiElement ptr)
+declare sub ElementCallback (payload as Control ptr)
+declare sub ElementCallback2 (payload as Control ptr)
+declare sub ElementCallback3 (payload as Control ptr)
 
 dim as uiWindow ptr fbGUI = uiWindow.GetInstance()
 dim as uiScrollBar ptr vscrollbar = new uiScrollBar (  5, 16, 80,10,0,1)
@@ -38,26 +37,26 @@ fbGUI->CreateWindow(100,200)
 fbGUI->Main()
 
 
-sub ElementCallback (payload as uiElement ptr)
+sub ElementCallback (payload as Control ptr)
 	if (payload <> 0 ) then
 		' The payload should be always a pointer of the calling element
-		dim element as uiElement ptr = cast(uiElement ptr, payload)
+		dim element as Control ptr = cast(Control ptr, payload)
 		dim vscrollbar as uiScrollBar ptr = cast(uiScrollBar ptr, element)
 		label1->Text =  "Range 1: " & vscrollbar->Value
 	end if
 end sub
-sub ElementCallback2 (payload as uiElement ptr)
+sub ElementCallback2 (payload as Control ptr)
 	if (payload <> 0 ) then
 		' The payload should be always a pointer of the calling element
-		dim element as uiElement ptr = cast(uiElement ptr, payload)
+		dim element as Control ptr = cast(Control ptr, payload)
 		dim vscrollbar as uiScrollBar ptr = cast(uiScrollBar ptr, element)
 		label2->Text =  "Range 2: " & vscrollbar->Value
 	end if
 end sub     
-sub ElementCallback3 (payload as uiElement ptr)
+sub ElementCallback3 (payload as Control ptr)
 	if (payload <> 0 ) then
 		' The payload should be always a pointer of the calling element
-		dim element as uiElement ptr = cast(uiElement ptr, payload)
+		dim element as Control ptr = cast(Control ptr, payload)
 		dim vscrollbar as uiScrollBar ptr = cast(uiScrollBar ptr, element)
 		label3->Text =  "Range 3:  " & vscrollbar->Value
 	end if

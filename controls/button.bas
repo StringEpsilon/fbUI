@@ -1,10 +1,11 @@
 ' uiButton.bas - Do what the f... you want (WTFPL). 
 ' Author: StringEpsilon, 2015
 
-#include once "../common/uiElement.bas"
+#include once "../common/control.bas"
 
+namespace fbUI
 
-type uiButton extends uiElement
+type uiButton extends Control
 	protected:
 		dim as string _Label
 		dim as boolean _hold
@@ -80,3 +81,5 @@ sub uiButton.OnFocus( focus as boolean )
 		base.Redraw()
 	end if
 end sub
+
+end namespace

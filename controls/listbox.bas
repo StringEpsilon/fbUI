@@ -1,15 +1,17 @@
-' uiElement.bas - Do what the f... you want (WTFPL). 
+' Control.bas - Do what the f... you want (WTFPL). 
 ' Author: StringEpsilon, 2015
 
-#include once "../common/uiElementContainer.bas"
-#include once "uiLabel.bas"
-#include once "uiScrollbar.bas"
+#include once "../common/controlContainer.bas"
+#include once "label.bas"
+#include once "scrollbar.bas"
 
-type uiListBox extends uiElementContainer
+namespace fbUI
+
+type uiListBox extends ControlContainer
 	private:
 		_selection as uiLabel ptr
 		_scrollbar as uiScrollbar ptr
-		declare function GetElementAt(x as integer, y as integer) as uiElement ptr
+		declare function GetElementAt(x as integer, y as integer) as Control ptr
 	public:
 		declare function Render() as fb.image ptr
 		Callback as sub(payload as any ptr)
@@ -17,7 +19,7 @@ type uiListBox extends uiElementContainer
 		declare destructor()
 		declare constructor (x as integer, y as integer,h as integer, w as integer, list() as string)
 				
-		declare sub OnuiClick(mouse as uiMouseEvent)
+		declare sub OnClick(mouse as uiMouseEvent)
 		declare sub OnKeypress(keypress as uiKeyEvent)
 		declare sub OnMouseMove(mouse as uiMouseEvent)
 end type
@@ -46,15 +48,23 @@ Destructor uiListBox()
 	delete this._children
 end destructor
 
-function uiListBox.GetElementAt(x as integer, y as integer) as uiElement ptr
-	dim result as uiElement ptr = 0
+function uiListBox.GetElementAt(x as integer, y as integer) as Control ptr
+	dim result as Control ptr = 0
 	dim i as integer = 0
-	dim child as uiElement ptr
+	dim child as Control ptr
+	dim as integer offset = 16 * this._scrollbar->Value
+	
 	while i < this._children->count and result = 0
 		child = this._children->item(i)
 		with child->dimensions
-			if (( x >= .x) AND ( x <= .x + .w ) and ( y >= .y) and (y <= .y + .h)) then
-				result = child
+			if ( *child is uiLabel ) then
+				if (( x >= .x) AND ( x <= .x + .w ) and ( y >= .y - offset) and (y <= .y - offset + .h)) then
+					result = child
+				end if
+			else
+				if (( x >= .x) AND ( x <= .x + .w ) and ( y >= .y - offset) and (y <= .y - offset + .h)) then
+					result = child
+				end if
 			end if
 		end with
 		i+=1
@@ -63,12 +73,12 @@ function uiListBox.GetElementAt(x as integer, y as integer) as uiElement ptr
 end function
 
 
-sub uiListBox.OnuiClick(mouse as uiMouseEvent)
+sub uiListBox.OnClick(mouse as uiMouseEvent)
 	mouse.x = mouse.x - this.dimensions.x
 	mouse.y = mouse.y - this.dimensions.y
 	
-	dim uiClickedElement as uiElement ptr = this.GetElementAt(mouse.x, mouse.y)
-	if (uiClickedElement <> 0) then
+	dim uiClickedElement as Control ptr = this.GetElementAt(mouse.x, mouse.y)
+	if ( uiClickedElement <> 0 ) then
 		if (this._focus <> uiClickedElement) then
 			if (this._focus <> 0 ) then
 				this._focus->OnFocus(false)
@@ -110,13 +120,18 @@ end sub
 function uiListBox.Render() as fb.image ptr
 	if ( this._stateChanged ) then
 		dim as integer offset = 16 * this._scrollbar->Value
-		dim element as uiElement ptr
+		dim element as Control ptr
 		with this.dimensions
 			line this._surface, (1, 1) - (.w-2, .h-2), ElementLight, BF
 			line this._surface, (0, 0) - (.w-1, .h-1), 0, B
 			
 			for i as integer = 1 to this._dimensions.h/16
-				put this._surface, (2, (i-1)*16), this._children->item(i+this._scrollbar->Value)->render(), ALPHA
+				element =  this._children->item(i+this._scrollbar->Value)
+				if (element = this._selection) then
+					line this._surface, (2, (i-1)*16 - offset + 1) - (.w -2, (i)*16 - offset -2), &hFFA0A0FF, BF
+				end if
+				
+				put this._surface, (2, (i-1)*16), element->render(), ALPHA
 				
 			next
 		end with
@@ -125,3 +140,4 @@ function uiListBox.Render() as fb.image ptr
 	return this._surface
 end function
 
+end namespace
