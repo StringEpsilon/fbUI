@@ -2,7 +2,9 @@
 #include once "../controls/toggleButton.bas"
 #include once "../controls/spinner.bas"
 
-declare sub btnCallback (payload as uiElement ptr)
+using fbUI
+
+declare sub btnCallback (payload as Control ptr)
 
 dim as uiWindow ptr fbGUI = uiWindow.GetInstance()
 dim as uiToggleButton ptr toggleButton
@@ -16,18 +18,17 @@ toggleButton->callback = @btnCallback
 fbGUI->AddElement(spinner)
 fbGUI->AddElement(toggleButton)
 fbGUI->CreateWindow(100,200)
-' Start the event loop and the main UI thread:
-fbGUI->Main()
-' You can exit the UI with ctrl+q
 
-' Destroy the uiElements:
+threadcreate(@StartSpinnerAnimation,spinner)
+
+fbGUI->Main()
+
 delete(toggleButton)
 delete(spinner)
-'delete(fbGUI)
 
 end
 
-sub btnCallback (payload as uiElement ptr)
+sub btnCallback (payload as Control ptr)
 	if (payload <> 0 ) then
 		' The payload should be always a pointer of the calling element
 		dim button as uiToggleButton ptr = cast(uiToggleButton ptr, payload)
