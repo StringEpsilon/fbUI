@@ -1,6 +1,6 @@
 # fbUI
 
-UI toolkit written in FreeBASIC with the help of Cairo.
+UI toolkit written in FreeBASIC.
 
 ### Design-Goals
 
