@@ -50,27 +50,16 @@ Destructor uiListBox()
 end destructor
 
 function uiListBox.GetElementAt(x as integer, y as integer) as uiControl ptr
-	dim result as uiControl ptr = 0
-	dim i as integer = 0
-	dim child as uiControl ptr
-	dim as integer offset = 16 * this._scrollbar->Value
+	' If scrollbar, we can leave early.
+	with this._scrollbar->dimensions
+		if (( x >= .x) AND ( x <= .x + .w ) and ( y >= .y ) and (y <= .y + .h)) then
+			return this._scrollbar
+		end if
+	end with
 	
-	while i < this._children->count and result = 0
-		child = this._children->item(i)
-		with child->dimensions
-			if ( *child is uiLabel ) then
-				if (( x >= .x) AND ( x <= .x + .w ) and ( y >= .y - offset) and (y <= .y - offset + .h)) then
-					result = child
-				end if
-			else
-				if (( x >= .x) AND ( x <= .x + .w ) and ( y >= .y - offset) and (y <= .y - offset + .h)) then
-					result = child
-				end if
-			end if
-		end with
-		i+=1
-	wend
-	return result
+	dim i as integer
+	i = int(y / 16) + this._scrollbar->value +1
+	return this._children->item(i)
 end function
 
 
@@ -134,7 +123,7 @@ function uiListBox.Render() as fb.image ptr
 			for i as integer = 1 to this._dimensions.h/16
 				element =  this._children->item(i+this._scrollbar->Value)
 				if (element = this._selection) then
-					line this._surface, (2, (i-1)*16 - offset + 1) - (.w -2, (i)*16 - offset -2), &hFFA0A0FF, BF
+					line this._surface, (2, (i-1)*16 + 1) - (.w -2, (i)*16 -2), &hFFA0A0FF, BF
 				end if
 				
 				put this._surface, (2, (i-1)*16), element->render(), ALPHA

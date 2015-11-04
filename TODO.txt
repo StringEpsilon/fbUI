@@ -3,10 +3,11 @@ Features:
 [ ] More basic elements for a first release:
 	[X] Radio buttons
 	[X] Labels
-	[-] Listbox 
+	[X] Listbox 
 	[X] Scrollbars 
 	[ ] Textarea / Multiline textbox
 	[ ] Dropdown / Combobox
+	[ ] Menus
 	[ ] ...
 	
 [ ] uiTextbox / Textcontrols:
