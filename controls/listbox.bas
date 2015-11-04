@@ -7,11 +7,11 @@
 
 namespace fbUI
 
-type uiListBox extends ControlContainer
+type uiListBox extends uiControlContainer
 	private:
 		_selection as uiLabel ptr
 		_scrollbar as uiScrollbar ptr
-		declare function GetElementAt(x as integer, y as integer) as Control ptr
+		declare function GetElementAt(x as integer, y as integer) as uiControl ptr
 	public:
 		declare function Render() as fb.image ptr
 		Callback as sub(payload as any ptr)
@@ -48,10 +48,10 @@ Destructor uiListBox()
 	delete this._children
 end destructor
 
-function uiListBox.GetElementAt(x as integer, y as integer) as Control ptr
-	dim result as Control ptr = 0
+function uiListBox.GetElementAt(x as integer, y as integer) as uiControl ptr
+	dim result as uiControl ptr = 0
 	dim i as integer = 0
-	dim child as Control ptr
+	dim child as uiControl ptr
 	dim as integer offset = 16 * this._scrollbar->Value
 	
 	while i < this._children->count and result = 0
@@ -77,7 +77,7 @@ sub uiListBox.OnClick(mouse as uiMouseEvent)
 	mouse.x = mouse.x - this.dimensions.x
 	mouse.y = mouse.y - this.dimensions.y
 	
-	dim uiClickedElement as Control ptr = this.GetElementAt(mouse.x, mouse.y)
+	dim uiClickedElement as uiControl ptr = this.GetElementAt(mouse.x, mouse.y)
 	if ( uiClickedElement <> 0 ) then
 		if (this._focus <> uiClickedElement) then
 			if (this._focus <> 0 ) then
@@ -120,7 +120,7 @@ end sub
 function uiListBox.Render() as fb.image ptr
 	if ( this._stateChanged ) then
 		dim as integer offset = 16 * this._scrollbar->Value
-		dim element as Control ptr
+		dim element as uiControl ptr
 		with this.dimensions
 			line this._surface, (1, 1) - (.w-2, .h-2), ElementLight, BF
 			line this._surface, (0, 0) - (.w-1, .h-1), 0, B

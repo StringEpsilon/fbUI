@@ -5,12 +5,12 @@
 
 namespace fbUI
 
-type controlContainer extends control
+type uiControlContainer extends uiControl
 	protected:
 		_children as controlList ptr
-		_focus as control ptr
+		_focus as uiControl ptr
 		
-		declare function GetElementAt(x as integer, y as integer) as control ptr
+		declare function GetElementAt(x as integer, y as integer) as uiControl ptr
 		declare constructor (x as integer, y as integer)
 	
 	public:
@@ -25,25 +25,25 @@ type controlContainer extends control
 		declare virtual sub OnFocus(focus as boolean)
 end type
 
-constructor controlContainer()
+constructor uiControlContainer()
 	base()
 	this._children = new controlList()
 end constructor 
 
-constructor controlContainer(x as integer, y as integer)
+constructor uiControlContainer(x as integer, y as integer)
 	base(x,y)
 	this._children = new controlList()
 end constructor 
 
-Destructor controlContainer()
+Destructor uiControlContainer()
 	base.Destructor()
 	delete this._children
 end destructor
 
-function controlContainer.GetElementAt(x as integer, y as integer) as control ptr
-	dim result as control ptr = 0
+function uiControlContainer.GetElementAt(x as integer, y as integer) as uiControl ptr
+	dim result as uiControl ptr = 0
 	dim i as integer = 0
-	dim child as control ptr
+	dim child as uiControl ptr
 	while i < this._children->count and result = 0
 		child = this._children->item(i)
 		with child->dimensions
@@ -56,17 +56,17 @@ function controlContainer.GetElementAt(x as integer, y as integer) as control pt
 	return result
 end function
 
-sub controlContainer.OnClick(mouse as uiMouseEvent)
+sub uiControlContainer.OnClick(mouse as uiMouseEvent)
 end sub
 
-sub controlContainer.OnMouseMove(mouse as uiMouseEvent)
+sub uiControlContainer.OnMouseMove(mouse as uiMouseEvent)
 end sub
 
-sub controlContainer.OnKeypress(keypress as uiKeyEvent)
+sub uiControlContainer.OnKeypress(keypress as uiKeyEvent)
 end sub
 
 
-sub controlContainer.OnFocus(focus as boolean)
+sub uiControlContainer.OnFocus(focus as boolean)
 	base.OnFocus(focus)
 	if ( this._focus <> 0 ) then
 		this._focus->OnFocus(false)

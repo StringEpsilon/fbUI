@@ -1,10 +1,12 @@
 #INCLUDE once "fbgfx.bi"
 
 #include once "../common/window.bas"
-#include once "../elements/textbox.bas"
-#include once "../elements/label.bas"
+#include once "../controls/textbox.bas"
+#include once "../controls/label.bas"
 
-declare sub ElementCallback (payload as uiElement ptr)
+using fbUI
+
+declare sub ElementCallback (payload as uiControl ptr)
 
 dim as uiWindow ptr fbGUI = uiWindow.GetInstance()
 dim shared label as uiLabel ptr
@@ -13,6 +15,7 @@ dim as uiTextbox ptr textbox = new uiTextbox( 5, 25, 190)
 
 textbox->callback = @ElementCallback
 
+fbGUI->AddElement(new uiLabel(5,40,"Type & press Enter",25))
 fbGUI->AddElement(label)
 fbGUI->AddElement(textbox)
 fbGUI->CreateWindow(100,200)
@@ -21,7 +24,7 @@ fbGUI->Main()
 
 delete(textbox)
 
-sub ElementCallback (payload as uiElement ptr)
+sub ElementCallback (payload as uiControl ptr)
 	if (payload <> 0 ) then
 		label->Text = cast(uiTextbox ptr, payload)->Text
 	end if

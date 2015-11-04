@@ -9,7 +9,7 @@ type uiTextBoxCursor
 	selectEnd as integer = -1
 end type
 
-type uiTextbox extends Control
+type uiTextbox extends uiControl
 	private:
 		_selection as uiTextboxCursor
 		dim as uiTextBoxCursor _cursor

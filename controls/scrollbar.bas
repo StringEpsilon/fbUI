@@ -16,7 +16,7 @@ enum uiOrientation
 	horizontal = 1
 end enum
 
-type uiScrollBar extends control
+type uiScrollBar extends uiControl
 	private:
 		_min as integer
 		_max as integer

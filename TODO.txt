@@ -1,7 +1,5 @@
 Features:
 
-[ ] Fix TextBox.
-
 [ ] More basic elements for a first release:
 	[X] Radio buttons
 	[X] Labels

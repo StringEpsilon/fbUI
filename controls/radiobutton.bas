@@ -8,7 +8,7 @@ namespace fbUI
 
 type _uiRadioButtonlist as uiRadioButtonlist
 
-type uiRadiobutton extends Control
+type uiRadiobutton extends uiControl
 	private:
 		_boxOffset as integer
 		_Label as string 

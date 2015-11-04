@@ -6,7 +6,7 @@
 
 namespace fbUI
 
-type uiSpinner extends control
+type uiSpinner extends uiControl
 	private:
 		_state as boolean = false
 		_currentFrame as integer = 1

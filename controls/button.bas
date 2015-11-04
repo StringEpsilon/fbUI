@@ -5,7 +5,7 @@
 
 namespace fbUI
 
-type uiButton extends Control
+type uiButton extends uiControl
 	protected:
 		dim as string _Label
 		dim as boolean _hold

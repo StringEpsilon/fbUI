@@ -17,8 +17,8 @@ type uiWindow extends IDrawing
 		static _instance as uiWindow ptr
 		_mutex as any ptr
 		_children as controlList ptr
-		_focus as control ptr
-		_mouseOver as Control ptr
+		_focus as uiControl ptr
+		_mouseOver as uiControl ptr
 		_RenderBuffer as RenderableBuffer ptr
 		_title as string
 		_shutdown as boolean = false
@@ -26,7 +26,7 @@ type uiWindow extends IDrawing
 		declare Constructor()
 		declare Destructor()
 		declare sub DrawAll()	
-		declare function GetElementAt(x as integer, y as integer) as Control ptr
+		declare function GetElementAt(x as integer, y as integer) as uiControl ptr
 	public:
 		declare property Title() as string
 		declare property Title(newTitle as string)
@@ -40,8 +40,8 @@ type uiWindow extends IDrawing
 		declare sub CreateWindow(h as integer, w as integer, newTitle as string = "")
 		declare sub HandleEvent(event as uiEvent)
 		declare sub Main()
-		declare sub AddElement( Control as Control ptr)
-		declare sub RemoveElement( Control as Control ptr)
+		declare sub AddElement( Control as uiControl ptr)
+		declare sub RemoveElement( Control as uiControl ptr)
 end type
 
 dim uiWindow._instance as uiWindow ptr = 0
@@ -84,7 +84,7 @@ property uiWindow.Title(newTitle as string)
 end property
 
 sub uiWindow.DrawAll()
-	dim as Control ptr child
+	dim as uiControl ptr child
 	mutexlock(this._mutex)
 	
 	cls
@@ -98,9 +98,9 @@ sub uiWindow.DrawAll()
 	mutexunlock(this._mutex)
 end sub
 
-function uiWindow.GetElementAt(x as integer, y as integer) as Control ptr
-	dim result as Control ptr = 0
-	dim child as Control ptr
+function uiWindow.GetElementAt(x as integer, y as integer) as uiControl ptr
+	dim result as uiControl ptr = 0
+	dim child as uiControl ptr
 	
 	for i as integer = 0 to this._children->count -1
 		child = this._children->item(i)
@@ -118,7 +118,7 @@ function uiWindow.GetElementAt(x as integer, y as integer) as Control ptr
 	return result
 end function
 
-sub uiWindow.AddElement( element as Control ptr)
+sub uiWindow.AddElement( element as uiControl ptr)
 	if (element <> 0) then
 		mutexlock(this._mutex)
 		element->Parent = @this
@@ -145,7 +145,7 @@ sub uiWindow.DestroyInstance()
 	end if
 end sub
 
-sub uiWindow.RemoveElement(element as Control ptr)
+sub uiWindow.RemoveElement(element as uiControl ptr)
 	if (element <> 0) then
 		dim i as integer = 0
 		while i < this._children->count
@@ -195,7 +195,7 @@ sub uiWindow.HandleEvent(event as uiEvent)
 				this._focus->OnKeypress(event.keypress)
 			end if
 		case uiMouseClick
-			dim uiClickedElement as Control ptr = this.GetElementAt(event.mouse.x, event.mouse.y)
+			dim uiClickedElement as uiControl ptr = this.GetElementAt(event.mouse.x, event.mouse.y)
 			' Always forward the release event to the element last clicked.
 			if ( event.mouse.last = uiReleased and this._focus <> 0 ) then
 				this._focus->OnClick(event.mouse)
@@ -223,8 +223,8 @@ sub uiWindow.HandleEvent(event as uiEvent)
 				this._focus->OnMouseMove(event.mouse)
 			end if
 			
-			dim as Control ptr mouseLeave, mouseEnter
-			dim uiClickedElement as Control ptr = this.GetElementAt(event.mouse.x, event.mouse.y)
+			dim as uiControl ptr mouseLeave, mouseEnter
+			dim uiClickedElement as uiControl ptr = this.GetElementAt(event.mouse.x, event.mouse.y)
 			
 			mutexlock(this._mutex)
 			if ( this._mouseOver <> uiClickedElement) then

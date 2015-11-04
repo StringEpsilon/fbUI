@@ -5,7 +5,7 @@
 
 namespace fbUI
 
-type uiCheckBox extends Control
+type uiCheckBox extends uiControl
 	private:
 		_boxOffset as integer
 		_Label as string 

@@ -4,7 +4,7 @@
 
 using fbUI
 
-declare sub btnCallback (payload as Control ptr)
+declare sub btnCallback (payload as uiControl ptr)
 
 dim as uiWindow ptr fbGUI = uiWindow.GetInstance()
 dim as uiToggleButton ptr toggleButton
@@ -28,7 +28,7 @@ delete(spinner)
 
 end
 
-sub btnCallback (payload as Control ptr)
+sub btnCallback (payload as uiControl ptr)
 	if (payload <> 0 ) then
 		' The payload should be always a pointer of the calling element
 		dim button as uiToggleButton ptr = cast(uiToggleButton ptr, payload)

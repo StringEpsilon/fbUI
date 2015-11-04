@@ -5,7 +5,7 @@
 
 namespace fbUI
 
-type uiLabel extends Control
+type uiLabel extends uiControl
 	private:
 		_Text as string 
 	public:
