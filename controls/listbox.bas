@@ -22,6 +22,7 @@ type uiListBox extends uiControlContainer
 		declare sub OnClick(mouse as uiMouseEvent)
 		declare sub OnKeypress(keypress as uiKeyEvent)
 		declare sub OnMouseMove(mouse as uiMouseEvent)
+		declare sub OnMouseWheel(mouse as uiMouseEvent)
 end type
 
 constructor uiListBox(x as integer, y as integer,h as integer, w as integer, list() as string)
@@ -116,6 +117,11 @@ sub uiListBox.OnKeypress(keypress as uiKeyEvent)
 	end if
 end sub
 
+sub uiListBox.OnMouseWheel( mouse as uiMouseEvent )
+	this._scrollbar->OnMouseWheel( mouse  )
+	' TODO Should listen to event, but in the meantime:
+	this.redraw()
+end sub
 
 function uiListBox.Render() as fb.image ptr
 	if ( this._stateChanged ) then

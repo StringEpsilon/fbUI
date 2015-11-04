@@ -170,7 +170,7 @@ sub uiScrollBar.OnClick( mouse as uiMouseEvent )
 end sub
 
 sub uiScrollBar.OnMouseWheel( mouse as uiMouseEvent )
-	if (mouse.wheel < 0 AND this._value > this._min ) OR (mouse.wheel > 0 AND this._value < this._segments-this._min+1 ) then
+	if (mouse.wheel < 0 AND this._value > this._min ) OR (mouse.wheel > 0 AND this._value < this._max) then
 		mutexlock(this._mutex)
 		this._value += mouse.wheel
 		this._knob.Position = this._knob.Size * (this._value - this._min)
