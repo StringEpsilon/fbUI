@@ -188,7 +188,6 @@ sub uiWindow.HandleEvent(event as uiEvent)
 			mutexlock(this._mutex)
 			this._shutdown = true
 			mutexunlock(this._mutex)
-			shutdownEventListener = true
 			exit sub
 		case uikeyPress
 			if (this._focus <> 0) then
@@ -255,16 +254,14 @@ sub uiWindow.Main()
 	dim element as IRenderable ptr
 	eventThread = threadcreate(@uiEventListener, @uiWindowEventDispatcher) 
 	do
-		if (this._RenderBuffer->count > 0) then
-			while this._RenderBuffer->count > 0
-				element = this._RenderBuffer->Pop()
-				with element->dimensions
-					screenlock
-					put (element->dimensions.x, element->dimensions.y), element->Render(), ALPHA
-					screenunlock
-				end with
-			wend			
-		end if
+		while this._RenderBuffer->count > 0
+			element = this._RenderBuffer->Pop()
+			with element->dimensions
+				'screenlock
+				put (element->dimensions.x, element->dimensions.y), element->Render(), ALPHA
+				'screenunlock
+			end with
+		wend
 		screensync
 	loop until this._shutDown
 	ThreadWait(eventThread)

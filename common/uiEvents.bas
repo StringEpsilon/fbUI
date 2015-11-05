@@ -5,8 +5,6 @@
 #include once "fbthread.bi"
 #INCLUDE once "fbgfx.bi"
 
-dim shared shutdownEventListener as boolean = false
-
 declare sub uiEventListener( callback as any ptr  )
 
 sub uiEventListener( callback as any ptr  )
@@ -72,12 +70,11 @@ sub uiEventListener( callback as any ptr  )
 					newEvent->EventType = uiShutDown
 			end select
 			if ( newEvent->eventType <> 0  ) then
-				
 				threaddetach( threadcreate (cast(any ptr, callback), newEvent ))
 			end if
 			oldMouse = newEvent->Mouse
 		end if
 		sleep 1
-	loop until shutdownEventListener
+	loop until newEvent->EventType = uiShutDown
 	delete newEvent
 end sub
