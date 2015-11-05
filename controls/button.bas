@@ -47,7 +47,6 @@ end property
 
 function uiButton.Render() as fb.image  ptr
 	with this._dimensions
-		'DrawButton(this._cairo,.w,.h, this._Hold)
 		if (this._hold ) then
 			line this._surface, (1, 1) - (.w-2, .h-2), ElementDark, BF
 		else
@@ -64,6 +63,7 @@ sub uiButton.OnClick( mouse as uiMouseEvent )
 	if ( mouse.lmb = uiReleased  ) then
 		mutexlock(this._mutex)
 		this._hold = false
+		sleep 75, 1
 		mutexunlock(this._mutex)
 		this.DoCallback()
 		base.Redraw()
