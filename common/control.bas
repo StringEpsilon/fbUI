@@ -4,7 +4,7 @@
 #include "fbthread.bi"
 #include "uiEvent.bi"
 #include "linkedlist.bas"
-#include "controlBase.bas"
+#include "base/IDrawing.bi"
 
 namespace fbUI
 
@@ -28,8 +28,8 @@ type uiControl extends IRenderable
 		declare sub DoCallback()
 	public:
 		' IRenderable:
-		declare property Dimensions () as uiDimensions
-		declare property Layer() as integer
+		declare property Dimensions () byref as uiDimensions
+		declare property Layer() byref as integer
 		
 		declare property Callback(cb as sub(payload as uiControl ptr)) 
 		declare property Parent(value as IDrawing ptr)
@@ -70,11 +70,11 @@ Destructor uiControl()
 	imagedestroy( this._surface )
 end destructor
 
-property uiControl.Dimensions() as uiDimensions
+property uiControl.Dimensions() byref as uiDimensions
 	return this._dimensions
 end property
 
-property uiControl.Layer() as integer
+property uiControl.Layer() byref as integer
 	return this._layer
 end property
 

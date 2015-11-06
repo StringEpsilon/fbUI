@@ -2,7 +2,7 @@
 ' Author: StringEpsilon, 2015
 
 #include once "../common/controlContainer.bas"
-#include once "label.bas"
+#include once "menuItem.bas"
 
 namespace fbUI
 
@@ -24,10 +24,13 @@ constructor uiMenu(h as integer, w as integer, list() as string)
 	this._dimensions.h = h
 	this._dimensions.w = w
 	
-	dim child as uiLabel ptr 
-	
+	dim child as uiMenuItem ptr 
+	dim yOffset as integer
 	for i as integer = 0 to ubound(list)
-		child = new uiLabel(0,0, list(i))
+		child = new uiMenuItem(list(i))
+		child->dimensions.x = yOffset
+		shell "echo "& yOffset & " . " & child->dimensions.x
+		yOffset += child->dimensions.w
 		child->Parent = @this
 		this._children->Append(child)
 	next
@@ -55,11 +58,7 @@ sub uiMenu.OnClick(mouse as uiMouseEvent)
 			mutexunlock(this._mutex)
 			this._focus->OnFocus(true)
 		end if
-		if (*uiClickedElement is uiLabel) then
-			this.Redraw()
-		else
-			uiClickedElement->OnClick(mouse)
-		end if
+		uiClickedElement->OnClick(mouse)
 	elseif (this._focus <> 0) then
 		this._focus->OnFocus(false)
 		mutexlock(this._mutex)
@@ -91,9 +90,10 @@ function uiMenu.Render() as fb.image ptr
 			line this._surface, (0, 0) - (.w-1, .h-1), ElementBorderColor, B
 			
 			for i as integer = 1 to this._children->count()-1
-				element = this._children->item(i)				
-				put this._surface, (offset,2), element->render(), ALPHA
-				offset += element->dimensions.w + 1
+				element = this._children->item(i)
+				with element->dimensions
+					put this._surface, (.x,.w), element->render(), ALPHA
+				end with
 			next
 		end with
 		'put this._surface, (this._scrollbar->dimensions.x, this._scrollbar->dimensions.y),this._scrollbar->Render(),ALPHA
