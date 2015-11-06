@@ -44,6 +44,7 @@ function uiLabel.Render() as fb.image ptr
 		with this._dimensions
 			
 			if (len(this._text) <> 0) then	
+				line this._surface, (1, 1) -  (.w, .h), BackgroundColor, BF
 				draw string this._surface, (1, (.h - FONT_HEIGHT) / 2 ), this._text, ElementTextColor
 			end if
 		end with
