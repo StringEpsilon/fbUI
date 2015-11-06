@@ -1,7 +1,8 @@
-#INCLUDE once "fbgfx.bi"
-#include once "../common/control.bas"
+' textbox.bas - StringEpsilon, 2015, WTFPL
 
 namespace fbUI
+
+#include once "../common/control.bas"
 
 type uiTextBoxCursor
 	position as integer = 0

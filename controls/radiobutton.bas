@@ -1,10 +1,8 @@
-'#include once "cairo/cairo.bi"
-' uiRadiobutton.bas - Do what the f... you want (WTFPL). 
-' Author: StringEpsilon, 2015
-
-#include once "../common/control.bas"
+' radiobutton.bas - StringEpsilon, 2015, WTFPL
 
 namespace fbUI
+
+#include once "../common/control.bas"
 
 type _uiRadioButtonlist as uiRadioButtonlist
 

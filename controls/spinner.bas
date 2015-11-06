@@ -1,10 +1,12 @@
-' Spinner.bas - Do what the f... you want (WTFPL). 
-' Author: StringEpsilon, 2015
-
-#include once "fbthread.bi"
-#include once "../common/control.bas"
+' spinner.bas - StringEpsilon, 2015, WTFPL
 
 namespace fbUI
+
+#ifndef PI
+const PI = 3.1415
+#endif
+
+#include once "../common/control.bas"
 
 type uiSpinner extends uiControl
 	private:

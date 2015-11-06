@@ -1,11 +1,11 @@
-' Control.bas - Do what the f... you want (WTFPL). 
-' Author: StringEpsilon, 2015
+' listbox.bas - StringEpsilon, 2015, WTFPL
 
-#include once "../common/controlContainer.bas"
 #include once "label.bas"
 #include once "scrollbar.bas"
 
 namespace fbUI
+
+#include once "../common/controlContainer.bas"
 
 type uiListBox extends uiControlContainer
 	private:

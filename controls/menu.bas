@@ -1,10 +1,10 @@
-' Control.bas - Do what the f... you want (WTFPL). 
-' Author: StringEpsilon, 2015
+' menu.bas - StringEpsilon, 2015, WTFPL
 
-#include once "../common/controlContainer.bas"
 #include once "menuItem.bas"
 
 namespace fbUI
+
+#include once "../common/controlContainer.bas"
 
 type uiMenu extends uiControlContainer
 	public:

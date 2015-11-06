@@ -3,8 +3,6 @@
 
 #include once "control.bas"
 
-namespace fbUI
-
 type uiControlContainer extends uiControl
 	protected:
 		_children as controlList ptr
@@ -72,5 +70,3 @@ sub uiControlContainer.OnFocus(focus as boolean)
 		this._focus->OnFocus(false)
 	end if
 end sub
-
-end namespace

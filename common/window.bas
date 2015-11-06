@@ -1,16 +1,14 @@
-' uiWindow.bas - Do what the f... you want (WTFPL). 
-' Author: StringEpsilon, 2015
+' window.bas - StringEpsilon, 2015, WTFPL
 
 SCREENRES 1, 1,32,,-1
 
 #include once "fbthread.bi"
-
-#include once "control.bas"
 #include once "buffer.bas"
-#include once "uiEvents.bas"
 
 namespace fbUI
 
+#include once "uiEvents.bas"
+#include once "control.bas"
 #include once "base/colors.bi"
 
 declarebuffer(IRenderable ptr, RenderableBuffer,true)

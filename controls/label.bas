@@ -1,5 +1,4 @@
-' uiLabel.bas - Do what the f... you want (WTFPL). 
-' Author: StringEpsilon, 2015
+' uiLabel.bas - StringEpsilon, 2015, WTFPL
 
 #include once "../common/control.bas"
 

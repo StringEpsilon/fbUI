@@ -1,12 +1,11 @@
-' uiElement.bas - Do what the f... you want (WTFPL). 
+' control.bas - Do what the f... you want (WTFPL). 
 ' Author: StringEpsilon, 2015
 
-#include "fbthread.bi"
-#include "uiEvent.bi"
-#include "linkedlist.bas"
-#include "base/IDrawing.bi"
-
-namespace fbUI
+#include once "fbthread.bi"
+#include once "linkedlist.bas"
+#include once "uiEvent.bi"
+#include once "base/IDrawing.bi"
+#include once "base/colors.bi"
 
 type uiControl extends IRenderable
 	private:
@@ -149,5 +148,3 @@ end sub
 
 sub uiControl.OnMouseWheel(mouse as uiMouseEvent)
 end sub
-
-end namespace

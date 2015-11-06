@@ -1,5 +1,4 @@
-' uiButton.bas - Do what the f... you want (WTFPL). 
-' Author: StringEpsilon, 2015
+' uiButton.bas - StringEpsilon, 2015, WTFPL
 
 #include once "button.bas"
 

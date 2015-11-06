@@ -4,8 +4,8 @@
 #include once "../controls/menu.bas"
 using fbUI
 
-dim as string list(10) 
-for i as integer = 0 to 10
+dim as string list(2) 
+for i as integer = 0 to 2
 	list(i) = "Item "& i
 next
 

@@ -1,5 +1,4 @@
-' uiScrollBar.bas - Do what the f... you want (WTFPL). 
-' Author: StringEpsilon, 2015
+' scrollbar.bas - StringEpsilon, 2015, WTFPL
 
 #include once "../common/control.bas"
 #define uiCeil(d) (-Int(-d))
