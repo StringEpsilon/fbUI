@@ -4,12 +4,14 @@
 SCREENRES 1, 1,32,,-1
 
 #include once "fbthread.bi"
-#include once "controlBase.bas"
+
 #include once "control.bas"
 #include once "buffer.bas"
 #include once "uiEvents.bas"
 
 namespace fbUI
+
+#include once "base/colors.bi"
 
 declarebuffer(IRenderable ptr, RenderableBuffer,true)
 
