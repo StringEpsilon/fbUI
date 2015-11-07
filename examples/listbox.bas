@@ -1,7 +1,6 @@
-#INCLUDE once "fbgfx.bi"
-
 #include once "../common/window.bas"
 #include once "../controls/listbox.bas"
+
 using fbUI
 
 dim as string list(10) 
