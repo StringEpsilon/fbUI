@@ -37,6 +37,7 @@ constructor uiListBox(x as integer, y as integer,h as integer, w as integer, lis
 	dim child as uiLabel ptr 
 	for i as integer = 0 to ubound(list)
 		child = new uiLabel(2, i*16+2, list(i))
+		child->DrawBackground = false
 		child->Parent = @this
 		this._children->Append(child)
 	next
