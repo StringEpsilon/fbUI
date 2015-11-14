@@ -9,8 +9,7 @@ namespace fbUI
 type uiMenu extends uiControlContainer
 	public:
 		declare function Render() as fb.image ptr
-		Callback as sub(payload as any ptr)
-		
+				
 		declare destructor()
 		declare constructor(h as integer, w as integer, list() as string)
 				

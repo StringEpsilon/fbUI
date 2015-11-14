@@ -53,19 +53,20 @@ function uiMenuItem.Render() as fb.image  ptr
 		end if
 		
 		draw string this._surface, ((.w - FONT_HEIGHT * len(this.Label)) / 2 ,(.h - FONT_HEIGHT)/2 ), this.label,ElementTextColor
-		
 	end with
 	return this._surface
 end function
 
 sub uiMenuItem.OnClick( mouse as uiMouseEvent )
 	if ( mouse.lmb = uiReleased  ) then
-		mutexlock(this._mutex)
-		this._hold = false
-		sleep 75, 1
-		mutexunlock(this._mutex)
-		this.DoCallback()
-		base.Redraw()
+		if (this._children->Count = 0) then
+			mutexlock(this._mutex)
+			this._hold = false
+			sleep 75, 1
+			mutexunlock(this._mutex)
+			this.DoCallback()
+			base.Redraw()
+		end if
 	elseif ( mouse.lmb = uiClick OR mouse.lmb = uiHold ) then
 		mutexlock(this._mutex)
 		this._hold = true

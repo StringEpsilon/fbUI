@@ -11,9 +11,7 @@ type uiControlContainer extends uiControl
 		declare function GetElementAt(x as integer, y as integer) as uiControl ptr
 		declare constructor (x as integer, y as integer)
 	
-	public:
-		Callback as sub(payload as any ptr)
-				
+	public:				
 		declare destructor()
 		declare constructor overload()
 				

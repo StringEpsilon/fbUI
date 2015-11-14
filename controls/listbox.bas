@@ -13,10 +13,8 @@ type uiListBox extends uiControlContainer
 		_scrollbar as uiScrollbar ptr
 		declare function GetElementAt(x as integer, y as integer) as uiControl ptr
 	public:
-		declare function Render() as fb.image ptr
-		Callback as sub(payload as any ptr)
-		
 		declare destructor()
+		declare constructor (x as integer, y as integer,h as integer, w as integer)
 		declare constructor (x as integer, y as integer,h as integer, w as integer, list() as string)
 		
 		declare property Selection() as string
@@ -25,17 +23,26 @@ type uiListBox extends uiControlContainer
 		declare sub OnKeypress(keypress as uiKeyEvent)
 		declare sub OnMouseMove(mouse as uiMouseEvent)
 		declare sub OnMouseWheel(mouse as uiMouseEvent)
+		
+		declare function Render() as fb.image ptr
+		
+		declare sub AddElement(value as string)
 end type
 
-constructor uiListBox(x as integer, y as integer,h as integer, w as integer, list() as string)
+constructor uiListBox(x as integer, y as integer,h as integer, w as integer)
 	base(x,y)
 	this._dimensions.h = h
 	this._dimensions.w = w
-	
-	this._scrollbar = new uiScrollbar(w-11, 2, h-4,ubound(list)-h/16+1, lbound(list))
+	this._scrollbar = new uiScrollbar(w-11, 2, h-4,0,0)
+	this._scrollbar->Range = h/16+1
 	this._scrollbar->Parent = @this
 	this._children->Append(this._scrollbar)
-	
+	this.CreateBuffer()
+end constructor 
+
+constructor uiListBox(x as integer, y as integer,h as integer, w as integer, list() as string)
+	base(x,y)
+	this.Constructor(x,y,h,w)
 	dim child as uiLabel ptr 
 	for i as integer = 0 to ubound(list)
 		child = new uiLabel(2, i*16+2, list(i))
@@ -43,7 +50,7 @@ constructor uiListBox(x as integer, y as integer,h as integer, w as integer, lis
 		child->Parent = @this
 		this._children->Append(child)
 	next
-		
+	this._scrollbar->Maximum = ubound(list)
 	this.CreateBuffer()
 end constructor 
 
@@ -53,7 +60,7 @@ Destructor uiListBox()
 end destructor
 
 function uiListBox.GetElementAt(x as integer, y as integer) as uiControl ptr
-	' If scrollbar, we can leave early.
+	'If scrollbar is clicked, we can leave early.
 	with this._scrollbar->dimensions
 		if (( x >= .x) AND ( x <= .x + .w ) and ( y >= .y ) and (y <= .y + .h)) then
 			return this._scrollbar
@@ -147,4 +154,15 @@ function uiListBox.Render() as fb.image ptr
 	return this._surface
 end function
 
+sub uiListBox.AddElement(value as string)
+	mutexlock(this._mutex)
+		dim as uiLabel ptr newLabel = new uiLabel(2, (this._children->count -1)*16+2, value)
+		newLabel->Parent = @this
+		newLabel->DrawBackground = false
+		this._children->Append(newLabel)
+		
+		this._scrollbar->Maximum = this._scrollbar->Maximum +1
+	mutexunlock(this._mutex)
+	this.Redraw()
+end sub
 end namespace
