@@ -120,7 +120,7 @@ sub uiControl.CreateBuffer()
 		imagedestroy( this._surface )
 	end if
 	
-	this._surface = imagecreate(this._dimensions.w, this._dimensions.h, &h00ffffff, 32)
+	this._surface = imagecreate(this._dimensions.w, this._dimensions.h+1, &h00ffffff, 32)
 end sub
 
 property uiControl.Callback(cb as sub(payload as uiControl ptr)) 

@@ -29,7 +29,6 @@ constructor uiMenu(h as integer, w as integer, list() as string)
 	for i as integer = 0 to ubound(list)
 		child = new uiMenuItem(list(i))
 		child->dimensions.x = yOffset
-		shell "echo "& yOffset & " . " & child->dimensions.x
 		yOffset += child->dimensions.w
 		child->Parent = @this
 		this._children->Append(child)
@@ -89,14 +88,14 @@ function uiMenu.Render() as fb.image ptr
 			line this._surface, (1, 1) - (.w-2, .h-2), ElementLight, BF
 			line this._surface, (0, 0) - (.w-1, .h-1), ElementBorderColor, B
 			
-			for i as integer = 1 to this._children->count()-1
+			for i as integer = 0 to this._children->count()-1
 				element = this._children->item(i)
 				with element->dimensions
-					put this._surface, (.x,.w), element->render(), ALPHA
+					put this._surface, (.x,.y), element->render(), ALPHA
+					line this._surface, (.x + .w,.y)-(.x + .w,.y +.h), ElementBorderColor, BF
 				end with
 			next
 		end with
-		'put this._surface, (this._scrollbar->dimensions.x, this._scrollbar->dimensions.y),this._scrollbar->Render(),ALPHA
 	end if
 	return this._surface
 end function

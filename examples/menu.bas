@@ -16,6 +16,3 @@ fbGUI->AddElement(menu)
 fbGUI->CreateWindow(100,200)
 
 fbGUI->Main()
-delete(menu)
-
-

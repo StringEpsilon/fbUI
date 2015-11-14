@@ -45,11 +45,13 @@ end property
 function uiMenuItem.Render() as fb.image  ptr
 	with this._dimensions
 		if (this._hold ) then
-			line this._surface, (1, 1) - (.w-2, .h-2), ElementDark, BF
+			line this._surface, (1, 1) - (.w-2, .h-1), ElementDark, BF
+			line this._surface, (1, 1) - (.w-1, .h), ElementLight, B
 		else
-			line this._surface, (1, 1) - (.w-2, .h-2), ElementLight, BF
+			line this._surface, (2, 2) - (.w-2, .h-1), ElementLight, BF
+			line this._surface, (1, 1) - (.w-1, .h), ElementDark, B
 		end if
-		line this._surface, (0, 0) - (.w-1, .h-1), ElementBorderColor, B
+		
 		draw string this._surface, ((.w - FONT_HEIGHT * len(this.Label)) / 2 ,(.h - FONT_HEIGHT)/2 ), this.label,ElementTextColor
 		
 	end with
