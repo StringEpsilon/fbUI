@@ -33,8 +33,7 @@ constructor uiListBox(x as integer, y as integer,h as integer, w as integer)
 	base(x,y)
 	this._dimensions.h = h
 	this._dimensions.w = w
-	this._scrollbar = new uiScrollbar(w-11, 2, h-4,0,0)
-	this._scrollbar->Range = h/16+1
+	this._scrollbar = new uiScrollbar(w-11, 2, h-4,h/16+1,0)
 	this._scrollbar->Parent = @this
 	this._children->Append(this._scrollbar)
 	this.CreateBuffer()
@@ -50,7 +49,6 @@ constructor uiListBox(x as integer, y as integer,h as integer, w as integer, lis
 		child->Parent = @this
 		this._children->Append(child)
 	next
-	this._scrollbar->Maximum = ubound(list)
 	this.CreateBuffer()
 end constructor 
 
@@ -160,8 +158,6 @@ sub uiListBox.AddElement(value as string)
 		newLabel->Parent = @this
 		newLabel->DrawBackground = false
 		this._children->Append(newLabel)
-		
-		this._scrollbar->Maximum = this._scrollbar->Maximum +1
 	mutexunlock(this._mutex)
 	this.Redraw()
 end sub

@@ -113,7 +113,7 @@ end property
 
 
 sub uiScrollbar.Readjust()
-	this._range = IIF(range > 0, range, 1)
+	this._range = IIF(this._range > 0, range, 1)
 	this._segments = uiCeil((this._max - this._min + 1 ) / this._range)
 	this._knob.Size = this._size / this._segments
 end sub
@@ -124,6 +124,7 @@ sub uiScrollBar.CalculateValue(position as integer)
 	if (this._value <> newValue ) then
 		this._value = newValue 
 		this._knob.Position = this._knob.Size * (this._value - this._min)
+		
 		this.Redraw()
 		
 		this.DoCallback()
