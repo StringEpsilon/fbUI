@@ -170,14 +170,22 @@ sub uiScrollBar.OnClick( mouse as uiMouseEvent )
 end sub
 
 sub uiScrollBar.OnMouseWheel( mouse as uiMouseEvent )
-	if (mouse.wheel < 0 AND this._value > this._min ) OR (mouse.wheel > 0 AND this.Value + this._range<= this._max) then
-		mutexlock(this._mutex)
+	mutexlock(this._mutex)
+	if (mouse.wheel < 0 AND this._value > this._min ) OR (mouse.wheel > 0 AND this.Value + this._range <= this._max) then
 		this._value += mouse.wheel
+		if ( this._value * this._range > this._max) then
+			this._value = this._max / this._range
+		elseif (this._value < this._min) then
+			this._value = this._min
+		end if
+		
 		this._knob.Position = this._knob.Size * (this._value - this._min)
 		mutexunlock(this._mutex)
 		this.Redraw()
 		this.DoCallback()
 	end if
+	
+	mutexunlock(this._mutex)
 end sub
 
 function uiScrollBar.Render() as fb.image  ptr

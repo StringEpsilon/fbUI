@@ -33,6 +33,6 @@ sub btnCallback (payload as uiControl ptr)
 		' The payload should be always a pointer of the calling element
 		dim button as uiToggleButton ptr = cast(uiToggleButton ptr, payload)
 		
-		spinner->State = button->State
+		spinner->State = button->Value
 	end if
 end sub     

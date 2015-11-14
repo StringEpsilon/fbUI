@@ -8,7 +8,7 @@ type uiCheckBox extends uiControl
 	private:
 		_boxOffset as integer
 		_Label as string 
-		_IsChecked as boolean  = false
+		_value as boolean  = false
 		
 	public:
 		declare function Render() as fb.image  ptr
@@ -22,8 +22,8 @@ type uiCheckBox extends uiControl
 		declare property Label() as string
 		declare property Label(value as string)
 			
-		declare property IsChecked() as boolean
-		declare property IsChecked(value as boolean)
+		declare property Value() as boolean
+		declare property Value(value as boolean)
 
 end type
 
@@ -48,14 +48,14 @@ constructor uiCheckBox(newdim as uiDimensions)
 	this.CreateBuffer()
 end constructor
 
-property uiCheckBox.Label(value as string)
+property uiCheckBox.Label(newValue as string)
 	if ( len(value) <> len(this._label) ) then 
 		mutexlock(this._mutex)
-		this._label = value
+		this._label = newValue
 		mutexunlock(this._mutex)
 	else
 		mutexlock(this._mutex)
-		this._label = value
+		this._label = newValue
 		this._dimensions.w = 20 + len(value) * FONT_WIDTH
 		this.CreateBuffer()
 		mutexunlock(this._mutex)
@@ -66,15 +66,15 @@ property uiCheckBox.Label() as string
 	return this._label
 end property
 
-property uiCheckBox.IsChecked(value as boolean)
+property uiCheckBox.Value(newValue as boolean)
 	mutexlock(this._mutex)
-	this._isChecked = value
+	this._value = newValue
 	mutexunlock(this._mutex)
 	this.Redraw()
 end property
 
-property uiCheckBox.IsChecked() as boolean
-	return this._isChecked
+property uiCheckBox.Value() as boolean
+	return this._value
 end property
 
 function uiCheckBox.Render() as  fb.image  ptr
@@ -82,7 +82,7 @@ function uiCheckBox.Render() as  fb.image  ptr
 		line this._surface, (1, 1) - (.h-2, .h-2), ElementLight, BF
 		line this._surface, (1, 1) - (.h-2, .h-2), ElementBorderColor, B
 		
-		if (this._IsChecked) then
+		if (this._value) then
 			line this._surface, (.h-2, 1) - (1, .h-2), ElementBorderColor
 			line this._surface, (.h-3, 1) - (1, .h-3), ElementBorderColor
 			
@@ -107,7 +107,7 @@ sub uiCheckBox.OnClick(mouse as UiMouseEvent)
 		
 		if ( x >= boxOffset ) AND ( x <= boxOffset +12 ) AND (y >= boxOffset) AND (y <= boxOffset +12) then
 			mutexlock(this._mutex)
-			this._IsChecked = not(this._IsChecked)
+			this._value = not(this._value)
 			mutexunlock(this._mutex)
 			this.DoCallback()
 			this.Redraw()
@@ -118,7 +118,7 @@ end sub
 sub uiCheckBox.OnKeyPress( keyPress as uiKeyEvent )
 	if ( keyPress.key = " " ) then
 		mutexlock(this._mutex)
-		this._IsChecked = not(this._IsChecked)
+		this._value = not(this._value)
 		mutexunlock(this._mutex)
 		this.DoCallback()
 		this.Redraw()

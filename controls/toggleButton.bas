@@ -5,7 +5,11 @@
 namespace fbUI
 
 type uiToggleButton extends uiButton
-	dim as boolean State = false
+	private:
+		_value as boolean = false
+	public:
+	declare property Value() as boolean
+	declare property Value(newValue as boolean)
 	
 	declare virtual function Render() as fb.image  ptr
 	declare virtual sub OnClick( mouse as uiMouseEvent)	
@@ -26,10 +30,20 @@ constructor uiToggleButton( x as integer, y as integer, newLabel as string = "")
 	base(x,y,newLabel)
 end constructor
 
+property uiToggleButton.Value() as boolean
+	return this._value
+end property
+
+property uiToggleButton.Value(newValue as boolean)
+	mutexlock(this._mutex)
+	this._value = newValue
+	mutexunlock(this._mutex)
+	this.Redraw()
+end property
 
 function uiToggleButton.Render() as fb.image  ptr
 	with this.dimensions
-		if (this._hold OR this.State ) then
+		if (this._hold OR this.Value ) then
 			line this._surface, (1, 1) - (.w-2, .h-2), ElementDark, BF
 		else
 			line this._surface, (1, 1) - (.w-2, .h-2), ElementLight, BF
@@ -44,7 +58,7 @@ end function
 sub uiToggleButton.OnClick( mouse as uiMouseEvent )
 	if ( mouse.lmb = uiReleased  ) then
 		mutexlock(this._mutex)
-		this.State = not(this.State)
+		this._Value = not(this._Value)
 		this._hold = false
 		mutexunlock(this._mutex)
 		this.DoCallback()

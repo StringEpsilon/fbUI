@@ -64,7 +64,7 @@ end sub
 
 sub btnCallback (payload as uiControl ptr)
 	if (payload <> 0 ) then
-		spinner->State = cast(uiToggleButton ptr, payload)->State
+		spinner->State = cast(uiToggleButton ptr, payload)->Value
 	end if
 end sub     
 

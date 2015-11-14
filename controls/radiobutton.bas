@@ -10,7 +10,7 @@ type uiRadiobutton extends uiControl
 	private:
 		_boxOffset as integer
 		_Label as string 
-		_isSelected as boolean = false
+		_value as boolean = false
 		_head as uiRadiobutton ptr
 	protected:
 		_group as _uiRadioButtonlist ptr
@@ -24,10 +24,10 @@ type uiRadiobutton extends uiControl
 		declare constructor overload( x as integer, y as integer, label as string = "", head as uiRadiobutton ptr = 0)
 
 		declare property Label() as string
-		declare property Label(value as string)
+		declare property Label(newValue as string)
 			
-		declare property IsSelected() as boolean
-		declare property IsSelected(value as boolean)
+		declare property Value() as boolean
+		declare property Value(newValue as boolean)
 
 end type
 
@@ -53,15 +53,15 @@ constructor uiRadiobutton( x as integer, y as integer, newLabel as string = "", 
 	this.CreateBuffer()
 end constructor
 
-property uiRadiobutton.Label(value as string)
-	if ( len(value) <> len(this._label) ) then 
+property uiRadiobutton.Label(newValue as string)
+	if ( len(newValue) <> len(this._label) ) then 
 		mutexlock(this._mutex)
-		this._label = value
+		this._label = newValue
 		mutexunlock(this._mutex)
 	else
 		mutexlock(this._mutex)
-		this._label = value
-		this._dimensions.w = 20 + len(value)* FONT_WIDTH
+		this._label = newValue
+		this._dimensions.w = 20 + len(newValue)* FONT_WIDTH
 		this.CreateBuffer()
 		mutexunlock(this._mutex)
 	end if
@@ -71,12 +71,12 @@ property uiRadiobutton.Label() as string
 	return this._label
 end property
 
-property uiRadiobutton.IsSelected(value as boolean)
-	if (value = this._isSelected) then exit property
+property uiRadiobutton.Value(newValue as boolean)
+	if (newValue = this._value) then exit property
 	
-	if (value = true) then
+	if (newValue = true) then
 		mutexlock(this._mutex)
-		this._isSelected = true
+		this._value = true
 		mutexunlock(this._mutex)
 		if (this._group = 0 AND this._head <> 0) then
 			this._head->SelectElement(@this)
@@ -85,21 +85,21 @@ property uiRadiobutton.IsSelected(value as boolean)
 		end if
 	else
 		mutexlock(this._mutex)
-		this._isSelected = false
+		this._value = false
 		mutexunlock(this._mutex)
 	end if
 	
 end property
 
-property uiRadiobutton.IsSelected() as boolean
-	return this._isSelected
+property uiRadiobutton.Value() as boolean
+	return this._value
 end property
 
 function uiRadiobutton.Render() as  fb.image ptr
 	with this._dimensions		
 		CIRCLE this._surface, (.h/2,.h/2), .h/2-1,ElementBorderColor
 		
-		if (this._isSelected) then
+		if (this._value) then
 			CIRCLE this._surface, (.h/2,.h/2), .h/4,ElementBorderColor,,,,F
 		else
 			CIRCLE this._surface, (.h/2,.h/2), .h/4,BackgroundColor,,,,F
@@ -122,7 +122,7 @@ sub uiRadiobutton.OnClick(mouse as UiMouseEvent)
 		end with
 		
 		if ( x >= boxOffset ) AND ( x <= boxOffset +12 ) AND (y >= boxOffset) AND (y <= boxOffset +12) then
-			this.IsSelected = true
+			this.Value = true
 			this.DoCallback()
 		end if
 	end if
@@ -136,11 +136,11 @@ sub uiRadiobutton.SelectElement(selection as uiRadiobutton ptr)
 			
 			if (item = selection) then
 				mutexlock(item->_mutex)
-				item->_IsSelected = true
+				item->_value = true
 				mutexunlock(item->_mutex)
 				item->Redraw()
-			elseif (item->_IsSelected) then
-				item->IsSelected = false
+			elseif (item->_value) then
+				item->Value = false
 				item->Redraw()
 			end if
 		next
@@ -149,7 +149,7 @@ end sub
 
 sub uiRadiobutton.OnKeyPress( keyPress as uiKeyEvent )
 	if ( keyPress.key = " " ) then
-		this.IsSelected = true
+		this.Value = true
 		this.DoCallback()
 	end if
 end sub

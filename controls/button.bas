@@ -8,9 +8,7 @@ type uiButton extends uiControl
 	protected:
 		dim as string _Label
 		dim as boolean _hold
-	public:
-		dim as boolean IsChecked = true
-		
+	public:		
 		declare virtual function Render() as fb.image  ptr
 		declare virtual sub OnClick( mouse as uiMouseEvent)	
 		declare virtual sub Onfocus( focus as boolean)

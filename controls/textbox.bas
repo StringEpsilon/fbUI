@@ -30,8 +30,8 @@ type uiTextbox extends uiControl
 		declare virtual sub OnClick( mouse as uiMouseEvent )
 		declare virtual sub OnMouseMove( mouse as uiMouseEvent )
 		
-		declare property Text() as string
-		declare property Text(value as string)
+		declare property Value() as string
+		declare property Value(value as string)
 
 end type
 
@@ -46,7 +46,7 @@ constructor uiTextbox( x as integer, y as integer, w as integer, newText as stri
 	this.CreateBuffer()
 end constructor
 
-property uiTextbox.Text(value as string)
+property uiTextbox.Value(newValue as string)
 	if ( len(value) <> len(this._Text) ) then 
 		this._Text = value
 	else
@@ -56,44 +56,44 @@ property uiTextbox.Text(value as string)
 	this.Redraw()
 end property
 
-property uiTextbox.Text() as string
+property uiTextbox.Value() as string
 	return this._Text
 end property
 
-sub uiTextbox.MoveTo(value as integer)
+sub uiTextbox.MoveTo(newValue as integer)
 	with this._cursor
 		if ( multikey(FB.SC_LSHIFT) ) then
 			if ( .selectStart = -1) then
 				.selectStart = .Position
-				.selectEnd = value
+				.selectEnd = newValue
 			else
-				.selectEnd = value
+				.selectEnd = newValue
 			end if
 		else
 			.selectStart = -1
 			.selectEnd = -1
 		end if
-		.Position = value
+		.Position = newValue
 		if (.Position - this._offset > this._length ) then
-			this._offset = value -this._length
+			this._offset = newValue -this._length
 		elseif (.Position < this._offset) then
 			this._offset = 0
 		end if
 	end with
 end sub
 
-sub uiTextbox.MoveBy(value as integer)
+sub uiTextbox.MoveBy(newValue as integer)
 	with this._cursor
-		if (.Position + value < 0 ) then exit sub
-		if (.Position + value > len(this._text) ) then exit sub
+		if (.Position + newValue < 0 ) then exit sub
+		if (.Position + newValue > len(this._text) ) then exit sub
 		
-		.Position += value
+		.Position += newValue
 		if (.Position - this._offset > this._length  OR .Position - this._offset < 0) then
-			this._offset += value
+			this._offset += newValue
 		end if
 		if ( multikey(FB.SC_LSHIFT) ) then
 			if (.selectStart = -1) then
-				.selectStart = .Position -value
+				.selectStart = .Position - newValue
 				.selectEnd = .Position
 			else
 				.selectEnd = .Position
@@ -107,7 +107,7 @@ end sub
 
 sub uiTextbox.RemoveSelected()
 	if this._cursor.selectStart > this._cursor.selectEnd then swap this._cursor.selectStart, this._cursor.selectEnd
-	this._text = left(text, this._cursor.selectStart) + right (text, len(this._text) -this._cursor.selectEnd )
+	this._text = left(_text, this._cursor.selectStart) + right (_text, len(this._text) -this._cursor.selectEnd )
 	this._cursor.Position = this._cursor.selectStart
 	this._cursor.selectStart = -1
 	this._cursor.selectEnd = -1
@@ -202,7 +202,7 @@ sub uiTextbox.OnKeypress( keypress as uiKeyEvent )
 				if (this._cursor.selectStart <> -1) then
 					this.RemoveSelected()
 				else
-					this._text = left(text, this._cursor.Position) + right (text, len(this._text) -this._cursor.Position -1)
+					this._text = left(_text, this._cursor.Position) + right (_text, len(this._text) -this._cursor.Position -1)
 				end if				
 		end select
 	else
@@ -217,9 +217,9 @@ sub uiTextbox.OnKeypress( keypress as uiKeyEvent )
 				else
 					if (this._cursor.Position > 0) then
 						if ( this._cursor.Position = len(this._text) ) then
-							this._text = left(text, len(text)-1)
+							this._text = left(_text, len(_text)-1)
 						else
-							this._text = left(text, this._cursor.Position-1) + right (text, len(this._text) -this._cursor.Position )
+							this._text = left(_text, this._cursor.Position-1) + right (_text, len(this._text) -this._cursor.Position )
 						end if
 						this.MoveBy(-1)
 					end if
@@ -236,7 +236,7 @@ sub uiTextbox.OnKeypress( keypress as uiKeyEvent )
 					if ( this._cursor.Position = len(this._text) ) then
 						this._Text += keypress.key
 					else
-						this._text = left(text, this._cursor.Position) + keypress.key + right (text, len(this._text) - this._cursor.Position )
+						this._text = left(_text, this._cursor.Position) + keypress.key + right (_text, len(this._text) - this._cursor.Position )
 					end if
 					this.MoveBy(+1)
 					this._cursor.selectStart = -1

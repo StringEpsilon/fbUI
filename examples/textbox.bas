@@ -26,6 +26,6 @@ delete(textbox)
 
 sub ElementCallback (payload as uiControl ptr)
 	if (payload <> 0 ) then
-		label->Text = cast(uiTextbox ptr, payload)->Text
+		label->Text = cast(uiTextbox ptr, payload)->Value
 	end if
 end sub     
