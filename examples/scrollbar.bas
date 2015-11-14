@@ -39,25 +39,20 @@ fbGUI->Main()
 
 sub ElementCallback (payload as uiControl ptr)
 	if (payload <> 0 ) then
-		' The payload should be always a pointer of the calling element
-		dim element as uiControl ptr = cast(uiControl ptr, payload)
-		dim vscrollbar as uiScrollBar ptr = cast(uiScrollBar ptr, element)
+		' Payload is a pointer to the calling element. Thus, casting should be safe:
+		dim vscrollbar as uiScrollBar ptr = cast(uiScrollBar ptr, payload)
 		label1->Text =  "Range 1: " & vscrollbar->Value
 	end if
 end sub
 sub ElementCallback2 (payload as uiControl ptr)
 	if (payload <> 0 ) then
-		' The payload should be always a pointer of the calling element
-		dim element as uiControl ptr = cast(uiControl ptr, payload)
-		dim vscrollbar as uiScrollBar ptr = cast(uiScrollBar ptr, element)
+		dim vscrollbar as uiScrollBar ptr = cast(uiScrollBar ptr, payload)
 		label2->Text =  "Range 2: " & vscrollbar->Value
 	end if
 end sub     
 sub ElementCallback3 (payload as uiControl ptr)
 	if (payload <> 0 ) then
-		' The payload should be always a pointer of the calling element
-		dim element as uiControl ptr = cast(uiControl ptr, payload)
-		dim vscrollbar as uiScrollBar ptr = cast(uiScrollBar ptr, element)
+		dim vscrollbar as uiScrollBar ptr = cast(uiScrollBar ptr, payload)
 		label3->Text =  "Range 3:  " & vscrollbar->Value
 	end if
 end sub     
