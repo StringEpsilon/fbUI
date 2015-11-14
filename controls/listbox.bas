@@ -13,7 +13,6 @@ type uiListBox extends uiControlContainer
 		_scrollbar as uiScrollbar ptr
 		declare function GetElementAt(x as integer, y as integer) as uiControl ptr
 	public:
-		declare destructor()
 		declare constructor (x as integer, y as integer,h as integer, w as integer)
 		declare constructor (x as integer, y as integer,h as integer, w as integer, list() as string)
 		
@@ -51,11 +50,6 @@ constructor uiListBox(x as integer, y as integer,h as integer, w as integer, lis
 	next
 	this.CreateBuffer()
 end constructor 
-
-Destructor uiListBox()
-	base.Destructor()
-	delete this._children
-end destructor
 
 function uiListBox.GetElementAt(x as integer, y as integer) as uiControl ptr
 	'If scrollbar is clicked, we can leave early.

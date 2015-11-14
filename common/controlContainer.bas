@@ -12,7 +12,7 @@ type uiControlContainer extends uiControl
 		declare constructor (x as integer, y as integer)
 	
 	public:				
-		declare destructor()
+		declare virtual destructor()
 		declare constructor overload()
 				
 		declare virtual sub OnClick(mouse as uiMouseEvent)
@@ -32,8 +32,14 @@ constructor uiControlContainer(x as integer, y as integer)
 end constructor 
 
 Destructor uiControlContainer()
-	base.Destructor()
-	delete this._children
+	if (this._mutex <> 0 ) then
+		mutexdestroy(this._mutex)
+		this._mutex = 0
+	end if
+	for i as integer = 0 to this._children->count -1
+		delete this._children->item(i)
+	next
+	delete this._children	
 end destructor
 
 function uiControlContainer.GetElementAt(x as integer, y as integer) as uiControl ptr

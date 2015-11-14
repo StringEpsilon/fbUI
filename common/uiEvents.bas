@@ -10,15 +10,12 @@ declare sub uiEventListener( callback as any ptr  )
 sub uiEventListener( callback as any ptr  )
 	dim as uiMouseEvent oldMouse 
 	dim as uiEvent ptr newEvent
+	dim as uiEvent oldEvent
 	dim event as fb.event
-	dim as double beforeEvent
 	dim wheelValue as integer
 	'Thanks to Muttonhead, for the inspiration and the event-code prior to the screenevent version.
 	do
 		if ( SCREENEVENT(@event)  )THEN
-			if (newEvent <> 0) then
-				delete newEvent
-			end if
 			newEvent = new uiEvent()
 			newEvent->Mouse = oldMouse
 			
@@ -63,28 +60,19 @@ sub uiEventListener( callback as any ptr  )
 					newEvent->mouse.last = uiReleased
 					newEvent->eventType = uiMouseClick
 				case FB.EVENT_MOUSE_WHEEL
-					' Temporary workaround for a bug in screenevent.
-					#ifdef __FB_Linux__
-					dim as integer x,y, z
-					getmouse x,y, z
-					newEvent->mouse.Wheel = wheelValue - z
-					wheelValue = z
-					#else
 					newEvent->mouse.Wheel = wheelValue - event.z
-					wheelValue = event.z
-					#endif
-					
+					wheelValue = event.z				
 					
 					newEvent->eventType = uiMouseWheel
 				case FB.EVENT_WINDOW_CLOSE
 					newEvent->EventType = uiShutDown
 			end select
 			if ( newEvent->eventType <> 0  ) then
+				oldEvent = *newEvent
 				threaddetach( threadcreate (cast(any ptr, callback), newEvent ))
 			end if
-			oldMouse = newEvent->Mouse
+			oldMouse = oldEvent.Mouse
 		end if
 		sleep 1
-	loop until newEvent->EventType = uiShutDown
-	delete newEvent
+	loop until oldEvent.EventType = uiShutDown
 end sub

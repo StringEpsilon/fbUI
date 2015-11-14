@@ -30,7 +30,7 @@ type uiControl extends IRenderable
 		' IRenderable:
 		declare property Dimensions () byref as uiDimensions
 		declare property Layer() byref as integer
-		
+				
 		declare property Callback(cb as sub(payload as uiControl ptr)) 
 		declare property Parent(value as IDrawing ptr)
 		declare property Parent(value as uiControl ptr)
@@ -38,7 +38,7 @@ type uiControl extends IRenderable
 		declare property ID(value as string)
 		declare property ID() as string
 		
-		declare destructor()
+		declare virtual destructor()
 		declare constructor overload()
 				
 		' General events:

@@ -53,6 +53,7 @@ end sub
 
 sub uiWindowEventDispatcher(event as uiEvent ptr)
 	uiWindow.GetInstance()->HandleEvent(*event)
+	delete event
 end sub
 
 ' Dummy parameter because of threadcreate. 
@@ -67,6 +68,9 @@ Constructor uiWindow()
 end Constructor
 
 Destructor uiWindow()
+	for i as integer = 0 to this._children->count -1
+		delete this._children->item(i)
+	next
 	delete this._children
 	delete this._RenderBuffer
 	mutexdestroy(this._mutex)
@@ -86,8 +90,6 @@ end property
 
 sub uiWindow.DrawAll()
 	dim as uiControl ptr child
-	mutexlock(this._mutex)
-	
 	cls
 	for i as integer = 0 to this._children->count -1
 		child = this._children->item(i)
@@ -96,7 +98,6 @@ sub uiWindow.DrawAll()
 		put (child->dimensions.x, child->dimensions.y), child->Render(), ALPHA
 		screenunlock
 	next
-	mutexunlock(this._mutex)
 end sub
 
 function uiWindow.GetElementAt(x as integer, y as integer) as uiControl ptr
@@ -255,14 +256,14 @@ sub uiWindow.Main()
 	dim element as IRenderable ptr
 	eventThread = threadcreate(@uiEventListener, @uiWindowEventDispatcher) 
 	do
+		screenlock
 		while this._RenderBuffer->count > 0
 			element = this._RenderBuffer->Pop()
 			with element->dimensions
-				'screenlock
 				put (element->dimensions.x, element->dimensions.y), element->Render(), ALPHA
-				'screenunlock
 			end with
 		wend
+		screenunlock
 		screensync
 	loop until this._shutDown
 	ThreadWait(eventThread)

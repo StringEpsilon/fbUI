@@ -19,7 +19,6 @@ fbGUI->AddElement(label1)
 fbGUI->CreateWindow(120,200)
 
 fbGUI->Main()
-delete(listbox)
 
 sub ListBoxCallback (payload as uiControl ptr)
 	if (payload <> 0 ) then
