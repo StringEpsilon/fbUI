@@ -3,7 +3,7 @@
 SCREENRES 1, 1,32,,-1
 
 #include once "fbthread.bi"
-#include once "buffer.bas"
+#include once "base/buffer.bas"
 
 namespace fbUI
 

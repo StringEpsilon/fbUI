@@ -2,7 +2,7 @@
 ' Author: StringEpsilon, 2015
 
 #include once "fbthread.bi"
-#include once "linkedlist.bas"
+#include once "base/linkedlist.bas"
 #include once "uiEvent.bi"
 #include once "base/IDrawing.bi"
 #include once "base/colors.bi"
