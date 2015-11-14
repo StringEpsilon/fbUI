@@ -8,6 +8,12 @@ using fbUI
 
 declare sub btnCallback (payload as uiControl ptr)
 declare sub listboxSelection (payload as uiControl ptr)
+declare sub ScrollbarChanged (payload as uiControl ptr)
+declare sub ScrollbarChanged2 (payload as uiControl ptr)
+
+dim as uiScrollBar ptr vscrollbar = new uiScrollBar( 5, 90, 80,20,0,5)
+dim as uiScrollBar ptr hscrollbar = new uiScrollBar( 20,90, 80,10,0,3, horizontal)
+dim shared as uiLabel ptr vscrollbarLabel, hscrollbarLabel
 
 dim as uiWindow ptr fbGUI = uiWindow.GetInstance()
 dim as uiToggleButton ptr toggleButton
@@ -15,6 +21,13 @@ dim shared as uiSpinner ptr spinner
 dim as uiListbox ptr listbox = new uiListbox( 100, 5, 80,100)
 dim shared as uiLabel ptr listboxLabel
 listboxLabel = new uiLabel( 205, 5, "Select!")
+
+vscrollbarLabel = new uiLabel(20, 100, "V Scrollbar: 0",16)
+hscrollbarLabel = new uiLabel(20, 120, "H Scrollbar: 0",16)
+
+vscrollbar->callback = @ScrollbarChanged
+hscrollbar->callback = @ScrollbarChanged2
+
 
 for i as integer = 0 to 10
 	listbox->AddElement("Item "& i)
@@ -28,6 +41,11 @@ listbox->callback = @listboxSelection
 fbGUI->AddElement(spinner)
 fbGUI->AddElement(toggleButton)
 fbGUI->AddElement(listbox)
+fbGUI->AddElement(listboxLabel)
+fbGUI->AddElement(vscrollbar)
+fbGUI->AddElement(hscrollbar)
+fbGUI->AddElement(vscrollbarLabel)
+fbGUI->AddElement(hscrollbarLabel)
 fbGUI->AddElement(listboxLabel)
 fbGUI->CreateWindow(200,400)
 
@@ -49,3 +67,17 @@ sub btnCallback (payload as uiControl ptr)
 		spinner->State = cast(uiToggleButton ptr, payload)->State
 	end if
 end sub     
+
+sub ScrollbarChanged (payload as uiControl ptr)
+	if (payload <> 0 ) then
+		dim vscrollbar as uiScrollBar ptr = cast(uiScrollBar ptr, payload)
+		vscrollbarLabel->Text =  "V Scrollbar: " & vscrollbar->Value
+	end if
+end sub    
+
+sub ScrollbarChanged2 (payload as uiControl ptr)
+	if (payload <> 0 ) then
+		dim vscrollbar as uiScrollBar ptr = cast(uiScrollBar ptr, payload)
+		hscrollbarLabel->Text =  "H Scrollbar: " & vscrollbar->Value
+	end if
+end sub
