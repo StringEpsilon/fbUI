@@ -14,6 +14,7 @@ type uiControl extends IRenderable
 		_callback as sub(payload as any ptr)
 		_layer as integer = normal
 	protected:
+		_id as string
 		_mutex as any ptr
 		_isActive as boolean = true
 		_hasFocus as boolean = false
@@ -33,6 +34,9 @@ type uiControl extends IRenderable
 		declare property Callback(cb as sub(payload as uiControl ptr)) 
 		declare property Parent(value as IDrawing ptr)
 		declare property Parent(value as uiControl ptr)
+		
+		declare property ID(value as string)
+		declare property ID() as string
 		
 		declare destructor()
 		declare constructor overload()
@@ -88,6 +92,16 @@ property uiControl.Parent(value as uiControl ptr)
 	mutexlock(this._mutex)
 	this._parentElement = value
 	mutexunlock(this._mutex)
+end property
+
+property uiControl.ID(value as string)
+	mutexlock(this._mutex)
+	this._id = value
+	mutexunlock(this._mutex)
+end property
+
+property uiControl.ID() as string
+	return this._id
 end property
 
 sub uiControl.Redraw()
