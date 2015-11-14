@@ -63,8 +63,18 @@ sub uiEventListener( callback as any ptr  )
 					newEvent->mouse.last = uiReleased
 					newEvent->eventType = uiMouseClick
 				case FB.EVENT_MOUSE_WHEEL
+					' Temporary workaround for a bug in screenevent.
+					#ifdef __FB_Linux__
+					dim as integer x,y, z
+					getmouse x,y, z
+					newEvent->mouse.Wheel = wheelValue - z
+					wheelValue = z
+					#else
 					newEvent->mouse.Wheel = wheelValue - event.z
 					wheelValue = event.z
+					#endif
+					
+					
 					newEvent->eventType = uiMouseWheel
 				case FB.EVENT_WINDOW_CLOSE
 					newEvent->EventType = uiShutDown
