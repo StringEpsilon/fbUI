@@ -18,7 +18,9 @@ type uiListBox extends uiControlContainer
 		
 		declare destructor()
 		declare constructor (x as integer, y as integer,h as integer, w as integer, list() as string)
-				
+		
+		declare property Selection() as string
+		
 		declare sub OnClick(mouse as uiMouseEvent)
 		declare sub OnKeypress(keypress as uiKeyEvent)
 		declare sub OnMouseMove(mouse as uiMouseEvent)
@@ -37,6 +39,7 @@ constructor uiListBox(x as integer, y as integer,h as integer, w as integer, lis
 	dim child as uiLabel ptr 
 	for i as integer = 0 to ubound(list)
 		child = new uiLabel(2, i*16+2, list(i))
+		child->DrawBackground = false
 		child->Parent = @this
 		this._children->Append(child)
 	next
@@ -62,6 +65,12 @@ function uiListBox.GetElementAt(x as integer, y as integer) as uiControl ptr
 	return this._children->item(i)
 end function
 
+property uiListBox.Selection() as string
+	if (this._selection <> 0) then
+		return this._selection->Text
+	end if
+	return ""
+end property
 
 sub uiListBox.OnClick(mouse as uiMouseEvent)
 	mouse.x = mouse.x - this.dimensions.x
@@ -69,19 +78,22 @@ sub uiListBox.OnClick(mouse as uiMouseEvent)
 	
 	dim uiClickedElement as uiControl ptr = this.GetElementAt(mouse.x, mouse.y)
 	if ( uiClickedElement <> 0 ) then
-		if (this._focus <> uiClickedElement) then
-			if (this._focus <> 0 ) then
-				this._focus->OnFocus(false)
-			end if
-			mutexlock(this._mutex)
-			this._focus = uiClickedElement
-			mutexunlock(this._mutex)
-			this._focus->OnFocus(true)
-		end if
 		if (*uiClickedElement is uiLabel) then
-			this._selection = cast(uiLabel ptr, uiClickedElement)
-			this.Redraw()
+			if (this._selection <> uiClickedElement) then
+				this._selection = cast(uiLabel ptr, uiClickedElement)
+				this.DoCallBack()				
+				this.Redraw()
+			end if
 		else
+			if (this._focus <> uiClickedElement) then
+				if (this._focus <> 0 ) then
+					this._focus->OnFocus(false)
+				end if
+				mutexlock(this._mutex)
+				this._focus = uiClickedElement
+				mutexunlock(this._mutex)
+				this._focus->OnFocus(true)
+			end if
 			uiClickedElement->OnClick(mouse)
 		end if
 	elseif (this._focus <> 0) then
