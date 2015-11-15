@@ -53,7 +53,7 @@ type uiControl extends IRenderable
 		declare virtual sub OnMouseWheel(mouse as uiMouseEvent)
 end type
 
-declareList(uiControl ptr, controlList)
+declareList(uiControl, controlList)
 
 constructor uiControl()
 	this._mutex = mutexCreate()

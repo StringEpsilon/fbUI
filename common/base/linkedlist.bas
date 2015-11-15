@@ -14,12 +14,11 @@ type ##listname##Element extends object
 end type
 
 constructor ##listname##Element()
-   this.element = new datatype
 end constructor
 
 destructor ##listname##Element()
 	delete this.nextElement
-	delete this.element
+	this.element = 0
 	this.previousElement = 0
 end destructor
 
@@ -27,17 +26,17 @@ TYPE ##listname##
 	PRIVATE:
 		_first as ##listname##Element ptr
 		_last as ##listname##Element ptr
-		_count as uinteger
+		_count as uinteger = 0
 		_lastAccessPtr as ##listname##Element ptr
 		_lastAccessIndex as uinteger = -1
 
 		declare function GetElement(index as uinteger) as  ##listname##Element ptr
 	PUBLIC:
-		declare property item(index as uinteger) as datatype
-		declare property item(index as uinteger, value as datatype)
+		declare property item(index as uinteger) as datatype ptr
+		declare property item(index as uinteger, value as datatype ptr)
 
-		declare sub append (newItem as datatype)
-		declare sub insert (index as uinteger, newItem as datatype)
+		declare sub append (newItem as datatype ptr)
+		declare sub insert (index as uinteger, newItem as datatype ptr)
 		declare sub remove (index as uinteger)
 
 		declare function count () as uinteger
@@ -62,7 +61,14 @@ destructor ##listname##()
 end destructor
 
 function ##listname##.GetElement(index as uinteger) as ##listname##Element ptr
-	if ( index <= 0 ) then return this._first
+	if ( index = 0 ) then 
+		return this._first
+	elseif (index < 0) then
+		return 0
+	elseif(index >= this._count) then
+		return 0
+	end if
+	
 	dim p_tmp_item as ##listname##Element ptr
 	dim i as integer
 	if ( this._lastAccessIndex = index-1) then
@@ -114,7 +120,7 @@ sub ##listname##.remove (index as uinteger)
 	this._count -= 1
 end sub
 
-sub ##listname##.insert (index as uinteger, newItem as datatype)
+sub ##listname##.insert (index as uinteger, newItem as datatype ptr)
 	if (index >= this._count ) then
 		this.append(newItem)
 	elseif (index <= this._count AND index > 0 ) then
@@ -122,7 +128,7 @@ sub ##listname##.insert (index as uinteger, newItem as datatype)
 		dim previousElement as ##listname##Element ptr = nextElement->previousElement
 		
 		dim newElement as ##listname##Element ptr = NEW ##listname##Element
-		*(newElement->element) = newItem
+		newElement->element = newItem
 		
 		newElement->nextElement = nextElement
 		nextElement->previousElement = newElement
@@ -138,27 +144,35 @@ sub ##listname##.insert (index as uinteger, newItem as datatype)
 	end if
 end sub
 
-sub ##listname##.append(newItem as datatype)
+sub ##listname##.append(newItem as datatype ptr)
 	if (this._first = 0 ) then
 		this._first = NEW ##listname##Element
-		*this._first->element = newItem
+		this._first->element = newItem
 		this._last = this._first
 		this._last->previousElement = this._first
 	elseif (_last <> 0) then
 		this._last->nextElement = NEW ##listname##Element
 		this._last->nextElement->previousElement = this._last
 		this._last = this._last->nextElement
-		*this._last->element = newItem
+		this._last->element = newItem
 	end if
-	_count += 1
+	this._count += 1
 end sub
 
-property ##listname##.item(index as uinteger) as datatype
-	return (*this.GetElement(index)->element)
+property ##listname##.item(index as uinteger) as datatype ptr
+	dim as ##listname##Element ptr result  = this.GetElement(index)
+	if (result <> 0 ) then
+		return result->element
+	else
+		return 0
+	end if
 end property
 
-property ##listname##.item(index as uinteger, value as datatype)
-	*this.GetElement(index)->element = value
+property ##listname##.item(index as uinteger, value as datatype ptr)
+	dim as ##listname##Element ptr result  = this.GetElement(index)
+	if (result <> 0 ) then
+		result->element = value
+	end if
 end property
 
 function ##listname##.count() as uinteger
