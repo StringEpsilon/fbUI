@@ -41,8 +41,8 @@ type uiWindow extends IDrawing
 		declare sub CreateWindow(h as integer, w as integer, newTitle as string = "")
 		declare sub HandleEvent(event as uiEvent)
 		declare sub Main()
-		declare sub AddElement( Control as uiControl ptr)
-		declare sub RemoveElement( Control as uiControl ptr)
+		declare sub AddControl( Control as uiControl ptr)
+		declare sub RemoveControl( Control as uiControl ptr)
 end type
 
 dim uiWindow._instance as uiWindow ptr = 0
@@ -120,13 +120,20 @@ function uiWindow.GetElementAt(x as integer, y as integer) as uiControl ptr
 	return result
 end function
 
-sub uiWindow.AddElement( element as uiControl ptr)
-	if (element <> 0) then
+sub uiWindow.AddControl( control as uiControl ptr)
+	if (control <> 0) then
 		mutexlock(this._mutex)
-		element->Parent = @this
-		this._children->append(element)
+		' If peformance gets bad, think of a better solution...
+		for i as integer = 1 to this._children->count 
+			if (this._children->item(i) = control) then
+				mutexunlock(this._mutex)
+				exit sub
+			end if
+		next
+		control->Parent = @this
+		this._children->append(control)
 		mutexunlock(this._mutex)
-		this.drawelement(element)
+		this.drawelement(control)
 	end if
 end sub
 
@@ -147,21 +154,21 @@ sub uiWindow.DestroyInstance()
 	end if
 end sub
 
-sub uiWindow.RemoveElement(element as uiControl ptr)
-	if (element <> 0) then
+sub uiWindow.RemoveControl(control as uiControl ptr)
+	if (control <> 0) then
 		dim i as integer = 0
 		while i < this._children->count
-			if ( this._children->item(i) = element) then
+			if ( this._children->item(i) = control) then
 				mutexlock(this._mutex)
 				this._children->remove(i)
-				element->Parent = cast(IDrawing ptr,0)
+				control->Parent = cast(IDrawing ptr,0)
 				mutexunlock(this._mutex)
 				exit while
 			end if
 			i += 1
 		wend
 		
-		if (this._focus = element) then 
+		if (this._focus = control) then 
 			mutexlock(this._mutex)
 			this._focus = 0
 			mutexunlock(this._mutex)

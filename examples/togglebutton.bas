@@ -15,8 +15,8 @@ spinner = new uiSpinner(88, 45, 24 )
 toggleButton = new uiToggleButton(50,5, "Disabled") 
 toggleButton->callback = @btnCallback
 
-fbGUI->AddElement(spinner)
-fbGUI->AddElement(toggleButton)
+fbGUI->AddControl(spinner)
+fbGUI->AddControl(toggleButton)
 fbGUI->CreateWindow(100,200)
 
 threadcreate(@StartSpinnerAnimation,spinner)

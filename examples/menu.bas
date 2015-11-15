@@ -12,7 +12,7 @@ next
 dim as uiWindow ptr fbGUI = uiWindow.GetInstance()
 dim as uiMenu ptr menu = new uiMenu( 16,200, list())
 
-fbGUI->AddElement(menu)
+fbGUI->AddControl(menu)
 fbGUI->CreateWindow(100,200)
 
 fbGUI->Main()

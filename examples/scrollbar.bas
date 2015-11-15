@@ -25,12 +25,12 @@ vscrollbar2->callback = @ElementCallback2
 vscrollbar3->callback = @ElementCallback3
 
 
-fbGUI->AddElement(vscrollbar)
-fbGUI->AddElement(vscrollbar2)
-fbGUI->AddElement(vscrollbar3)
-fbGUI->AddElement(label1)
-fbGUI->AddElement(label2)
-fbGUI->AddElement(label3)
+fbGUI->AddControl(vscrollbar)
+fbGUI->AddControl(vscrollbar2)
+fbGUI->AddControl(vscrollbar3)
+fbGUI->AddControl(label1)
+fbGUI->AddControl(label2)
+fbGUI->AddControl(label3)
 fbGUI->CreateWindow(100,200)
 
 ' Start the event loop and the main UI thread:

@@ -14,8 +14,8 @@ for i as integer = 0 to 10
 next
 
 listbox->Callback = @ListBoxCallback
-fbGUI->AddElement(listbox)
-fbGUI->AddElement(label1)
+fbGUI->AddControl(listbox)
+fbGUI->AddControl(label1)
 fbGUI->CreateWindow(120,200)
 
 fbGUI->Main()

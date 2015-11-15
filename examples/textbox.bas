@@ -15,9 +15,9 @@ dim as uiTextbox ptr textbox = new uiTextbox( 5, 25, 190)
 
 textbox->callback = @ElementCallback
 
-fbGUI->AddElement(new uiLabel(5,40,"Type & press Enter",25))
-fbGUI->AddElement(label)
-fbGUI->AddElement(textbox)
+fbGUI->AddControl(new uiLabel(5,40,"Type & press Enter",25))
+fbGUI->AddControl(label)
+fbGUI->AddControl(textbox)
 fbGUI->CreateWindow(100,200)
 
 fbGUI->Main()
