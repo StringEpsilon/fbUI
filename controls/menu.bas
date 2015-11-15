@@ -29,8 +29,7 @@ constructor uiMenu(h as integer, w as integer, list() as string)
 		child = new uiMenuItem(list(i))
 		child->dimensions.x = yOffset
 		yOffset += child->dimensions.w
-		child->Parent = @this
-		this._children->Append(child)
+		this.AddControl(child)
 	next
 	this.CreateBuffer()
 end constructor 
@@ -45,7 +44,7 @@ sub uiMenu.OnClick(mouse as uiMouseEvent)
 	mouse.x = mouse.x - this.dimensions.x
 	mouse.y = mouse.y - this.dimensions.y
 	
-	dim uiClickedElement as uiControl ptr = this.GetElementAt(mouse.x, mouse.y)
+	dim uiClickedElement as uiControl ptr = this.GetControlAt(mouse.x, mouse.y)
 	if ( uiClickedElement <> 0 ) then
 		if (this._focus <> uiClickedElement) then
 			if (this._focus <> 0 ) then
@@ -89,6 +88,7 @@ function uiMenu.Render() as fb.image ptr
 			
 			for i as integer = 0 to this._children->count()-1
 				element = this._children->item(i)
+				if (element = 0) then exit for
 				with element->dimensions
 					put this._surface, (.x,.y), element->render(), ALPHA
 					line this._surface, (.x + .w,.y)-(.x + .w,.y +.h), ElementBorderColor, BF

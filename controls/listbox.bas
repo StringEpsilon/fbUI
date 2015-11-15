@@ -11,7 +11,7 @@ type uiListBox extends uiControlContainer
 	private:
 		_selection as uiLabel ptr
 		_scrollbar as uiScrollbar ptr
-		declare function GetElementAt(x as integer, y as integer) as uiControl ptr
+		declare function GetControlAt(x as integer, y as integer) as uiControl ptr
 	public:
 		declare constructor (x as integer, y as integer,h as integer, w as integer)
 		declare constructor (x as integer, y as integer,h as integer, w as integer, list() as string)
@@ -45,22 +45,21 @@ constructor uiListBox(x as integer, y as integer,h as integer, w as integer, lis
 	for i as integer = 0 to ubound(list)
 		child = new uiLabel(2, i*16+2, list(i))
 		child->DrawBackground = false
-		child->Parent = @this
-		this._children->Append(child)
+		this.AddControl(child)
 	next
 	this.CreateBuffer()
 end constructor 
 
-function uiListBox.GetElementAt(x as integer, y as integer) as uiControl ptr
-	'If scrollbar is clicked, we can leave early.
+function uiListBox.GetControlAt(x as integer, y as integer) as uiControl ptr
+	' If scrollbar is clicked, we can leave early.
+	' This is faster than checking all children and easier to read because of offset values.
 	with this._scrollbar->dimensions
 		if (( x >= .x) AND ( x <= .x + .w ) and ( y >= .y ) and (y <= .y + .h)) then
 			return this._scrollbar
 		end if
 	end with
 	
-	dim i as integer
-	i = int(y / 16) + this._scrollbar->value +1
+	dim as integer i = int(y / 16) + this._scrollbar->value +1
 	return this._children->item(i)
 end function
 
@@ -75,7 +74,7 @@ sub uiListBox.OnClick(mouse as uiMouseEvent)
 	mouse.x = mouse.x - this.dimensions.x
 	mouse.y = mouse.y - this.dimensions.y
 	
-	dim uiClickedElement as uiControl ptr = this.GetElementAt(mouse.x, mouse.y)
+	dim uiClickedElement as uiControl ptr = this.GetControlAt(mouse.x, mouse.y)
 	if ( uiClickedElement <> 0 ) then
 		if (*uiClickedElement is uiLabel) then
 			if (this._selection <> uiClickedElement) then
@@ -133,12 +132,13 @@ function uiListBox.Render() as fb.image ptr
 			
 			for i as integer = 1 to this._dimensions.h/16
 				element =  this._children->item(i+this._scrollbar->Value)
+				if (element = 0) then exit for
+				
 				if (element = this._selection) then
 					line this._surface, (2, (i-1)*16 + 1) - (.w -2, (i)*16 -2), &hFFA0A0FF, BF
 				end if
 				
 				put this._surface, (2, (i-1)*16), element->render(), ALPHA
-				
 			next
 		end with
 		put this._surface, (this._scrollbar->dimensions.x, this._scrollbar->dimensions.y),this._scrollbar->Render(),ALPHA
@@ -147,12 +147,9 @@ function uiListBox.Render() as fb.image ptr
 end function
 
 sub uiListBox.AddElement(value as string)
-	mutexlock(this._mutex)
-		dim as uiLabel ptr newLabel = new uiLabel(2, (this._children->count -1)*16+2, value)
-		newLabel->Parent = @this
-		newLabel->DrawBackground = false
-		this._children->Append(newLabel)
-	mutexunlock(this._mutex)
+	dim as uiLabel ptr newLabel = new uiLabel(2, (this._children->count -1)*16+2, value)
+	newLabel->DrawBackground = false
+	this.AddControl(newLabel)
 	this.Redraw()
 end sub
 end namespace
