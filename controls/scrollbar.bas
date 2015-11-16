@@ -183,9 +183,9 @@ sub uiScrollBar.OnMouseWheel( mouse as uiMouseEvent )
 		mutexunlock(this._mutex)
 		this.Redraw()
 		this.DoCallback()
+	else
+		mutexunlock(this._mutex)
 	end if
-	
-	mutexunlock(this._mutex)
 end sub
 
 function uiScrollBar.Render() as fb.image  ptr

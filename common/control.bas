@@ -106,6 +106,7 @@ end property
 
 sub uiControl.Redraw()
 	' We assume that if an element requested to be redrawn, it has changes.
+	mutexlock(this._mutex)
 	this._stateChanged = true
 	if (this._parentElement <> 0) then
 		this._parentElement->_stateChanged = true
@@ -113,6 +114,7 @@ sub uiControl.Redraw()
 	elseif ( this._parent ) then
 		this._parent->DrawElement(@this)
 	end if
+	mutexunlock(this._mutex)
 end sub
 
 sub uiControl.CreateBuffer()
