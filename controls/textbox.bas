@@ -153,7 +153,6 @@ end function
 
 sub uiTextbox.OnClick( mouse as uiMouseEvent )
 	if ( mouse.lmb = uiClick ) then
-		
 		dim as integer newCursor = (mouse.x - this.dimensions.x - 3 ) / FONT_WIDTH + this._offset
 		if ( newCursor > len(this._text) ) then
 			newCursor = len(this._text)
@@ -229,12 +228,12 @@ sub uiTextbox.OnKeypress( keypress as uiKeyEvent )
 			case 13 ' Enter
 				this.DoCallback()
 			case 32 to 254:
-				if (this._cursor.selectStart <> -1) then
+				if ( this._cursor.selectStart <> -1 AND this._cursor.selectEnd <> -1 ) then
 					this.RemoveSelected()
 				end if
 				if ( len(this._text) < 255  ) then
 					if ( this._cursor.Position = len(this._text) ) then
-						this._Text += keypress.key
+						this._text += keypress.key
 					else
 						this._text = left(_text, this._cursor.Position) + keypress.key + right (_text, len(this._text) - this._cursor.Position )
 					end if
