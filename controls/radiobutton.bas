@@ -31,7 +31,7 @@ type uiRadiobutton extends uiControl
 
 end type
 
-declareList(uiRadioButton ptr, uiRadioButtonlist)
+declareList(uiRadioButton, uiRadioButtonlist)
 
 constructor uiRadiobutton( x as integer, y as integer, newLabel as string = "", head as uiRadiobutton ptr = 0)
 	base()
@@ -88,7 +88,6 @@ property uiRadiobutton.Value(newValue as boolean)
 		this._value = false
 		mutexunlock(this._mutex)
 	end if
-	
 end property
 
 property uiRadiobutton.Value() as boolean
