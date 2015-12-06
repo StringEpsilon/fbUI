@@ -14,6 +14,7 @@ type uiButton extends uiControl
 		declare virtual sub Onfocus( focus as boolean)
 		
 		declare constructor overload( x as integer, y as integer, newLabel as string = "", length as integer = 0)
+		declare constructor overload( byref json as jsonItem)
 
 		declare property Label() as string
 		declare property Label(value as string)
@@ -28,6 +29,16 @@ constructor uiButton( x as integer, y as integer, newLabel as string = "", lengt
 		.y = y
 	end with
 	this._label = newLabel
+	this.CreateBuffer()
+end constructor
+
+constructor uiButton( byref json as jsonItem )
+	base(json)
+	this._dimensions.h = FONT_HEIGHT + 6
+	this._label = json["label"].value
+	if ( this._dimensions.w = 0 ) then
+		this._dimensions.w = 20 + len(this._label)*FONT_WIDTH
+	end if
 	this.CreateBuffer()
 end constructor
 

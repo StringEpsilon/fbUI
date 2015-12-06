@@ -24,6 +24,7 @@ type uiTextbox extends uiControl
 		declare sub RemoveSelected()
 	public: 
 		declare constructor overload( x as integer, y as integer,length as integer, newText as string = "")
+		declare constructor overload( byref json as jsonItem )
 
 		declare function Render() as  fb.image  ptr
 		declare virtual sub OnKeypress( keypress as uiKeyEvent )
@@ -34,6 +35,15 @@ type uiTextbox extends uiControl
 		declare property Value(value as string)
 
 end type
+
+constructor uiTextBox( byref json as jsonItem )
+	base(json)
+	this._dimensions.h = 14
+	this._length = (this._dimensions.w - 12) / FONT_WIDTH
+	this._text = json["value"].value
+	
+	this.CreateBuffer()
+end constructor
 
 constructor uiTextbox( x as integer, y as integer, w as integer, newText as string = "")
 	base(x,y)
@@ -47,12 +57,7 @@ constructor uiTextbox( x as integer, y as integer, w as integer, newText as stri
 end constructor
 
 property uiTextbox.Value(newValue as string)
-	if ( len(value) <> len(this._Text) ) then 
-		this._Text = value
-	else
-		this._Text = value
-		this.CreateBuffer()
-	end if
+	this._Text = value
 	this.Redraw()
 end property
 

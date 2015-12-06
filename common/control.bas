@@ -6,6 +6,8 @@
 #include once "uiEvent.bi"
 #include once "base/IDrawing.bi"
 #include once "base/colors.bi"
+#include once "fbJson.bi"
+
 
 type uiControl extends IRenderable
 	private:
@@ -23,6 +25,7 @@ type uiControl extends IRenderable
 		_stateChanged as boolean = true
 		
 		declare constructor (x as integer, y as integer)
+		declare constructor (byref json as jsonItem)
 		declare virtual sub CreateBuffer()
 		declare sub Redraw()
 		declare sub DoCallback()
@@ -58,6 +61,18 @@ declareList(uiControl, controlList)
 constructor uiControl()
 	this._mutex = mutexCreate()
 end constructor 
+
+constructor uiControl(byref json as jsonItem)
+	this.Constructor()
+	if ( json["dimensions"].count >= 0 ) then
+		this._dimensions.h = cint(json["dimensions"]["h"].value)
+		this._dimensions.w = cint(json["dimensions"]["w"].value)
+		this._dimensions.x = cint(json["dimensions"]["x"].value)
+		this._dimensions.y = cint(json["dimensions"]["y"].value)
+	end if
+	
+	this._id = json["id"].value
+end constructor
 
 constructor uiControl(x as integer, y as integer)
 	this.constructor()
