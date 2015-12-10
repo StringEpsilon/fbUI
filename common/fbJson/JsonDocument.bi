@@ -10,7 +10,7 @@ end type
 
 operator jsonDocument.[](key as string) byref as jsonItem	
 	if ( this._datatype = jsonObject ) then
-		for i as integer = 0 to ubound(this._children)
+		for i as integer = 0 to this.Count -1
 			if ( this._children(i)->key = key ) then
 				return *this._children(i)
 			end if
@@ -20,26 +20,25 @@ operator jsonDocument.[](key as string) byref as jsonItem
 end operator
 
 operator jsonDocument.[](index as integer) byref as jsonItem
-	if ( index <= ubound(this._children) ) then
+	if ( index <= this.Count -1 ) then
 		return *this._children(index)
 	end if
 	return *new jsonItem()
 end operator
 
 function jsonDocument.ReadFile(path as string) as boolean
-	dim as string inputLine 
 	dim as string jsonFile
 	dim as integer ff = freefile()
 	
-	open path for input as #ff 
-		while (not eof(ff))
-			line input #ff, inputLine 
-			jsonFile += inputLine + chr(10)
-		wend
+	open path for binary as #ff 
+	' I don't know if there is any better way to get the whole file at once.
+	jsonFile = space(lof(ff))
+	get #ff, , jsonFile
+	' But using "get #" is definetly faster.
 	close #ff
 	
 	jsonFile = trim(jsonFile, any " "+chr(9,10))
-	this.ParseObjectString(jsonFile, 0, len(jsonFile)-1)	
+	this.Parse(jsonFile, 0, len(jsonFile)-1)	
 	return this._datatype <> malformed
 end function
 
@@ -48,7 +47,7 @@ function jsonDocument.SaveFile(path as string, overwrite as boolean = true) as b
 	dim as integer ff = freefile()
 	dim as integer fileError 
 	
-	if ( dir(path) <> "" and overwrite = false ) then return false
+	if ( len(dir(path)) > 0 and overwrite = false ) then return false
 	
 	fileError = open(path for output as #ff)
 	if (fileError = 0 ) then
