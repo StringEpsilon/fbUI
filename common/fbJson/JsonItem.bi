@@ -174,7 +174,8 @@ property jsonItem.Value( byref newValue as string)
 	if ( newValue[0] = jsonToken.Quote ) then 
 		if ( newValue[len(newValue)-1] = jsonToken.Quote ) then
 			this._dataType = jsonString
-			this._value = newValue
+			this._value = mid(newValue,2, len(newValue)-2)
+			
 			DeEscapeString(this._value)
 		else
 			this._dataType = malformed
@@ -212,7 +213,7 @@ sub jsonItem.Parse(byref jsonString as string, startIndex as integer, endIndex a
 	dim as string newKey
 	dim as integer currentLevel
 	dim as integer stateStart = startIndex + 1
-	dim as parserState state = none
+	dim as parserState state = parserState.none
 	dim as boolean isStringOpen = false
 
 	if (this._dataType = jsonNull) then
@@ -240,7 +241,7 @@ sub jsonItem.Parse(byref jsonString as string, startIndex as integer, endIndex a
 				
 				if ( isStringOpen = true ) then
 					if ( this._dataType <> jsonArray ) then
-						if ( state = none ) then 
+						if ( state = parserState.none ) then 
 							state = keyToken
 							stateStart = i+1
 						end if
@@ -319,7 +320,7 @@ sub jsonItem.Parse(byref jsonString as string, startIndex as integer, endIndex a
 			
 			if ( this._dataType = jsonObject ) then
 				this.AppendChild(newKey, child)
-				state = none
+				state = parserState.none
 			else
 				this.AppendChild(child)
 				state = valueToken

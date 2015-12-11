@@ -1,6 +1,4 @@
-#include once "../common/window.bas"
-#include once "../controls/toggleButton.bas"
-#include once "../controls/spinner.bas"
+#include once "../fbUI.bas"
 
 using fbUI
 
@@ -12,7 +10,8 @@ dim shared as uiSpinner ptr spinner
 
 'Create the elements and add them to the UI:
 spinner = new uiSpinner(88, 45, 24 )  
-toggleButton = new uiToggleButton(50,5, "Disabled") 
+
+toggleButton = new uiToggleButton(jsonItem("{""dimensions"":{""x"":50,""y"":5},""label"":""Disabled"",""value"":false}") ) 
 toggleButton->callback = @btnCallback
 
 fbGUI->AddControl(spinner)
@@ -22,11 +21,6 @@ fbGUI->CreateWindow(100,200)
 threadcreate(@StartSpinnerAnimation,spinner)
 
 fbGUI->Main()
-
-delete(toggleButton)
-delete(spinner)
-
-end
 
 sub btnCallback (payload as uiControl ptr)
 	if (payload <> 0 ) then

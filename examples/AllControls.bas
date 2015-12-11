@@ -1,10 +1,4 @@
-#include once "../common/window.bas"
-#include once "../controls/toggleButton.bas"
-#include once "../controls/spinner.bas"
-#include once "../controls/listbox.bas"
-#include once "../controls/radiobutton.bas"
-#include once "../controls/textbox.bas"
-
+#include once "../fbUI.bas"
 using fbUI
 
 declare sub btnCallback (payload as uiControl ptr)

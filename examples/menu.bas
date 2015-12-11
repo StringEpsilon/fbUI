@@ -1,7 +1,5 @@
-#INCLUDE once "fbgfx.bi"
+#include once "../fbUI.bas"
 
-#include once "../common/window.bas"
-#include once "../controls/menu.bas"
 using fbUI
 
 dim as string list(2) 

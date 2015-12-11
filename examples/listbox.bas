@@ -1,5 +1,4 @@
-#include once "../common/window.bas"
-#include once "../controls/listbox.bas"
+#include once "../fbUI.bas"
 
 using fbUI
 

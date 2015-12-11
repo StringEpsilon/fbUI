@@ -63,7 +63,7 @@ constructor uiControl()
 end constructor 
 
 constructor uiControl(byref json as jsonItem)
-	this.Constructor()
+	this._mutex = mutexCreate()
 	if ( json["dimensions"].count >= 0 ) then
 		this._dimensions.h = cint(json["dimensions"]["h"].value)
 		this._dimensions.w = cint(json["dimensions"]["w"].value)

@@ -1,9 +1,5 @@
-#INCLUDE once "fbgfx.bi"
+#include once "../fbUI.bas"
 
-#include once "../common/window.bas"
-#include once "../controls/scrollbar.bas"
-
-#include once "../controls/label.bas"
 using fbUI
 
 declare sub ElementCallback (payload as uiControl ptr)

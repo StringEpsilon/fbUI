@@ -15,6 +15,7 @@ type uiToggleButton extends uiButton
 	declare virtual sub OnClick( mouse as uiMouseEvent)	
 	
 	declare constructor( x as integer, y as integer, newLabel as string = "")
+	declare constructor overload( byref json as jsonItem)
 	
 	private:
 		declare constructor(byref element as const uiToggleButton)
@@ -25,10 +26,17 @@ constructor uiToggleButton(byref element as const uiToggleButton)
 	base(element)
 end constructor
 
-
 constructor uiToggleButton( x as integer, y as integer, newLabel as string = "")
 	base(x,y,newLabel)
 end constructor
+
+constructor uiToggleButton( byref json as jsonItem )
+	base(json)
+	if ( json.ContainsKey("value") ) then
+		this._value = cbool(json["value"].value)
+	end if
+end constructor
+
 
 property uiToggleButton.Value() as boolean
 	return this._value

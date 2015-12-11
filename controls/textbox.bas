@@ -41,7 +41,6 @@ constructor uiTextBox( byref json as jsonItem )
 	this._dimensions.h = 14
 	this._length = (this._dimensions.w - 12) / FONT_WIDTH
 	this._text = json["value"].value
-	
 	this.CreateBuffer()
 end constructor
 
@@ -193,7 +192,7 @@ sub uiTextbox.OnKeypress( keypress as uiKeyEvent )
 	mutexlock(this._mutex)
 	if ( keypress.extended ) then
 		' In this case, we got a 2 character key.
-		select case keypress.keycode
+		select case as const keypress.keycode
 			case 71 ' pos1 / home
 				this.MoveTo(0)
 			case 79 ' end
@@ -210,7 +209,7 @@ sub uiTextbox.OnKeypress( keypress as uiKeyEvent )
 				end if				
 		end select
 	else
-		select case keypress.keycode
+		select case as const keypress.keycode
 			case 1 'ctrl + a
 				this.MoveTo(0)
 				this._cursor.selectStart = 0
