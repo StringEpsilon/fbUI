@@ -5,7 +5,7 @@
 
 namespace fbUI
 
-#include once "../common/controlContainer.bas"
+#include once "../controlContainer.bas"
 
 type uiListBox extends uiControlContainer
 	private:

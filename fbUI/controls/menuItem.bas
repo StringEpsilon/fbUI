@@ -2,7 +2,7 @@
 
 namespace fbUI
 
-#include once "../common/controlContainer.bas"
+#include once "../controlContainer.bas"
 
 type uiMenuItem extends uiControlContainer
 	protected:

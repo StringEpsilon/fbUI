@@ -6,7 +6,7 @@ namespace fbUI
 const PI = 3.1415
 #endif
 
-#include once "../common/control.bas"
+#include once "../control.bas"
 
 type uiSpinner extends uiControl
 	private:

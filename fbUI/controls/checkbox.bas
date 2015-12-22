@@ -2,7 +2,7 @@
 
 namespace fbUI
 
-#include once "../common/control.bas"
+#include once "../control.bas"
 
 type uiCheckBox extends uiControl
 	private:

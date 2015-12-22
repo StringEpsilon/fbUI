@@ -1,5 +1,5 @@
 #include once "../fbUI.bas"
-#include once "../common/jsonHelper.bas"
+
 using fbUI
 
 declare sub ToggleCallback (payload as uiControl ptr)

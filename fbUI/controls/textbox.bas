@@ -2,7 +2,7 @@
 
 namespace fbUI
 
-#include once "../common/control.bas"
+#include once "../control.bas"
 
 type uiTextBoxCursor
 	position as integer = 0

@@ -1,6 +1,6 @@
 ' scrollbar.bas - StringEpsilon, 2015, WTFPL
 
-#include once "../common/control.bas"
+#include once "../control.bas"
 #define uiCeil(d) (-Int(-d))
 
 namespace fbUI

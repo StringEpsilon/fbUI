@@ -4,7 +4,7 @@
 
 namespace fbUI
 
-#include once "../common/controlContainer.bas"
+#include once "../controlContainer.bas"
 
 type uiMenu extends uiControlContainer
 	public:
