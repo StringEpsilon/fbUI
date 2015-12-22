@@ -38,6 +38,8 @@ type uiWindow extends IDrawing
 		declare static function GetInstance() as uiWindow ptr
 		declare static sub DestroyInstance()
 		
+		declare function GetControl(id as string) as uiControl ptr
+		
 		declare sub CreateWindow(h as integer, w as integer, newTitle as string = "")
 		declare sub HandleEvent(event as uiEvent)
 		declare sub Main()
@@ -191,6 +193,15 @@ function uiWindow.GetInstance() as uiWindow ptr
 	return _instance
 end function
 
+function uiWindow.GetControl(id as string) as uiControl ptr
+	for i as integer = 0 to this._children->Count -1
+		if ( this._children->Item(i)->Id = id ) then
+			return this._children->Item(i)
+		end if
+	next
+	return 0
+end function
+
 sub uiWindow.HandleEvent(event as uiEvent)
 	select case as const event.eventType 
 		case uiShutdown
@@ -205,10 +216,11 @@ sub uiWindow.HandleEvent(event as uiEvent)
 		case uiMouseClick
 			dim uiClickedElement as uiControl ptr = this.GetElementAt(event.mouse.x, event.mouse.y)
 			' Always forward the release event to the element last clicked.
+			
 			if ( event.mouse.last = uiReleased and this._focus <> 0 ) then
 				this._focus->OnClick(event.mouse)
 			else
-				if (uiClickedElement <> 0) then
+				if ( uiClickedElement <> 0 ) then
 					if ( this._focus <> uiClickedElement ) then
 						if (this._focus <> 0 ) then
 							this._focus->OnFocus(false)
@@ -219,7 +231,7 @@ sub uiWindow.HandleEvent(event as uiEvent)
 						this._focus->OnFocus(true)
 					end if
 					uiClickedElement->OnClick(event.Mouse)
-				elseif (this._focus <> 0) then
+				elseif ( this._focus <> 0 ) then
 					this._focus->OnFocus(false)
 					mutexlock(this._mutex)
 					this._focus = 0
@@ -227,9 +239,11 @@ sub uiWindow.HandleEvent(event as uiEvent)
 				end if
 			end if
 		case uiMouseMove
+			mutexlock(this._mutex)
 			if ( this._focus <> 0 ) then
 				this._focus->OnMouseMove(event.mouse)
 			end if
+			mutexunlock(this._mutex)
 			
 			dim as uiControl ptr mouseLeave, mouseEnter
 			dim uiClickedElement as uiControl ptr = this.GetElementAt(event.mouse.x, event.mouse.y)
