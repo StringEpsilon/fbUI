@@ -58,9 +58,11 @@ sub ##buffername##.Clear()
 	#if CreateThreadSafe = true
 	mutexlock(this._mutex)
 	#endif
+	
 	deallocate(this._array)
 	this._head = this._tail = this._size = 0
 	this._version += 1
+	
 	#if CreateThreadSafe = true
 	mutexunlock(this._mutex)
 	#endif
@@ -72,6 +74,7 @@ function ##buffername##.Pop() as datatype
 		#if CreateThreadSafe = true
 		mutexlock(this._mutex)
 		#endif
+		
 		element = this._array[this._head]
 		if (this._head + 1 =  this._arraySize) then
 			this._head = 0
@@ -80,6 +83,7 @@ function ##buffername##.Pop() as datatype
 		end if
 		this._size -= 1
 		this._version +=1
+		
 		#if CreateThreadSafe = true
 		mutexunlock(this._mutex)
 		#endif
@@ -92,24 +96,26 @@ function ##buffername##.Contains(item as datatype) as boolean
 	dim i as integer = 0
 	while i < this._size
 		if ( this._array[i] = item )  then return true
-		i+=1
+		i += 1
 	wend
 	return false
 end function 
 
 sub ##buffername##.Push(item as datatype)
-	if (this._size = this._arraySize OR this._tail = this._arraySize) then
-		this.SetCapacity(IIF(_size<_tail, _tail, _size)* 2)
-	end if
 	#if CreateThreadSafe = true
 	mutexlock(this._mutex)
 	#endif
+	
+	if (this._size = this._arraySize OR this._tail = this._arraySize) then
+		this.SetCapacity(IIF(_size<_tail, _tail, _size)* 2)
+	end if
+
 	this._array[this._tail] = item
 	
 	if ( this._tail + 1 = this._arraySize ) then
-		_tail = 0
+		this._tail = 0
 	else
-		_tail += 1
+		this._tail += 1
 	end if
 	this._size +=1
 	this._version +=1
@@ -122,17 +128,11 @@ sub ##buffername##.SetCapacity(newSize as uinteger)
 	if ( newSize <= this._size) then
 		exit sub
 	end if
-	#if CreateThreadSafe = true
-	mutexlock(this._mutex)
-	#endif
 	this._arraySize = newSize
 	this._array = reallocate(this._array ,sizeof(datatype)*this._arraySize)
 	this._tail = _size
 	this._head = 0
 	this._version +=1
-	#if CreateThreadSafe = true
-	mutexunlock(this._mutex)
-	#endif
 end sub
 		
 property ##buffername##.Count() as uinteger
