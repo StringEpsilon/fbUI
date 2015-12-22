@@ -121,22 +121,23 @@ end property
 
 sub uiControl.Redraw()
 	' We assume that if an element requested to be redrawn, it has changes.
-	mutexlock(this._mutex)
+	'mutexlock(this._mutex)
 	this._stateChanged = true
 	if (this._parentElement <> 0) then
 		this._parentElement->_stateChanged = true
+	'	mutexunlock(this._mutex)
 		this._parentElement->Redraw()
 	elseif ( this._parent ) then
+	'	mutexunlock(this._mutex)
 		this._parent->DrawElement(@this)
 	end if
-	mutexunlock(this._mutex)
+	'mutexunlock(this._mutex)
 end sub
 
 sub uiControl.CreateBuffer()
 	if ( this._surface <> 0) then
 		imagedestroy( this._surface )
 	end if
-	
 	this._surface = imagecreate(this._dimensions.w, this._dimensions.h+1, &h00ffffff, 32)
 end sub
 
