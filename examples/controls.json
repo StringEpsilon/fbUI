@@ -1,0 +1,116 @@
+{
+	"window": {
+		"height": 200,
+		"width": 400,
+		"controls": 
+		[{
+			"id": "vscrollbar",
+			"type": "scrollbar",
+			"maximum": 20,
+			"minimum": 0,
+			"range": 5,
+			"dimensions": { "x": 5,"y": 90,"h": 90 }
+		}, {
+			"id": "hscrollbar",
+			"type": "scrollbar",
+			"maximum": 20,
+			"minimum": 0,
+			"range": 5,
+			"orientation": "horizontal",
+			"dimensions": {
+				"x": 20,
+				"y": 90,
+				"w": 90
+			}
+		}, {
+			"id": "vscrollbarLabel",
+			"type": "label",
+			"text": "V Scrollbar 0",
+			"length": 16,
+			"dimensions": {
+				"x": 20,
+				"y": 100
+			}
+		}, {
+			"id": "hscrollbarLabel",
+			"type": "label",
+			"text": "V Scrollbar 0",
+			"length": 16,
+			"dimensions": {
+				"x": 20,
+				"y": 120
+			}
+		}, {
+			"id": "listboxLabel",
+			"type": "label",
+			"text": "Select!",
+			"dimensions": {
+				"x": 205,
+				"y": 5
+			}
+		}, {
+			"id": "spinner",
+			"type": "spinner",
+			"diameter": 25,
+			"dimensions": {
+				"x": 5,
+				"y": 25
+			}
+		}, {
+			"id": "listbox",
+			"type": "listbox",
+			"dimensions": {
+				"x": 100,
+				"y": 5,
+				"h": 80,
+				"w": 100
+			},
+			"elements": [
+				"Item 1",
+				"Item 2",
+				"Item 3",
+				"Item 4",
+				"Item 5",
+				"Item 6",
+				"Item 7",
+				"Item 8",
+				"Item 9",
+				"Item 10"
+			]
+		}, {
+			"id": "spinnerToggle",
+			"type": "togglebutton",
+			"label": "Disabled",
+			"dimensions": {
+				"x": 5,
+				"y": 5
+			}
+		}, {
+			"id": "textbox1",
+			"type": "textbox",
+			"value": "Hello World",
+			"dimensions": { "x": 5, "y": 181, "w": 200 }
+		},
+		{
+			"id" : "radiobutton1",
+			"type": "radiobutton",
+			"value": "Option1",
+			"dimensions": { "x": 305, "y": 5 }
+		},
+		{
+			"id" : "radiobutton2",
+			"group": "radiobutton1",
+			"type": "radiobutton",
+			"value": "Option2",
+			"dimensions": { "x": 305, "y": 25 }
+		},
+		{
+			"id" : "radiobutton3",
+			"group": "radiobutton1",
+			"type": "radiobutton",
+			"value": "Option3",
+			"dimensions": { "x": 305, "y": 45 }
+		}
+		]
+	}
+}

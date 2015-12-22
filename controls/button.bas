@@ -14,7 +14,7 @@ type uiButton extends uiControl
 		declare virtual sub Onfocus( focus as boolean)
 		
 		declare constructor overload( x as integer, y as integer, newLabel as string = "", length as integer = 0)
-		declare constructor overload( byref json as jsonItem)
+		declare constructor(byref json as jsonItem)
 
 		declare property Label() as string
 		declare property Label(value as string)

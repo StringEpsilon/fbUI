@@ -31,7 +31,9 @@ type uiScrollBar extends uiControl
 	public:
 		declare function Render() as fb.image  ptr
 		
-		declare constructor overload(x as integer, y as integer, size as integer, max as integer, min as integer = 1, range as integer = 1, orientation as uiOrientation = vertical)
+		declare constructor(x as integer, y as integer, size as integer, max as integer, min as integer = 1, range as integer = 1, orientation as uiOrientation = vertical)
+		declare constructor (byref json as jsonItem)
+		
 		declare property Value() as integer
 		declare property Value(newValue as integer)
 		declare property Minimum() as integer
@@ -45,6 +47,27 @@ type uiScrollBar extends uiControl
 		declare virtual sub OnClick( mouse as uiMouseEvent ) 
 		declare virtual sub OnMouseWheel( mouse as uiMouseEvent )
 end type
+
+constructor uiScrollBar(byref json as jsonItem)
+	base(json)
+	
+	if ( this._dimensions.h <> 0 ) then
+		this._orientation = vertical
+		this._dimensions.w = 10
+		this._size = this._dimensions.h
+	else
+		this._orientation = horizontal
+		this._dimensions.h = 10
+		this._size = this._dimensions.w
+	end if
+	
+	this._range = cint(json["range"].value)
+	this._min = cint(json["minimum"].value)
+	this._max = cint(json["maximum"].value)
+	this._value = this._min +1
+	this.Readjust()
+	this.CreateBuffer()
+end constructor
 
 constructor uiScrollBar(x as integer, y as integer, size as integer, max as integer, min as integer = 1, p_range as integer = 1, orientation as uiOrientation = vertical)
 	base()
@@ -121,18 +144,18 @@ end sub
 sub uiScrollBar.CalculateValue(position as integer)
 	dim as integer l = IIF(this._orientation=vertical,this.dimensions.h, this.dimensions.w)
 	dim as integer newValue =  int( position / (l+1) * this._segments)  + this._min
-	if (this._value <> newValue ) then
+	
+	if ( this._value <> newValue ) then
 		this._value = newValue 
 		this._knob.Position = this._knob.Size * (this._value - this._min)
 		
 		this.Redraw()
-		
 		this.DoCallback()
 	end if
 end sub
 
 sub uiScrollBar.OnMouseMove( mouse as uiMouseEvent )
-	if ( mouse.lmb = uiClick OR (mouse.lmb = uiHold and this._hold) ) then
+	if ( mouse.lmb = uiClick OR (mouse.lmb = uiHold and this._hold = -1) ) then
 		if (this._orientation = vertical) then
 			mutexlock(this._mutex)
 			dim y as integer = mouse.y - this._dimensions.y 

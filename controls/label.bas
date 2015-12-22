@@ -11,8 +11,9 @@ type uiLabel extends uiControl
 	public:
 		declare function Render() as fb.image ptr
 		
-		declare constructor overload( x as integer, y as integer, newText as string,  length as integer = 0)
-
+		declare constructor( x as integer, y as integer, newText as string,  length as integer = 0)
+		declare constructor(byref json as jsonItem)
+		
 		declare property DrawBackground() as boolean
 		declare property DrawBackground(value as boolean)
 
@@ -20,7 +21,7 @@ type uiLabel extends uiControl
 		declare property Text(value as string)
 end type
 
-constructor uiLabel( x as integer, y as integer,newText as string,  length as integer = 0)
+constructor uiLabel(x as integer, y as integer,newText as string,  length as integer = 0)
 	base()	
 	with this._dimensions
 		.h = 16
@@ -29,6 +30,16 @@ constructor uiLabel( x as integer, y as integer,newText as string,  length as in
 		.y = y
 	end with
 	this._text = newText
+	this.CreateBuffer()
+end constructor
+
+constructor uiLabel(byref json as jsonItem )
+	base(json)
+	this._dimensions.h = 16
+	this._text = json["text"].value
+	if ( this._dimensions.w = 0 ) then
+		this._dimensions.w = 20 + len(this._text)*FONT_WIDTH
+	end if
 	this.CreateBuffer()
 end constructor
 

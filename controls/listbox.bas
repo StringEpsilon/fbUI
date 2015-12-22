@@ -13,8 +13,9 @@ type uiListBox extends uiControlContainer
 		_scrollbar as uiScrollbar ptr
 		declare function GetControlAt(x as integer, y as integer) as uiControl ptr
 	public:
-		declare constructor (x as integer, y as integer,h as integer, w as integer)
-		declare constructor (x as integer, y as integer,h as integer, w as integer, list() as string)
+		declare constructor(x as integer, y as integer,h as integer, w as integer)
+		declare constructor(x as integer, y as integer,h as integer, w as integer, list() as string)
+		declare constructor(byref json as jsonItem)
 		
 		declare property Selection() as string
 		
@@ -27,6 +28,26 @@ type uiListBox extends uiControlContainer
 		
 		declare sub AddElement(value as string)
 end type
+
+constructor uiListBox( byref json as jsonItem )
+	base(json)
+'	this._dimensions.h = FONT_HEIGHT + 6
+	with this._dimensions
+		this._scrollbar = new uiScrollbar(.w-11, 2, .h-4,.h/16+1,0)
+	end with
+	this._scrollbar->Parent = @this
+	this._children->Append(this._scrollbar)
+	
+	if ( json.ContainsKey("elements") ) then
+		dim child as uiLabel ptr
+		for i as integer = 0 to json["elements"].count -1
+			child = new uiLabel(2, i*16+2, json["elements"][i].value )
+			child->DrawBackground = false
+			this.AddControl(child)
+		next
+	end if
+	this.CreateBuffer()
+end constructor
 
 constructor uiListBox(x as integer, y as integer,h as integer, w as integer)
 	base(x,y)

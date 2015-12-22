@@ -14,9 +14,10 @@ type uiControlContainer extends uiControl
 	public:	
 		declare virtual destructor()
 		declare constructor overload()
+		declare constructor(byref json as jsonItem)
 		
 		declare sub AddControl(control as uiControl ptr)
-				
+		
 		declare virtual sub OnClick(mouse as uiMouseEvent)
 		declare virtual sub OnKeypress(keypress as uiKeyEvent)
 		declare virtual sub OnMouseMove(mouse as uiMouseEvent)
@@ -30,6 +31,11 @@ end constructor
 
 constructor uiControlContainer(x as integer, y as integer)
 	base(x,y)
+	this._children = new controlList()
+end constructor 
+
+constructor uiControlContainer(byref json as jsonItem)
+	base(json)
 	this._children = new controlList()
 end constructor 
 

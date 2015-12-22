@@ -12,13 +12,14 @@ type uiSpinner extends uiControl
 	private:
 		_state as boolean = false
 		_currentFrame as integer = 1
-		_d as integer
+		_diameter as integer
 		_threadHandle as any ptr
 		_exitAnimation as boolean = false
 	public:
 		declare function Render() as fb.image  ptr
 		
-		declare constructor overload( x as integer, y as integer, d as integer)
+		declare constructor(byref json as jsonItem)
+		declare constructor(x as integer, y as integer, d as integer)
 		declare destructor()
 		
 		declare Property ThreadHandle(value as any ptr)
@@ -30,9 +31,20 @@ end type
 
 declare sub StartSpinnerAnimation(spinner as any ptr)
 
+constructor uiSpinner(byref json as jsonItem)
+	base(json)	
+	this._diameter = cint(json["diameter"].value)
+	with this._dimensions
+		.h = this._diameter
+		.w = this._diameter
+	end with
+	this.CreateBuffer()
+	this._threadHandle = ThreadCreate(@StartSpinnerAnimation,@this)
+end constructor
+
 constructor uiSpinner( x as integer, y as integer,d as integer)
 	base()	
-	this._d = d
+	this._diameter = d
 	with this._dimensions
 		.h = d 
 		.w = d
@@ -83,8 +95,8 @@ function uiSpinner.Render() as fb.image ptr
 		dim as double angle2 = angle1 + 180.0 * (PI/180.0)
 		
 		line this._surface, (0,0) - (.w, .h), BackGroundColor, BF
-		circle this._surface, (.h/2, .h/2), _d/2-1, ElementBorderColor, angle1, angle2
-		circle this._surface, (.h/2, .h/2), _d/2-2, ElementBorderColor, angle1, angle2
+		circle this._surface, (.h/2, .h/2), _diameter / 2-1, ElementBorderColor, angle1, angle2
+		circle this._surface, (.h/2, .h/2), _diameter / 2-2, ElementBorderColor, angle1, angle2
 	end with
 	return this._surface
 end function

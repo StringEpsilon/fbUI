@@ -18,14 +18,25 @@ type uiCheckBox extends uiControl
 
 		declare constructor overload( x as integer, y as integer, label as string = "")
 		declare constructor(dimensions as uiDimensions)
+		declare constructor(byref json as jsonItem)
 
 		declare property Label() as string
 		declare property Label(value as string)
 			
 		declare property Value() as boolean
 		declare property Value(value as boolean)
-
 end type
+
+constructor uiCheckBox( byref json as jsonItem )
+	base(json)
+	this._dimensions.h = 16
+	this._label = json["label"].value
+	if ( this._dimensions.w = 0 ) then
+		this._dimensions.w = 20 + len(this._label)*FONT_WIDTH
+	end if
+	this._boxOffset = ( this._dimensions.h-12 ) \ 2
+	this.CreateBuffer()
+end constructor
 
 constructor uiCheckBox( x as integer, y as integer, newLabel as string = "")
 	base()
