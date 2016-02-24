@@ -1,0 +1,3 @@
+[submodule "fbUI/fbJson"]
+	path = fbUI/fbJson
+	url = https://github.com/StringEpsilon/fbJson

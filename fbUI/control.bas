@@ -6,7 +6,7 @@
 #include once "uiEvent.bi"
 #include once "base/IDrawing.bi"
 #include once "base/colors.bi"
-#include once "fbJson.bi"
+#include once "/fbJson/fbJson.bi"
 
 
 type uiControl extends IRenderable
